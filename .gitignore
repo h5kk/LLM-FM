@@ -1,0 +1,40 @@
+# Draft design documents (local reference, not for commit)
+feature-memory-gist.md
+feature-memory-architecture-plan.md
+
+# Feature Memory runtime state (rebuild from markdown)
+.feature-memory/state.sqlite
+.feature-memory/state.sqlite-journal
+.feature-memory/state.sqlite-wal
+.feature-memory/events.jsonl
+.feature-memory/reports/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.venv/
+venv/
+*.whl
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
