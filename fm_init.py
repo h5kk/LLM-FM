@@ -15,6 +15,7 @@ Creates:
 """
 import argparse
 import json
+import shutil
 import sys
 from datetime import date
 from pathlib import Path
@@ -265,6 +266,7 @@ Since the fm CLI does not exist yet, this script:
 5. Prints a reminder message if a feature match is found
 """
 import json
+import os
 import sys
 import fnmatch
 from datetime import datetime, timezone
@@ -366,7 +368,10 @@ def main():
         abs_path = Path(file_path).resolve()
         rel_path = abs_path.relative_to(project_dir.resolve()).as_posix()
     except (ValueError, OSError):
-        rel_path = file_path.replace("\\\\", "/")
+        try:
+            rel_path = Path(os.path.relpath(file_path, project_dir)).as_posix()
+        except ValueError:
+            rel_path = Path(file_path).as_posix()
 
     # Append event to events.jsonl
     now = datetime.now(timezone.utc)
@@ -582,48 +587,47 @@ if __name__ == "__main__":
     main()
 '''
 
-SETTINGS_JSON = """\
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .feature-memory/hooks/claude_session_start.py",
-            "timeout": 5000
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .feature-memory/hooks/claude_post_tool.py",
-            "timeout": 3000
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .feature-memory/hooks/claude_stop.py",
-            "timeout": 15000
-          }
-        ]
-      }
-    ]
-  }
-}
-"""
+def get_python_command():
+    """Determine the correct python command for this platform."""
+    if sys.platform == "win32":
+        return "python"
+    if shutil.which("python3"):
+        return "python3"
+    if shutil.which("python"):
+        return "python"
+    return "python3"
+
+
+def build_settings_json(python_cmd: str) -> str:
+    """Generate settings.json content with the platform-appropriate python command."""
+    return json.dumps({
+        "hooks": {
+            "SessionStart": [{
+                "matcher": "",
+                "hooks": [{
+                    "type": "command",
+                    "command": f"{python_cmd} .feature-memory/hooks/claude_session_start.py",
+                    "timeout": 5000
+                }]
+            }],
+            "PostToolUse": [{
+                "matcher": "Edit|Write|MultiEdit",
+                "hooks": [{
+                    "type": "command",
+                    "command": f"{python_cmd} .feature-memory/hooks/claude_post_tool.py",
+                    "timeout": 3000
+                }]
+            }],
+            "Stop": [{
+                "matcher": "",
+                "hooks": [{
+                    "type": "command",
+                    "command": f"{python_cmd} .feature-memory/hooks/claude_stop.py",
+                    "timeout": 15000
+                }]
+            }]
+        }
+    }, indent=2)
 
 SKILL_MD = """\
 ---
@@ -760,10 +764,10 @@ TEMPLATES = {
 # LOGIC
 # =============================================================================
 
-def merge_settings_json(project_dir: Path, dry_run: bool = False, force: bool = False) -> tuple:
+def merge_settings_json(project_dir: Path, python_cmd: str, dry_run: bool = False, force: bool = False) -> tuple:
     """Merge FM hooks into existing settings.json. Returns (path, action)."""
     settings_path = project_dir / ".claude" / "settings.json"
-    new_settings = json.loads(SETTINGS_JSON)
+    new_settings = json.loads(build_settings_json(python_cmd))
 
     if not settings_path.exists():
         if not dry_run:
@@ -886,8 +890,10 @@ def main():
 
     project_dir = Path.cwd()
     project_name = args.project_name or project_dir.name.lower().replace(" ", "-")
+    python_cmd = get_python_command()
 
     print(f"Feature Memory Init — project: {project_name}")
+    print(f"Python command: {python_cmd}")
     if args.dry_run:
         print("(DRY RUN — no files will be written)\n")
     else:
@@ -904,15 +910,16 @@ def main():
         else:
             if not args.dry_run:
                 abs_path.parent.mkdir(parents=True, exist_ok=True)
-                abs_path.write_text(content, encoding="utf-8", newline="\n" if rel_path.endswith(".jsonl") else None)
+                with open(abs_path, "w", encoding="utf-8", newline="\n" if rel_path.endswith(".jsonl") else None) as f:
+                    f.write(content)
             action = "overwritten" if existed else "created"
             results.append((rel_path, action))
 
     # 2. Handle config.yaml (needs project_name substitution)
     results.append(handle_config_yaml(project_dir, project_name, args.dry_run, args.force))
 
-    # 3. Handle settings.json (merge logic)
-    results.append(merge_settings_json(project_dir, args.dry_run, args.force))
+    # 3. Handle settings.json (merge logic, platform-aware python command)
+    results.append(merge_settings_json(project_dir, python_cmd, args.dry_run, args.force))
 
     # 4. Handle CLAUDE.md (append logic)
     results.append(handle_claude_md(project_dir, args.dry_run, args.force))
