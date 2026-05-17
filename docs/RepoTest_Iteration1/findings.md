@@ -82,9 +82,46 @@ If a hook script crashes (e.g., permission denied on events.jsonl), it fails sil
 7. **Does the skill actually trigger automatically, or only when explicitly invoked?**
    Cannot test without live session. Skill description contains relevant keywords but actual trigger behavior depends on Claude Code's skill matching logic.
 
-### Finding 7: event_id collision confirmed under rapid edits
+### Finding 7: event_id collision confirmed under rapid edits — FIXED
 
-**Severity:** Low (Phase 0)
+**Severity:** Low (Phase 0) → **Resolved**
 **Category:** Design validation
 
-Events 3 and 4 in the integration test log share identical `event_id` values (`20260517T223129Z-path-touched`) because both were generated within the same second. This confirms the pre-flight finding and validates recommendation #2 (use UUIDs or suffixed event_ids).
+Events 3 and 4 in the integration test log shared identical `event_id` values. **Fixed** by adding a 4-char hex random suffix: `20260517T231120Z-377b`. Verified unique across 100 rapid invocations.
+
+## Expanded Testing Findings (8 features, Flask + React)
+
+### Finding 8: Shared utility files unmapped
+
+**Severity:** Medium
+**Category:** Design gap
+
+`frontend/src/hooks/useApi.ts` is used by all frontend features but maps to none. The Stop hook correctly reports it as unmapped, but the message ("doesn't map to any feature") is misleading for files that are clearly part of the system. The council recommended deferring a fix — the "infrastructure" feature pattern works as a catch-all for now.
+
+### Finding 9: Cross-session event contamination — FIXED
+
+**Severity:** High → **Resolved**
+**Category:** Correctness bug
+
+The Stop hook read ALL events regardless of session, causing stale warnings from previous sessions. **Fixed** with two changes: (1) Stop hook filters by `session_id` when available, (2) SessionStart truncates events.jsonl.
+
+### Finding 10: Silent hook failures — FIXED
+
+**Severity:** Medium → **Resolved**
+**Category:** Reliability
+
+All hooks silently swallowed exceptions. **Fixed** with `hook_error_wrapper` that logs to `.feature-memory/errors.log` and reports to the agent via `[FM] Hook error:` message.
+
+### Finding 11: Duplicated code across hooks — FIXED
+
+**Severity:** Low → **Resolved**
+**Category:** Maintainability
+
+`load_config` and `match_path_to_features` were copy-pasted between PostToolUse and Stop hooks. **Fixed** by extracting to `fm_common.py` shared module.
+
+### Finding 12: Performance scales well
+
+**Severity:** None (positive finding)
+**Category:** Performance
+
+PostToolUse averages 47ms per invocation (3000ms budget). Stop hook handles 1000 events in 50ms (15000ms budget). SessionStart outputs 2080 chars for 8 features. No performance concerns at current scale.
