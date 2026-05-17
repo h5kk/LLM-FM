@@ -159,116 +159,15 @@ After running `fm_init.py`, open a Claude Code session and say:
 Claude will analyze your codebase, identify features, and write initial documentation.
 """
 
-SESSION_START_HOOK = '''\
+FM_COMMON = '''\
 #!/usr/bin/env python3
-"""SessionStart hook (Phase 0): inject Feature Memory context from markdown files directly.
+"""Shared utilities for Feature Memory hooks.
 
-Since the fm CLI does not exist yet, this reads docs/feature-memory/index.md
-and .feature-memory/config.yaml directly to build a context message.
+Extracted to avoid code duplication across PostToolUse, Stop, and SessionStart hooks.
 """
-import json
-import sys
-from pathlib import Path
-
-
-def main():
-    try:
-        hook_input = json.load(sys.stdin)
-    except (json.JSONDecodeError, EOFError):
-        hook_input = {}
-
-    project_dir = Path.cwd()
-    docs_root = project_dir / "docs" / "feature-memory"
-
-    if not docs_root.exists():
-        return
-
-    lines = []
-    lines.append("=== Feature Memory (Phase 0 - paper prototype) ===")
-    lines.append(f"Docs root: {docs_root.as_posix()}")
-    lines.append("")
-
-    # Read index to list features
-    index_path = docs_root / "index.md"
-    if index_path.exists():
-        index_content = index_path.read_text(encoding="utf-8")
-        in_table = False
-        feature_lines = []
-        for line in index_content.splitlines():
-            if line.startswith("| Feature"):
-                in_table = True
-                continue
-            if in_table and line.startswith("|---"):
-                continue
-            if in_table and line.startswith("|"):
-                feature_lines.append(line.strip())
-            elif in_table:
-                in_table = False
-        if feature_lines:
-            lines.append("Documented features:")
-            for fl in feature_lines:
-                lines.append(f"  {fl}")
-            lines.append("")
-
-    # Read recent activity (first 10 lines of content)
-    recent_path = docs_root / "recent.md"
-    if recent_path.exists():
-        recent_content = recent_path.read_text(encoding="utf-8")
-        in_frontmatter = False
-        content_lines = []
-        for line in recent_content.splitlines():
-            if line.strip() == "---":
-                in_frontmatter = not in_frontmatter
-                continue
-            if not in_frontmatter:
-                content_lines.append(line)
-        if content_lines:
-            lines.append("Recent activity:")
-            for cl in content_lines[:10]:
-                if cl.strip():
-                    lines.append(f"  {cl}")
-            lines.append("")
-
-    # Check for events
-    events_path = project_dir / ".feature-memory" / "events.jsonl"
-    if events_path.exists():
-        event_count = sum(1 for line in events_path.open(encoding="utf-8") if line.strip())
-        if event_count > 0:
-            lines.append(f"Event log: {event_count} events recorded in events.jsonl")
-            lines.append("")
-
-    lines.append("Rules: Update feature docs after changing user-facing behavior.")
-    lines.append("       Do not reorganize hierarchy; write proposals to reports/.")
-    lines.append("       The fm CLI is not yet available. Update docs manually.")
-
-    context_message = "\\n".join(lines)
-
-    output = {
-        "result": "continue",
-        "message": context_message
-    }
-    json.dump(output, sys.stdout)
-
-
-if __name__ == "__main__":
-    main()
-'''
-
-POST_TOOL_HOOK = '''\
-#!/usr/bin/env python3
-"""PostToolUse hook (Phase 0): record edited paths and remind about feature docs.
-
-Since the fm CLI does not exist yet, this script:
-1. Reads hook input from stdin
-2. Extracts the edited file path
-3. Appends a path_touched event to .feature-memory/events.jsonl
-4. Checks config.yaml globs to determine which feature(s) are affected
-5. Prints a reminder message if a feature match is found
-"""
-import json
-import os
-import sys
 import fnmatch
+import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -297,51 +196,175 @@ def load_config(project_dir):
             continue
 
         if in_features:
-            # Feature ID line (e.g., "  auth:")
             if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":") and not stripped.startswith("-"):
                 current_feature = stripped[:-1]
                 features[current_feature] = []
                 in_globs = False
                 continue
 
-            # Globs section
             if stripped == "globs:":
                 in_globs = True
                 continue
 
-            # Glob entry
             if in_globs and stripped.startswith("- "):
                 glob_pattern = stripped[2:].strip()
                 if current_feature:
                     features[current_feature].append(glob_pattern)
                 continue
 
-            # Other keys under feature reset in_globs
             if not stripped.startswith("- ") and ":" in stripped:
                 in_globs = False
+
+    if not features and config_path.stat().st_size > 50:
+        log_error("YAML parse warning: config.yaml has content but no features were parsed. "
+                  "Check indentation (must use 2-space indent).")
 
     return features
 
 
 def match_path_to_features(file_path, features):
-    """Match a file path against feature globs. Returns list of feature IDs."""
+    """Match a file path against feature globs. Returns list of ALL matching feature IDs."""
     normalized = file_path.replace("\\\\", "/")
     matched = []
 
     for feature_id, globs in features.items():
         for pattern in globs:
-            # Handle directory globs like "src/auth/**"
             if pattern.endswith("/**"):
                 prefix = pattern[:-3]
                 if normalized.startswith(prefix + "/") or normalized == prefix:
                     matched.append(feature_id)
                     break
-            # Handle exact matches
             elif fnmatch.fnmatch(normalized, pattern):
                 matched.append(feature_id)
                 break
 
     return matched
+
+
+def generate_event_id():
+    """Generate a unique event ID with timestamp and random suffix."""
+    import random
+    now = datetime.now(timezone.utc)
+    suffix = f"{random.randint(0, 0xFFFF):04x}"
+    return f"{now.strftime(\'%Y%m%dT%H%M%SZ\')}-{suffix}"
+
+
+def log_error(message):
+    """Log an error to .feature-memory/errors.log."""
+    try:
+        error_path = Path.cwd() / ".feature-memory" / "errors.log"
+        with open(error_path, "a", encoding="utf-8") as f:
+            f.write(f"{datetime.now(timezone.utc).isoformat()} {message}\\n")
+    except Exception:
+        pass
+
+
+def hook_error_wrapper(hook_name, main_func):
+    """Wrap a hook\'s main function with error handling."""
+    try:
+        main_func()
+    except Exception as e:
+        log_error(f"{hook_name} ERROR: {e}")
+        output = {"result": "continue", "message": f"[FM] {hook_name} hook error: {e}"}
+        json.dump(output, sys.stdout)
+'''
+
+SESSION_START_HOOK = '''\
+#!/usr/bin/env python3
+"""SessionStart hook (Phase 0): inject Feature Memory context and clear stale events."""
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from fm_common import hook_error_wrapper
+
+
+def main():
+    try:
+        hook_input = json.load(sys.stdin)
+    except (json.JSONDecodeError, EOFError):
+        hook_input = {}
+
+    project_dir = Path.cwd()
+    docs_root = project_dir / "docs" / "feature-memory"
+
+    if not docs_root.exists():
+        return
+
+    # Truncate events from previous sessions
+    events_path = project_dir / ".feature-memory" / "events.jsonl"
+    if events_path.exists():
+        events_path.write_text("", encoding="utf-8")
+
+    lines = []
+    lines.append("=== Feature Memory (Phase 0 - paper prototype) ===")
+    rel_docs = docs_root.relative_to(project_dir).as_posix()
+    lines.append(f"Docs root: {rel_docs}")
+    lines.append("")
+
+    index_path = docs_root / "index.md"
+    if index_path.exists():
+        index_content = index_path.read_text(encoding="utf-8")
+        in_table = False
+        feature_lines = []
+        for line in index_content.splitlines():
+            if line.startswith("| Feature"):
+                in_table = True
+                continue
+            if in_table and line.startswith("|---"):
+                continue
+            if in_table and line.startswith("|"):
+                feature_lines.append(line.strip())
+            elif in_table:
+                in_table = False
+        if feature_lines:
+            lines.append("Documented features:")
+            for fl in feature_lines:
+                lines.append(f"  {fl}")
+            lines.append("")
+
+    recent_path = docs_root / "recent.md"
+    if recent_path.exists():
+        recent_content = recent_path.read_text(encoding="utf-8")
+        in_frontmatter = False
+        content_lines = []
+        for line in recent_content.splitlines():
+            if line.strip() == "---":
+                in_frontmatter = not in_frontmatter
+                continue
+            if not in_frontmatter:
+                content_lines.append(line)
+        if content_lines:
+            lines.append("Recent activity:")
+            for cl in content_lines[:10]:
+                if cl.strip():
+                    lines.append(f"  {cl}")
+            lines.append("")
+
+    lines.append("Rules: Update feature docs after changing user-facing behavior.")
+    lines.append("       Do not reorganize hierarchy; write proposals to reports/.")
+    lines.append("       The fm CLI is not yet available. Update docs manually.")
+
+    output = {"result": "continue", "message": "\\n".join(lines)}
+    json.dump(output, sys.stdout)
+
+
+if __name__ == "__main__":
+    hook_error_wrapper("SessionStart", main)
+'''
+
+POST_TOOL_HOOK = '''\
+#!/usr/bin/env python3
+"""PostToolUse hook (Phase 0): record edited paths and remind about feature docs."""
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from fm_common import load_config, match_path_to_features, generate_event_id, hook_error_wrapper
 
 
 def main():
@@ -353,7 +376,6 @@ def main():
     tool_name = hook_input.get("tool_name", "")
     tool_input = hook_input.get("tool_input", {})
 
-    # Extract the edited file path
     file_path = None
     if tool_name in ("Edit", "Write", "MultiEdit"):
         file_path = tool_input.get("file_path")
@@ -363,7 +385,6 @@ def main():
 
     project_dir = Path.cwd()
 
-    # Normalize the file path to be relative to project
     try:
         abs_path = Path(file_path).resolve()
         rel_path = abs_path.relative_to(project_dir.resolve()).as_posix()
@@ -373,10 +394,9 @@ def main():
         except ValueError:
             rel_path = Path(file_path).as_posix()
 
-    # Append event to events.jsonl
     now = datetime.now(timezone.utc)
     event = {
-        "event_id": f"{now.strftime(\'%Y%m%dT%H%M%SZ\')}-path-touched",
+        "event_id": generate_event_id(),
         "created_at": now.isoformat(),
         "event_type": "path_touched",
         "source": "claude-hook",
@@ -391,7 +411,6 @@ def main():
     except FileNotFoundError:
         pass
 
-    # Check if the path maps to a known feature
     features = load_config(project_dir)
     matched_features = match_path_to_features(rel_path, features)
 
@@ -411,86 +430,21 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    hook_error_wrapper("PostToolUse", main)
 '''
 
 STOP_HOOK = '''\
 #!/usr/bin/env python3
 """Stop hook (Phase 0): check if touched source files have missing docs updates.
 
-Since the fm CLI does not exist yet, this script:
-1. Reads .feature-memory/events.jsonl for path_touched events
-2. Groups touched paths by feature using config.yaml globs
-3. Checks if the feature doc was also modified (by looking for doc path events)
-4. Reports features that had source changes but no doc updates
+Filters events by current session_id and sorts output by change count.
 """
 import json
 import sys
 from pathlib import Path
-import fnmatch
 
-
-def load_config(project_dir):
-    """Load feature globs from config.yaml without requiring PyYAML."""
-    config_path = project_dir / ".feature-memory" / "config.yaml"
-    if not config_path.exists():
-        return {}
-
-    features = {}
-    current_feature = None
-    in_features = False
-    in_globs = False
-
-    for line in config_path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-
-        if stripped == "features:":
-            in_features = True
-            continue
-
-        if in_features and not line.startswith(" ") and not line.startswith("\\t") and line.strip():
-            in_features = False
-            in_globs = False
-            continue
-
-        if in_features:
-            if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":") and not stripped.startswith("-"):
-                current_feature = stripped[:-1]
-                features[current_feature] = []
-                in_globs = False
-                continue
-
-            if stripped == "globs:":
-                in_globs = True
-                continue
-
-            if in_globs and stripped.startswith("- "):
-                glob_pattern = stripped[2:].strip()
-                if current_feature:
-                    features[current_feature].append(glob_pattern)
-                continue
-
-            if not stripped.startswith("- ") and ":" in stripped:
-                in_globs = False
-
-    return features
-
-
-def match_path_to_features(file_path, features):
-    """Match a file path against feature globs."""
-    normalized = file_path.replace("\\\\", "/")
-    matched = []
-    for feature_id, globs in features.items():
-        for pattern in globs:
-            if pattern.endswith("/**"):
-                prefix = pattern[:-3]
-                if normalized.startswith(prefix + "/") or normalized == prefix:
-                    matched.append(feature_id)
-                    break
-            elif fnmatch.fnmatch(normalized, pattern):
-                matched.append(feature_id)
-                break
-    return matched
+sys.path.insert(0, str(Path(__file__).parent))
+from fm_common import load_config, match_path_to_features, hook_error_wrapper
 
 
 def main():
@@ -505,7 +459,8 @@ def main():
     if not events_path.exists():
         return
 
-    # Read all events
+    current_session = hook_input.get("session_id")
+
     events = []
     for line in events_path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
@@ -518,7 +473,12 @@ def main():
     if not events:
         return
 
-    # Collect all touched paths
+    # Filter to current session if session_id is available
+    if current_session:
+        events = [e for e in events if e.get("session_id") == current_session]
+        if not events:
+            return
+
     touched_paths = set()
     doc_paths_touched = set()
 
@@ -533,7 +493,6 @@ def main():
     if not touched_paths:
         return
 
-    # Map paths to features
     features = load_config(project_dir)
     features_touched = {}
     unmapped_paths = []
@@ -549,14 +508,14 @@ def main():
     if not features_touched and not unmapped_paths:
         return
 
-    # Check which features had doc updates
     messages = []
     features_needing_docs = []
 
-    for fid, paths in features_touched.items():
+    # Sort by change count (most impacted first)
+    for fid, paths in sorted(features_touched.items(), key=lambda x: len(x[1]), reverse=True):
         doc_path = f"docs/feature-memory/features/{fid}.md"
         if doc_path not in doc_paths_touched:
-            features_needing_docs.append(fid)
+            features_needing_docs.append((fid, len(paths)))
             messages.append(
                 f"- Feature \'{fid}\': {len(paths)} source file(s) changed "
                 f"but {doc_path} was not updated"
@@ -564,27 +523,23 @@ def main():
 
     if unmapped_paths:
         messages.append(
-            f"- {len(unmapped_paths)} file(s) edited that don\\'t map to any feature: "
+            f"- {len(unmapped_paths)} file(s) edited that don\'t map to any feature: "
             + ", ".join(sorted(unmapped_paths)[:5])
         )
 
     if messages:
         summary = "[FM] Session documentation check:\\n" + "\\n".join(messages)
         if features_needing_docs:
-            summary += (
-                "\\n\\nConsider updating feature docs for: "
-                + ", ".join(sorted(features_needing_docs))
-            )
+            sorted_names = [f"{fid} ({count})" for fid, count in
+                           sorted(features_needing_docs, key=lambda x: x[1], reverse=True)]
+            summary += "\\n\\nConsider updating feature docs for: " + ", ".join(sorted_names)
 
-        output = {
-            "result": "continue",
-            "message": summary
-        }
+        output = {"result": "continue", "message": summary}
         json.dump(output, sys.stdout)
 
 
 if __name__ == "__main__":
-    main()
+    hook_error_wrapper("Stop", main)
 '''
 
 def get_python_command():
@@ -753,6 +708,7 @@ TEMPLATES = {
     "docs/feature-memory/reports/.gitkeep": "",
     ".feature-memory/events.jsonl": "",
     ".feature-memory/reports/.gitkeep": "",
+    ".feature-memory/hooks/fm_common.py": FM_COMMON,
     ".feature-memory/hooks/claude_session_start.py": SESSION_START_HOOK,
     ".feature-memory/hooks/claude_post_tool.py": POST_TOOL_HOOK,
     ".feature-memory/hooks/claude_stop.py": STOP_HOOK,
