@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated": "2026-05-18T18:31:09.963739+00:00",
+  "generated": "2026-05-18T18:31:38.170873+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -26,6 +26,59 @@
         "docs",
         "markdown"
       ]
+    },
+    {
+      "event_id": "f20a68ec657a-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "both",
+      "summary": "Add 3-col desktop layout, Dev Sync, .md filter, clear/purge skills; bump to v0.5.0",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "ux",
+        "html-css"
+      ],
+      "paths": [
+        "plugin/.claude-plugin/plugin.json",
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add 3-col desktop layout, Dev Sync, .md filter, clear/purge skills; bump to v0.5.0",
+      "git_hash": "f20a68ec657a6bc5f54ddce89008584e9d685516",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "f20a68ec657a-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Add 3-col desktop layout, Dev Sync, .md filter, clear/purge skills; bump to v0.5.0",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "ux",
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py",
+        "plugin/hooks/fm_backfill.py",
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add 3-col desktop layout, Dev Sync, .md filter, clear/purge skills; bump to v0.5.0",
+      "git_hash": "f20a68ec657a6bc5f54ddce89008584e9d685516",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
     },
     {
       "event_id": "e866d1624738-hooks",
