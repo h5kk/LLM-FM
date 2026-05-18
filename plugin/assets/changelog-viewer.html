@@ -124,11 +124,11 @@
     /* ── Tag filter ──────────────────────────────────────────────────── */
     #active-tag-summary { font-size: 11px; color: var(--accent); flex-shrink: 0; }
 
-    #tag-filter { border-top: 1px solid var(--border); padding: 10px 0 12px; }
+    #tag-filter { border-top: 1px solid var(--border); padding: 8px 0 10px; }
 
     .tag-filter-header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 8px; font-size: 11px; font-weight: 600;
+      margin-bottom: 6px; font-size: 11px; font-weight: 600;
       color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
     }
     #clear-tags {
@@ -138,25 +138,47 @@
     }
     #clear-tags:hover { color: var(--text); border-color: var(--accent); }
 
-    .tag-filter-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
-    .cat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; min-width: 52px; padding-top: 3px; flex-shrink: 0; }
+    /* Structured section: impact/quality/process on compact rows */
+    .tf-structured { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .tag-filter-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .cat-label {
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+      min-width: 46px; flex-shrink: 0;
+    }
     .cat-label.impact  { color: #f97316; }
     .cat-label.quality { color: #a855f7; }
     .cat-label.process { color: #14b8a6; }
-    .cat-label.topic   { color: #93c5fd; }
-    .tag-chips-row { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag-chips-row { display: flex; flex-wrap: wrap; gap: 3px; }
+
+    /* Topic section */
+    .tf-topic-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .tf-topic-label {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: #93c5fd;
+    }
+    #tf-topic-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    #tf-topic-more {
+      background: none; border: none; color: var(--accent); cursor: pointer;
+      font-size: 11px; font-family: var(--font); padding: 4px 0 0;
+      opacity: 0.8; transition: opacity 0.15s;
+    }
+    #tf-topic-more:hover { opacity: 1; }
 
     .filter-chip {
       display: inline-flex; align-items: center; gap: 3px;
-      font-size: 10px; font-weight: 600; border-radius: 10px; padding: 2px 8px;
+      font-size: 10px; font-weight: 600; border-radius: 10px; padding: 2px 7px;
       cursor: pointer; border: 1px solid transparent;
-      transition: opacity 0.15s, border-color 0.15s; opacity: 0.65;
+      transition: opacity 0.15s, border-color 0.15s; opacity: 0.6;
     }
     .filter-chip:hover { opacity: 1; }
     .filter-chip.impact  { background: #431407; color: #fb923c; }
     .filter-chip.quality { background: #2e1065; color: #c084fc; }
     .filter-chip.process { background: #042f2e; color: #2dd4bf; }
-    .filter-chip.topic   { background: #1e293b; color: #93c5fd; }
+    .filter-chip.topic   { background: #1e293b; color: #93c5fd; font-size: 11px; }
+    .filter-chip.topic.prominent { opacity: 0.85; font-weight: 700; }
     .filter-chip.active         { opacity: 1; }
     .filter-chip.impact.active  { border-color: #f97316; }
     .filter-chip.quality.active { border-color: #a855f7; }
@@ -165,8 +187,8 @@
     :root[data-theme="light"] .filter-chip.impact  { background: #fff7ed; color: #c2410c; }
     :root[data-theme="light"] .filter-chip.quality { background: #faf5ff; color: #7e22ce; }
     :root[data-theme="light"] .filter-chip.process { background: #f0fdfa; color: #0f766e; }
-    :root[data-theme="light"] .filter-chip.topic   { background: #eff6ff; color: #1d4ed8; font-style: italic; }
-    .chip-count { opacity: 0.65; font-size: 9px; }
+    :root[data-theme="light"] .filter-chip.topic   { background: #eff6ff; color: #1d4ed8; }
+    .chip-count { opacity: 0.55; font-size: 9px; font-weight: 400; }
 
     /* ── Toolbar ──────────────────────────────────────────────────────── */
     .toolbar { display: flex; gap: 8px; align-items: center; padding: 8px 0 10px; flex-wrap: wrap; }
@@ -1148,42 +1170,76 @@
   });
 
   // ── Tag filter ────────────────────────────────────────────────────────
+  let topicTagsExpanded = false;
+  const TOPIC_VISIBLE = 12;
+
   function buildTagFilter() {
     const regexCounts = {}, topicCounts = {};
     for (const e of allEntries) {
       for (const t of (e.tags || []))       regexCounts[t] = (regexCounts[t] || 0) + 1;
       for (const t of (e.topic_tags || [])) topicCounts[t]  = (topicCounts[t]  || 0) + 1;
     }
+
+    // ── Structured rows (Impact / Quality / Process) ──────────────────
     const cats = { impact: [], quality: [], process: [] };
     for (const [tag, count] of Object.entries(regexCounts)) {
       const c = TAG_CATEGORIES[tag];
       if (c && cats[c]) cats[c].push({ tag, count });
     }
     const labels = { impact: 'Impact', quality: 'Quality', process: 'Process' };
-    let html = '';
+    let structured = '';
     for (const [cat, tags] of Object.entries(cats)) {
       if (!tags.length) continue;
       tags.sort((a, b) => b.count - a.count);
       const chips = tags.map(({ tag, count }) =>
         `<button class="filter-chip ${cat}${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`
       ).join('');
-      html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${labels[cat]}</span><div class="tag-chips-row">${chips}</div></div>`;
+      structured += `<div class="tag-filter-row"><span class="cat-label ${cat}">${labels[cat]}</span><div class="tag-chips-row">${chips}</div></div>`;
     }
-    const topicTags = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
-    if (topicTags.length) {
-      const chips = topicTags.map(([tag, count]) =>
-        `<button class="filter-chip topic${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`
-      ).join('');
-      html += `<div class="tag-filter-row"><span class="cat-label topic">Topic</span><div class="tag-chips-row">${chips}</div></div>`;
+
+    // ── Topic section ─────────────────────────────────────────────────
+    const allTopics = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
+    const maxCount = allTopics[0]?.[1] || 1;
+    const visible = topicTagsExpanded ? allTopics : allTopics.slice(0, TOPIC_VISIBLE);
+    const hidden = allTopics.length - TOPIC_VISIBLE;
+
+    const topicChips = visible.map(([tag, count]) => {
+      const prominent = count >= maxCount * 0.3 ? ' prominent' : '';
+      return `<button class="filter-chip topic${prominent}${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`;
+    }).join('');
+
+    let topicHtml = '';
+    if (allTopics.length) {
+      const moreBtn = !topicTagsExpanded && hidden > 0
+        ? `<button id="tf-topic-more">${hidden} more ▾</button>` : '';
+      const lessBtn = topicTagsExpanded && allTopics.length > TOPIC_VISIBLE
+        ? `<button id="tf-topic-more">Show less ▴</button>` : '';
+      topicHtml = `
+        <div class="tf-topic-header">
+          <span class="tf-topic-label">Topic</span>
+        </div>
+        <div id="tf-topic-chips">${topicChips}</div>
+        ${moreBtn || lessBtn}`;
     }
-    document.getElementById('tag-filter-body').innerHTML = html;
-    document.getElementById('tag-filter-body').querySelectorAll('.filter-chip').forEach(btn => {
+
+    const body = document.getElementById('tag-filter-body');
+    body.innerHTML = `<div class="tf-structured">${structured}</div>${topicHtml}`;
+
+    body.querySelectorAll('.filter-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         const tag = btn.dataset.tag;
         activeTags.has(tag) ? activeTags.delete(tag) : activeTags.add(tag);
         saveTagFilter(); updateTagUI(); render();
       });
     });
+
+    const moreBtn = document.getElementById('tf-topic-more');
+    if (moreBtn) {
+      moreBtn.addEventListener('click', () => {
+        topicTagsExpanded = !topicTagsExpanded;
+        buildTagFilter();
+      });
+    }
   }
 
   function updateTagUI() {
