@@ -8,7 +8,7 @@ Every project has two codebases. The real one (files, tests, routes, configs). A
 
 Feature Memory makes it explicit: a structured layer of feature documentation that lives alongside your code, stays current through hooks and skills, and gives agents immediate context when they start a session.
 
-![20 minutes of manual investigation vs 40 seconds with Feature Memory](images/value.png)
+![The Evolution — from Traditional RAG to LLM Wiki to Feature Memory](images/v2_TheEvolution.png)
 
 ## How It Works
 
@@ -86,10 +86,6 @@ Feature Memory is designed in layers:
 3. **Hooks** — Python scripts that integrate with Claude Code's lifecycle events
 4. **Skill** — structured instructions that teach the agent how to maintain FM docs
 5. **CLI** (Phase 1) — `fm` command for scanning, status checks, and reports
-
-### The Evolution
-
-![The Evolution — from Traditional RAG to LLM Wiki to Feature Memory](images/v2_TheEvolution.png)
 
 ## Specs
 
