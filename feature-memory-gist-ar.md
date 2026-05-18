@@ -32,6 +32,8 @@ raw code activity → hooks → FM compiler → compiled feature docs → agents
 
 الإنسان يملك الذوق والحكم والنية. الوكيل يملك مسك الدفاتر.
 
+![20 minutes of manual investigation vs 40 seconds with Feature Memory](images/value.png)
+
 ## لماذا لا نستخدم رسمًا بيانيًا فحسب؟
 
 أمر مغرٍ. قواعد الشيفرة عبارة عن رسوم بيانية. المنتجات عبارة عن رسوم بيانية. الميزات تعتمد على بعضها. الملفات تستورد بعضها.
@@ -73,6 +75,8 @@ Sources → Compiler → Compiled Docs → Consumers
 ```
 
 **المصادر الخام هي دائمًا مصدر الحقيقة.** المستندات المجمَّعة هي طبقة الذاكرة المُصانة. المخطط يخبر الوكيل كيف يتصرف بوصفه **مشرفًا منضبطًا** بدلًا من ملخِّص عام.
+
+![Three-layer architecture: source code, compiled docs, consumers](images/three-layer-architecture.png)
 
 إليك كيف تتدفق البيانات:
 
@@ -142,6 +146,8 @@ login and invalid credentials; expiry behavior is partially covered.
 
 ليست موسوعية. مجرد الصفحة التي يقرأها الوكيل **قبل** لمس المصادقة والتي يتصفحها الإنسان قبل الانضمام إلى محادثة.
 
+![Annotated Feature Memory page showing metadata, summaries, source map, and recent changes](images/feature-page-anatomy.png)
+
 ## الخطافات هي محرك الصيانة
 
 التوثيق اليدوي يتعفن. اللحظة المناسبة لتحديث التوثيق هي دائمًا اللحظة التي يريد فيها الجميع المضي قدمًا. لذا يعمل النظام **قرب لحظة التغيير**:
@@ -171,6 +177,10 @@ expensive (LLM, seconds):             generate summaries, run reviews
 الخطافات الرخيصة تُطلَق عند كل تعديل. الخطافات المكلفة تُجمَّع عند حدود ذات معنى — التزام، طلب دمج، دمج. تكلفة كل التزام تبقى قريبة من الصفر. تكلفة كل طلب دمج: بضعة سنتات.
 
 **صيانة التوثيق تصبح أثرًا جانبيًا لصيانة البرمجيات**، وليست عملًا روتينيًا منفصلًا.
+
+![Five-stage hook lifecycle from File Edit to Nightly](images/hook-lifecycle.png)
+
+![FM vs LLM Wiki data pipeline comparison](images/data-pipeline.png)
 
 ## واجهة سطر الأوامر (CLI)
 

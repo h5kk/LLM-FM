@@ -6,6 +6,8 @@ A documentation compiler for software repos. Maintains feature-level memory so a
 
 Every project has two codebases. The real one (files, tests, routes, configs). And the remembered one (what it does, why, which files matter, what's dead). The second one is more useful and decays fastest. Make it explicit.
 
+![20 minutes of manual investigation vs 40 seconds with Feature Memory](images/value.png)
+
 ## Structure
 
 ```
@@ -23,6 +25,8 @@ docs/feature-memory/
   state.sqlite          # indexed cache of the markdown
   events.jsonl          # hook event log
 ```
+
+![Where Feature Memory lives in a project](images/project-structure-example.png)
 
 Each feature page has:
 

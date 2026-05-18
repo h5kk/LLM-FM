@@ -8,6 +8,8 @@ Every project has two codebases. The real one (files, tests, routes, configs). A
 
 Feature Memory makes it explicit: a structured layer of feature documentation that lives alongside your code, stays current through hooks and skills, and gives agents immediate context when they start a session.
 
+![20 minutes of manual investigation vs 40 seconds with Feature Memory](images/value.png)
+
 ## How It Works
 
 ```
@@ -34,6 +36,8 @@ Three hooks wire into Claude Code's lifecycle:
 | **Stop** | Session ends | Reports features with source changes but no doc updates |
 
 A companion **skill** (`feature-memory`) gives the agent a structured workflow for reading and updating feature pages, changelogs, and the index.
+
+![Five-stage hook lifecycle from File Edit to Nightly showing deterministic and LLM-powered operations](images/hook-lifecycle.png)
 
 ## Quick Start
 
@@ -73,6 +77,8 @@ fm report proposal "Refactor auth to OAuth2"
 
 ## Architecture
 
+![Three-layer architecture: source code, compiled docs, consumers](images/three-layer-architecture.png)
+
 Feature Memory is designed in layers:
 
 1. **Markdown docs** (`docs/feature-memory/`) — human-readable, git-tracked feature pages with YAML frontmatter
@@ -80,6 +86,10 @@ Feature Memory is designed in layers:
 3. **Hooks** — Python scripts that integrate with Claude Code's lifecycle events
 4. **Skill** — structured instructions that teach the agent how to maintain FM docs
 5. **CLI** (Phase 1) — `fm` command for scanning, status checks, and reports
+
+### What a Feature Page Looks Like
+
+![Annotated Feature Memory page showing metadata, summaries, source map, and recent changes](images/feature-page-anatomy.png)
 
 ## Specs
 
