@@ -243,7 +243,7 @@ def _infer_tags(paths, message, kind):
     return result
 
 
-_VIEWER_VERSION = 4  # increment when the viewer template gets significant UI changes
+_VIEWER_VERSION = 5  # increment when the viewer template gets significant UI changes
 
 
 def _check_viewer_update(docs_root):

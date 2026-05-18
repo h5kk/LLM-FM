@@ -166,6 +166,47 @@ def _update_viewer(docs_root, data):
         print(f"  Warning: viewer update failed: {e}")
 
 
+def _purge_md_only(project_dir, changelog_path, docs_root):
+    """Remove entries where every stored path is a .md file."""
+    if not changelog_path.exists():
+        print("No changelog.json found. Run backfill first.")
+        return
+    try:
+        data = json.loads(changelog_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"Error reading changelog: {e}")
+        return
+    entries = data.get("entries", [])
+    before = len(entries)
+    kept = [e for e in entries
+            if not (e.get("paths") and all(p.endswith(".md") for p in e["paths"]))]
+    removed = before - len(kept)
+    print(f"Removed {removed} entr{'y' if removed == 1 else 'ies'} with only .md paths (of {before} total).")
+    if removed > 0:
+        from datetime import datetime, timezone
+        data["entries"] = kept
+        data["generated"] = datetime.now(timezone.utc).isoformat()
+        changelog_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        _update_viewer(docs_root, data)
+        print("Done.")
+    else:
+        print("Nothing removed — no .md-only entries found.")
+
+
+def _clear_changelog(project_dir, changelog_path, docs_root):
+    """Clear all entries from changelog.json (does not touch .md docs)."""
+    from datetime import datetime, timezone
+    data = {
+        "schema_version": 2,
+        "generated": datetime.now(timezone.utc).isoformat(),
+        "entries": [],
+    }
+    changelog_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    _update_viewer(docs_root, data)
+    print("Cleared changelog.json — 0 entries remain.")
+    print("Feature .md docs untouched. Run backfill to repopulate.")
+
+
 def _retag_existing(project_dir, changelog_path, docs_root):
     """Re-infer and replace tags for all entries. No git scan — uses stored paths+message."""
     if not changelog_path.exists():
@@ -218,9 +259,14 @@ def main():
                        help="All commits in the repo")
     group.add_argument("--retag", action="store_true",
                        help="Re-infer and replace tags for ALL existing entries (no git scan)")
+    group.add_argument("--purge-md-only", action="store_true", dest="purge_md_only",
+                       help="Remove entries whose every path is a .md file")
+    group.add_argument("--clear", action="store_true",
+                       help="Clear ALL entries from changelog.json (feature .md docs untouched)")
     args = parser.parse_args()
 
-    if not any([args.hours, args.since, args.since_commit, args.all_commits, args.retag]):
+    if not any([args.hours, args.since, args.since_commit, args.all_commits,
+                args.retag, args.purge_md_only, args.clear]):
         args.hours = 48
 
     project_dir = Path.cwd()
@@ -236,6 +282,14 @@ def main():
 
     if args.retag:
         _retag_existing(project_dir, changelog_path, docs_root)
+        return
+
+    if args.purge_md_only:
+        _purge_md_only(project_dir, changelog_path, docs_root)
+        return
+
+    if args.clear:
+        _clear_changelog(project_dir, changelog_path, docs_root)
         return
 
     # Primary dedup: event_id. Secondary: (hash12, feature_id) to catch Stop-hook entries
@@ -292,8 +346,9 @@ def main():
         if not files:
             continue
 
-        # Exclude FM doc files — they are meta-updates, not feature changes
+        # Exclude FM doc files and .md files — meta-updates, not feature changes
         source_files = [f for f in files if not f.startswith("docs/feature-memory/")]
+        source_files = [f for f in source_files if not f.endswith(".md")]
         if not source_files:
             continue
 

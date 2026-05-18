@@ -1,6 +1,6 @@
 {
   "name": "feature-memory",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, dual developer+product changelogs, tag-filtered changelog viewer, relationship diagrams, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
   "author": {
     "name": "Hanny Noueilaty",
@@ -35,7 +35,17 @@
     {
       "name": "feature-memory-changelog-refresh",
       "path": "skills/feature-memory-changelog-refresh/SKILL.md",
-      "description": "Re-infers tags for existing changelog entries that predate tag support (v0.4.0). No git re-scan — uses stored paths and commit messages. Safe to run multiple times."
+      "description": "Re-infers and replaces tags for ALL existing changelog entries. No git re-scan — uses stored paths and commit messages."
+    },
+    {
+      "name": "feature-memory-changelog-clear",
+      "path": "skills/feature-memory-changelog-clear/SKILL.md",
+      "description": "Clears all entries from changelog.json without touching feature .md docs. Changelog can be repopulated with backfill."
+    },
+    {
+      "name": "feature-memory-changelog-purge-md",
+      "path": "skills/feature-memory-changelog-purge-md/SKILL.md",
+      "description": "Removes changelog entries whose every path is a .md file (doc-only commits that don't represent feature changes)."
     }
   ]
 }

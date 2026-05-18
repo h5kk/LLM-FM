@@ -1,4 +1,4 @@
-<!-- fm-viewer-version: 4 -->
+<!-- fm-viewer-version: 5 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,6 +22,7 @@
       --tag-bg: #1e2235;
       --radius: 8px;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --header-h: 96px;
     }
 
     :root[data-theme="light"] {
@@ -59,7 +60,7 @@
     .header-row {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 10px;
       margin-bottom: 12px;
       flex-wrap: wrap;
     }
@@ -78,8 +79,8 @@
 
     #search {
       flex: 1;
-      min-width: 200px;
-      max-width: 400px;
+      min-width: 180px;
+      max-width: 360px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -122,7 +123,8 @@
       padding-bottom: 10px;
     }
 
-    main {
+    /* ── Mobile / single-column main ───────────────────────────────── */
+    main#timeline {
       max-width: 900px;
       margin: 0 auto;
       padding: 24px 24px 64px;
@@ -155,6 +157,7 @@
       background: var(--border);
     }
 
+    /* ── Entry card ─────────────────────────────────────────────────── */
     .entry {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -168,10 +171,11 @@
     .entry-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
+      gap: 8px;
+      padding: 10px 12px;
       cursor: pointer;
       user-select: none;
+      min-width: 0;
     }
 
     .audience-dot {
@@ -205,23 +209,18 @@
       letter-spacing: 0.04em;
       flex-shrink: 0;
     }
-    .kind-tag.new-feature   { background: #0d3321; color: #34d399; }
-    .kind-tag.bug-fix       { background: #3b0f0f; color: #f87171; }
+    .kind-tag.new-feature    { background: #0d3321; color: #34d399; }
+    .kind-tag.bug-fix        { background: #3b0f0f; color: #f87171; }
     .kind-tag.behavior-change { background: #1e1b3a; color: #a78bfa; }
-    .kind-tag.refactor      { background: #1a2030; color: #94a3b8; }
-    .kind-tag.path-touched  { background: #1a1f2e; color: #64748b; }
-    .kind-tag.default       { background: var(--tag-bg); color: var(--muted); }
+    .kind-tag.refactor       { background: #1a2030; color: #94a3b8; }
+    .kind-tag.path-touched   { background: #1a1f2e; color: #64748b; }
+    .kind-tag.default        { background: var(--tag-bg); color: var(--muted); }
 
-    :root[data-theme="light"] .kind-tag.new-feature   { background: #d1fae5; color: #065f46; }
-    :root[data-theme="light"] .kind-tag.bug-fix        { background: #fee2e2; color: #991b1b; }
+    :root[data-theme="light"] .kind-tag.new-feature    { background: #d1fae5; color: #065f46; }
+    :root[data-theme="light"] .kind-tag.bug-fix         { background: #fee2e2; color: #991b1b; }
     :root[data-theme="light"] .kind-tag.behavior-change { background: #ede9fe; color: #4c1d95; }
-    :root[data-theme="light"] .kind-tag.refactor       { background: #e2e8f0; color: #475569; }
-    :root[data-theme="light"] .kind-tag.path-touched   { background: #f1f5f9; color: #64748b; }
-
-    :root[data-theme="light"] .confidence-badge.high   { background: #d1fae5; color: #065f46; }
-    :root[data-theme="light"] .confidence-badge.medium { background: #fef9c3; color: #854d0e; }
-    :root[data-theme="light"] .confidence-badge.low    { background: #fee2e2; color: #991b1b; }
-    :root[data-theme="light"] .confidence-badge.auto   { background: var(--tag-bg); color: var(--muted); }
+    :root[data-theme="light"] .kind-tag.refactor        { background: #e2e8f0; color: #475569; }
+    :root[data-theme="light"] .kind-tag.path-touched    { background: #f1f5f9; color: #64748b; }
 
     .summary {
       flex: 1;
@@ -232,6 +231,16 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
+    /* ── Inline tags in collapsed row ──────────────────────────────── */
+    .entry-header-tags {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .entry-header-tags .tag-chip { font-size: 10px; padding: 1px 5px; white-space: nowrap; }
+    @media (max-width: 700px) { .entry-header-tags { display: none; } }
 
     .author-chip {
       font-size: 11px;
@@ -259,7 +268,6 @@
       border-color: #93c5fd;
       color: #1d4ed8;
     }
-    .detail-value.mono.jira-ticket { color: #60a5fa; }
 
     .expand-btn {
       background: none;
@@ -273,6 +281,7 @@
     }
     .entry.expanded .expand-btn { transform: rotate(180deg); }
 
+    /* ── Entry detail (expanded) ─────────────────────────────────────── */
     .entry-detail {
       border-top: 1px solid var(--border);
       padding: 12px 14px;
@@ -328,21 +337,21 @@
     .confidence-badge.low    { background: #3b0f0f; color: #f87171; }
     .confidence-badge.auto   { background: var(--tag-bg); color: var(--muted); }
 
-    #theme-toggle {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 15px;
-      line-height: 1;
-      padding: 5px 9px;
-      flex-shrink: 0;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    #theme-toggle:hover { color: var(--text); border-color: var(--accent); }
+    :root[data-theme="light"] .confidence-badge.high   { background: #d1fae5; color: #065f46; }
+    :root[data-theme="light"] .confidence-badge.medium { background: #fef9c3; color: #854d0e; }
+    :root[data-theme="light"] .confidence-badge.low    { background: #fee2e2; color: #991b1b; }
+    :root[data-theme="light"] .confidence-badge.auto   { background: var(--tag-bg); color: var(--muted); }
 
-    /* ── Tag chips (in expanded detail) ──────────────────────────── */
+    /* cross-channel note for 'both' entries */
+    .cross-channel-note {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+      border-left: 2px solid var(--border);
+      padding-left: 8px;
+    }
+
+    /* ── Tag chips ───────────────────────────────────────────────────── */
     .tag-chip {
       display: inline-block;
       font-size: 10px;
@@ -367,7 +376,7 @@
       margin-top: 6px;
     }
 
-    /* ── Tag filter panel ─────────────────────────────────────────── */
+    /* ── Tag filter panel ─────────────────────────────────────────────── */
     #tag-filter-toggle {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -441,11 +450,7 @@
     .cat-label.process { color: #14b8a6; }
     .cat-label.tech    { color: #3b82f6; }
 
-    .tag-chips-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
+    .tag-chips-row { display: flex; flex-wrap: wrap; gap: 4px; }
 
     .filter-chip {
       display: inline-flex;
@@ -461,29 +466,23 @@
       opacity: 0.65;
     }
     .filter-chip:hover { opacity: 1; }
-
     .filter-chip.impact  { background: #431407; color: #fb923c; }
     .filter-chip.quality { background: #2e1065; color: #c084fc; }
     .filter-chip.process { background: #042f2e; color: #2dd4bf; }
     .filter-chip.tech    { background: #1e3a5f; color: #60a5fa; }
-
-    .filter-chip.active         { opacity: 1; }
+    .filter-chip.active        { opacity: 1; }
     .filter-chip.impact.active  { border-color: #f97316; }
     .filter-chip.quality.active { border-color: #a855f7; }
     .filter-chip.process.active { border-color: #14b8a6; }
     .filter-chip.tech.active    { border-color: #3b82f6; }
-
     :root[data-theme="light"] .filter-chip.impact  { background: #fff7ed; color: #c2410c; }
     :root[data-theme="light"] .filter-chip.quality { background: #faf5ff; color: #7e22ce; }
     :root[data-theme="light"] .filter-chip.process { background: #f0fdfa; color: #0f766e; }
     :root[data-theme="light"] .filter-chip.tech    { background: #eff6ff; color: #1d4ed8; }
 
-    .chip-count {
-      opacity: 0.65;
-      font-size: 9px;
-    }
+    .chip-count { opacity: 0.65; font-size: 9px; }
 
-    /* ── Toolbar ─────────────────────────────────────────────────── */
+    /* ── Toolbar ──────────────────────────────────────────────────────── */
     .toolbar {
       display: flex;
       gap: 8px;
@@ -506,8 +505,8 @@
       transition: color 0.15s, border-color 0.15s;
     }
     .toolbar-btn:hover { color: var(--text); border-color: var(--accent); }
+    .toolbar-btn.danger:hover { color: #f87171; border-color: #f87171; }
 
-    /* Copy JSON: select + button side-by-side, visually joined */
     .copy-json-group {
       display: flex;
       align-items: stretch;
@@ -516,8 +515,7 @@
       overflow: hidden;
       transition: border-color 0.15s;
     }
-    .copy-json-group:focus-within,
-    .copy-json-group:hover { border-color: var(--accent); }
+    .copy-json-group:focus-within, .copy-json-group:hover { border-color: var(--accent); }
 
     .copy-json-select {
       background: var(--surface);
@@ -545,13 +543,173 @@
     }
     .copy-json-btn:hover { color: var(--text); }
 
-    /* Flash feedback shared by all copy/export buttons */
-    .toolbar-btn.flash,
-    .copy-json-btn.flash { color: var(--prod-color); border-color: var(--prod-color); }
+    .toolbar-btn.flash, .copy-json-btn.flash { color: var(--prod-color); border-color: var(--prod-color); }
+
+    /* ── Theme / misc header buttons ─────────────────────────────────── */
+    #theme-toggle, #focus-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: var(--font);
+      line-height: 1;
+      padding: 5px 9px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    #theme-toggle:hover, #focus-toggle:hover { color: var(--text); border-color: var(--accent); }
+
+    #focus-toggle { display: none; }
+
+    /* ── Clear banner ─────────────────────────────────────────────────── */
+    #clear-banner {
+      background: #2d1a00;
+      border-bottom: 1px solid #854d0e;
+      padding: 10px 24px;
+      font-size: 12px;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    :root[data-theme="light"] #clear-banner {
+      background: #fef3c7;
+      border-color: #d97706;
+      color: #92400e;
+    }
+    #clear-banner code {
+      font-family: "SF Mono", Consolas, monospace;
+      font-size: 11px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 3px;
+      padding: 1px 6px;
+    }
+    :root[data-theme="light"] #clear-banner code { background: rgba(0,0,0,0.08); }
+    #restore-btn {
+      background: none;
+      border: 1px solid currentColor;
+      border-radius: 4px;
+      color: inherit;
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 8px;
+      opacity: 0.8;
+    }
+    #restore-btn:hover { opacity: 1; }
+
+    /* ── Three-column desktop layout ─────────────────────────────────── */
+    #about-panel-host {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px 24px 0;
+    }
+
+    #columns { display: none; }
+
+    @media (min-width: 1200px) {
+      main#timeline { display: none; }
+
+      #columns {
+        display: grid;
+        grid-template-columns: 35fr 35fr 30fr;
+        gap: 1px;
+        background: var(--border);
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      .col {
+        background: var(--bg);
+        height: calc(100vh - var(--header-h));
+        overflow-y: auto;
+        padding: 16px 16px 64px;
+        min-width: 0;
+      }
+
+      .col-header {
+        position: sticky;
+        top: 0;
+        background: var(--bg);
+        z-index: 5;
+        padding: 4px 0 10px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .col[data-col="product"]   .col-header { border-bottom-color: var(--prod-color); color: var(--prod-color); }
+      .col[data-col="developer"] .col-header { border-bottom-color: var(--dev-color);  color: var(--dev-color);  }
+      .col[data-col="devsync"]   .col-header { border-bottom-color: var(--accent);     color: var(--accent);     }
+
+      .col-count { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; }
+
+      body.three-col .tabs { display: none; }
+
+      #focus-toggle { display: inline-flex; align-items: center; }
+
+      /* Focus mode */
+      body.focus-product   #columns { grid-template-columns: 1fr 0fr 0fr; }
+      body.focus-developer #columns { grid-template-columns: 0fr 1fr 0fr; }
+      body.focus-devsync   #columns { grid-template-columns: 0fr 0fr 1fr; }
+      body.focus-product   .col[data-col="developer"],
+      body.focus-product   .col[data-col="devsync"],
+      body.focus-developer .col[data-col="product"],
+      body.focus-developer .col[data-col="devsync"],
+      body.focus-devsync   .col[data-col="product"],
+      body.focus-devsync   .col[data-col="developer"] { display: none; }
+    }
+
+    /* ── Dev Sync column styles ──────────────────────────────────────── */
+    .ds-summary {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      padding: 8px 10px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--accent);
+    }
+    .ds-section { margin-bottom: 16px; }
+    .ds-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fb923c;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .ds-feature-group { margin-bottom: 16px; }
+    .ds-feature-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .ds-feature-count {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+      background: var(--tag-bg);
+      border-radius: 8px;
+      padding: 0 6px;
+    }
 
     @media (max-width: 600px) {
       header { padding: 12px 16px 0; }
-      main { padding: 16px 16px 48px; }
+      main#timeline { padding: 16px 16px 48px; }
       .kind-tag, .feature-badge { display: none; }
       .toolbar { gap: 6px; }
     }
@@ -563,10 +721,11 @@
   <div class="header-row">
     <h1>Feature Memory Changelog</h1>
     <span class="subtitle" id="generated-label"></span>
-    <input type="search" id="search" placeholder="Search features, authors, changes…" autocomplete="off">
+    <input type="search" id="search" placeholder="Search features, authors, tags…" autocomplete="off">
     <button id="tag-filter-toggle" title="Filter by tags">🏷 Tags</button>
     <span id="active-tag-summary" style="display:none"></span>
     <button id="theme-toggle" title="Toggle light/dark mode">☀︎</button>
+    <button id="focus-toggle" title="Focus a column">⛶ Focus: All</button>
     <span id="count"></span>
   </div>
   <div class="tabs">
@@ -582,7 +741,7 @@
     <div id="tag-filter-body"></div>
   </div>
   <div class="toolbar" id="toolbar">
-    <button class="toolbar-btn" id="expand-all-btn" title="Expand or collapse all visible entries">Expand All</button>
+    <button class="toolbar-btn" id="expand-all-btn">Expand All</button>
     <div class="copy-json-group" title="Copy entries as JSON">
       <select class="copy-json-select" id="copy-json-mode" aria-label="JSON copy scope">
         <option value="filtered">Copy filtered JSON</option>
@@ -590,24 +749,47 @@
       </select>
       <button class="copy-json-btn" id="copy-json-btn">Copy JSON</button>
     </div>
-    <button class="toolbar-btn" id="copy-md-btn" title="Copy filtered entries as Markdown changelog">Copy Markdown</button>
-    <button class="toolbar-btn" id="export-csv-btn" title="Download filtered entries as CSV">Export CSV</button>
+    <button class="toolbar-btn" id="copy-md-btn">Copy Markdown</button>
+    <button class="toolbar-btn" id="export-csv-btn">Export CSV</button>
+    <button class="toolbar-btn danger" id="clear-view-btn" title="Clear all entries from view (does not delete .md docs)">⊗ Clear entries</button>
   </div>
 </header>
+
+<div id="clear-banner" style="display:none">
+  <span>Entries cleared from view for this session.</span>
+  <span>To permanently clear: <code>python plugin/hooks/fm_backfill.py --clear</code></span>
+  <button id="restore-btn">Restore entries</button>
+</div>
+
+<div id="about-panel-host"></div>
 
 <main id="timeline">
   <details id="about-panel" style="margin-bottom:16px">
     <summary style="cursor:pointer; font-size:12px; color:var(--muted); padding:8px 0">About this changelog ▸</summary>
     <div style="font-size:12px; color:var(--muted); padding:8px 0 0; line-height:1.7">
-      <p><strong style="color:var(--text)">Product entries</strong> — business-facing changes visible to users or stakeholders. Shown in the Product tab.</p>
-      <p><strong style="color:var(--text)">Developer entries</strong> — technical implementation details: file changes, refactors, test additions. Shown in the Developer tab.</p>
-      <p><strong style="color:var(--text)">Confidence</strong> — <em>high</em>: verified claims; <em>medium</em>: inferred from patterns; <em>low</em>: needs review.</p>
-      <p><strong style="color:var(--text)">review_status: auto</strong> — generated automatically from git history or session hooks, not manually reviewed.</p>
-      <p><strong style="color:var(--text)">source: git-backfill</strong> — entry created by scanning git commit history (fm_backfill). <strong>source: hook</strong> — created live at session end.</p>
-      <p style="margin-top:6px">Tags are inferred automatically from file paths and commit messages.</p>
+      <p><strong style="color:var(--text)">Product</strong> — business-facing changes visible to users or stakeholders.</p>
+      <p><strong style="color:var(--text)">Developer</strong> — technical details: file changes, refactors, test additions.</p>
+      <p><strong style="color:var(--text)">Dev Sync</strong> — engineer-focused digest grouped by feature, with highlights for breaking/security changes.</p>
+      <p><strong style="color:var(--text)">Confidence</strong> — <em>high</em>: verified; <em>medium</em>: inferred; <em>low</em>: needs review.</p>
+      <p style="margin-top:6px">Tags inferred automatically from file paths and commit messages.</p>
     </div>
   </details>
 </main>
+
+<div id="columns">
+  <section class="col" data-col="product">
+    <div class="col-header">Product <span class="col-count" id="count-product"></span></div>
+    <div class="col-body" id="col-product-body"></div>
+  </section>
+  <section class="col" data-col="developer">
+    <div class="col-header">Developer <span class="col-count" id="count-developer"></span></div>
+    <div class="col-body" id="col-developer-body"></div>
+  </section>
+  <section class="col" data-col="devsync">
+    <div class="col-header">Dev Sync <span class="col-count" id="count-devsync"></span></div>
+    <div class="col-body" id="col-devsync-body"></div>
+  </section>
+</div>
 
 <script id="changelog-data" type="application/json">
 {
@@ -622,130 +804,12 @@
       "audience": "developer",
       "summary": "Added get_feature_doc_path() and get_git_info() to fm_common.py",
       "kind": ["new-feature"],
+      "tags": ["python", "docs"],
       "paths": ["plugin/hooks/fm_common.py"],
       "git_author": "h5k",
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add sub-folder hierarchy, Mermaid diagram, dual changelogs",
       "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
-      "confidence": "high",
-      "review_status": "auto",
-      "source": "hook"
-    },
-    {
-      "event_id": "20260518T214401Z-c3d4",
-      "date": "2026-05-18",
-      "feature_id": "hooks",
-      "feature_title": "Hooks",
-      "audience": "developer",
-      "summary": "SessionStart now archives events.jsonl before clearing to prevent data loss on session resume",
-      "kind": ["bug-fix"],
-      "paths": ["plugin/hooks/claude_session_start.py"],
-      "git_author": "h5k",
-      "git_email": "31630310+h5kk@users.noreply.github.com",
-      "git_message": "Fix: archive events before SessionStart clears log",
-      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
-      "confidence": "high",
-      "review_status": "auto",
-      "source": "hook"
-    },
-    {
-      "event_id": "20260518T214402Z-e5f6",
-      "date": "2026-05-18",
-      "feature_id": "hooks",
-      "feature_title": "Hooks",
-      "audience": "both",
-      "summary": "Stop hook now captures git author and compiles changelog.json automatically at session end",
-      "kind": ["new-feature"],
-      "paths": ["plugin/hooks/claude_stop.py"],
-      "git_author": "h5k",
-      "git_email": "31630310+h5kk@users.noreply.github.com",
-      "git_message": "Stop hook: compile changelog.json from JSONL events with git attribution",
-      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
-      "confidence": "high",
-      "review_status": "auto",
-      "source": "hook"
-    },
-    {
-      "event_id": "20260518T214403Z-g7h8",
-      "date": "2026-05-18",
-      "feature_id": "skills",
-      "feature_title": "Skills",
-      "audience": "both",
-      "summary": "Init skill now supports split mode — large features get sub-folder with product/engineering/changelog pages",
-      "kind": ["new-feature"],
-      "paths": ["plugin/skills/feature-memory-init/SKILL.md"],
-      "git_author": "h5k",
-      "git_email": "31630310+h5kk@users.noreply.github.com",
-      "git_message": "Add split mode, Mermaid diagram generation, and changelog viewer to init skill",
-      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
-      "confidence": "high",
-      "review_status": "auto",
-      "source": "hook"
-    },
-    {
-      "event_id": "20260518T214404Z-i9j0",
-      "date": "2026-05-18",
-      "feature_id": "skills",
-      "feature_title": "Skills",
-      "audience": "developer",
-      "summary": "Maintainer skill routes updates to product.md or engineering.md in split mode",
-      "kind": ["behavior-change"],
-      "paths": ["plugin/skills/feature-memory/SKILL.md"],
-      "git_author": "h5k",
-      "git_email": "31630310+h5kk@users.noreply.github.com",
-      "git_message": "Maintainer: split mode routing + audience-tagged changelog entries",
-      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
-      "confidence": "high",
-      "review_status": "auto",
-      "source": "hook"
-    },
-    {
-      "event_id": "20260518T214405Z-k1l2",
-      "date": "2026-05-18",
-      "feature_id": "plugin-core",
-      "feature_title": "Plugin Core",
-      "audience": "product",
-      "summary": "Plugin version bumped to 0.2.0 with dual changelog viewer, relationship diagram, and split-mode support",
-      "kind": ["new-feature"],
-      "paths": ["plugin/.claude-plugin/plugin.json"],
-      "git_author": "h5k",
-      "git_email": "31630310+h5kk@users.noreply.github.com",
-      "git_message": "Bump plugin to v0.2.0",
-      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
-      "confidence": "high",
-      "review_status": "auto",
-      "source": "hook"
-    },
-    {
-      "event_id": "20260517T100000Z-m3n4",
-      "date": "2026-05-17",
-      "feature_id": "plugin-core",
-      "feature_title": "Plugin Core",
-      "audience": "product",
-      "summary": "Plugin published to h5kk marketplace with install instructions in README",
-      "kind": ["new-feature"],
-      "paths": ["README.md", "plugin/.claude-plugin/plugin.json"],
-      "git_author": "h5k",
-      "git_email": "31630310+h5kk@users.noreply.github.com",
-      "git_message": "Add plugin install instructions to README",
-      "git_hash": "b2eea5b",
-      "confidence": "high",
-      "review_status": "auto",
-      "source": "hook"
-    },
-    {
-      "event_id": "20260517T090000Z-o5p6",
-      "date": "2026-05-17",
-      "feature_id": "skills",
-      "feature_title": "Skills",
-      "audience": "both",
-      "summary": "Replaced fm_init.py script with init skill — no more manual Python script, everything runs through Claude",
-      "kind": ["behavior-change", "refactor"],
-      "paths": ["plugin/skills/feature-memory-init/SKILL.md", "fm_init.py"],
-      "git_author": "h5k",
-      "git_email": "31630310+h5kk@users.noreply.github.com",
-      "git_message": "Replace fm_init.py workflow with init skill",
-      "git_hash": "73cd33c",
       "confidence": "high",
       "review_status": "auto",
       "source": "hook"
@@ -756,13 +820,14 @@
 
 <script>
 (function () {
+  // ── Data loading ────────────────────────────────────────────────────
   let data = {};
   try {
     data = JSON.parse(document.getElementById('changelog-data').textContent || '{}');
   } catch (e) {
     document.querySelector('main').innerHTML = '<p class="empty">Changelog data could not be parsed. Regenerate with fm_backfill.py.</p>';
   }
-  const entries = Array.isArray(data.entries) ? data.entries : [];
+  const allEntries = Array.isArray(data.entries) ? data.entries : [];
 
   if (data.generated) {
     const d = new Date(data.generated);
@@ -770,18 +835,24 @@
       'Updated ' + d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
-  // Hide the Developer tab when there are <= 1 developer-audience entries.
-  // "both" entries count as developer for this purpose.
-  const devCount = entries.filter(e => {
-    const a = e.audience || 'developer';
-    return a === 'developer' || a === 'both';
-  }).length;
-  if (devCount <= 1) {
-    const devTab = document.querySelector('.tab[data-audience="developer"]');
-    if (devTab) devTab.style.display = 'none';
-  }
+  // ── State ────────────────────────────────────────────────────────────
+  let activeTags = new Set();
+  let activeAudience = 'all';
+  let searchQuery = '';
+  let allExpanded = false;
+  let focusMode = null;        // null | 'product' | 'developer' | 'devsync'
+  let viewCleared = false;
 
-  // ── Tag category map ─────────────────────────────────────────────
+  const THREE_COL_MIN = 1200;
+  const HIGHLIGHT_TAGS = ['breaking-change', 'api-change', 'security', 'schema-change', 'data-migration'];
+
+  // Restore tag filter state from localStorage
+  try {
+    const saved = JSON.parse(localStorage.getItem('fm-tags') || '[]');
+    saved.forEach(t => activeTags.add(t));
+  } catch (_) {}
+
+  // ── Constants ────────────────────────────────────────────────────────
   const TAG_CATEGORIES = {
     'breaking-change': 'impact', 'api-change': 'impact', 'schema-change': 'impact',
     'config-change': 'impact', 'data-migration': 'impact',
@@ -791,82 +862,21 @@
     'typescript': 'tech', 'python': 'tech', 'javascript': 'tech', 'html-css': 'tech',
     'shell': 'tech', 'yaml': 'tech', 'sql': 'tech', 'markdown': 'tech',
   };
-  function tagCat(t) { return TAG_CATEGORIES[t] || 'tech'; }
-
-  // ── Active tag filter state ──────────────────────────────────────
-  let activeTags = new Set();
-  try {
-    const saved = JSON.parse(localStorage.getItem('fm-tags') || '[]');
-    saved.forEach(t => activeTags.add(t));
-  } catch (_) {}
-
-  function saveTagFilter() {
-    try { localStorage.setItem('fm-tags', JSON.stringify([...activeTags])); } catch (_) {}
-  }
-
-  let activeAudience = 'all';
-  let searchQuery = '';
 
   const kindClass = {
-    'new-feature': 'new-feature',
-    'bug-fix': 'bug-fix',
-    'behavior-change': 'behavior-change',
-    'refactor': 'refactor',
-    'path_touched': 'path-touched',
-    'path-touched': 'path-touched',
+    'new-feature': 'new-feature', 'bug-fix': 'bug-fix',
+    'behavior-change': 'behavior-change', 'refactor': 'refactor',
+    'path_touched': 'path-touched', 'path-touched': 'path-touched',
   };
 
-  function getKindClass(kind) {
-    return kindClass[kind] || 'default';
-  }
+  // ── Pure helpers ─────────────────────────────────────────────────────
+  function tagCat(t) { return TAG_CATEGORIES[t] || 'tech'; }
 
-  function audienceClass(a) {
-    if (a === 'both') return 'both';
-    return a === 'product' ? 'product' : 'developer';
-  }
-
-  function matchesFilter(entry) {
-    if (activeAudience !== 'all') {
-      const a = entry.audience || 'developer';
-      if (a !== activeAudience && a !== 'both') return false;
-    }
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      const haystack = [
-        entry.summary || '',
-        entry.feature_id || '',
-        entry.feature_title || '',
-        entry.git_author || '',
-        entry.git_message || '',
-        entry.jira_ticket || '',
-        (entry.kind || []).join(' '),
-        (entry.paths || []).join(' '),
-        (entry.tags || []).join(' '),
-      ].join(' ').toLowerCase();
-      if (!haystack.includes(q)) return false;
-    }
-    if (activeTags.size > 0) {
-      const entryTags = new Set(entry.tags || []);
-      // Group active tags by category
-      const byCat = {};
-      for (const t of activeTags) {
-        const c = tagCat(t);
-        (byCat[c] = byCat[c] || []).push(t);
-      }
-      // AND across categories: entry must satisfy every selected category
-      for (const catTags of Object.values(byCat)) {
-        if (!catTags.some(t => entryTags.has(t))) return false;
-      }
-    }
-    return true;
-  }
-
-  function escHtml(s) {
-    return String(s || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function firstNameOnly(str) {
+    const s = String(str || '').trim();
+    if (!s) return '';
+    const first = s.split(/[\s.@]+/)[0];
+    return first.length > 14 ? first.slice(0, 14) : first;
   }
 
   function authorColor(name) {
@@ -877,67 +887,144 @@
     return `hsl(${h % 360}, 65%, 62%)`;
   }
 
-  function renderEntry(entry) {
+  function escHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function getKindClass(kind) { return kindClass[kind] || 'default'; }
+
+  function audienceClass(a) {
+    if (a === 'both') return 'both';
+    return a === 'product' ? 'product' : 'developer';
+  }
+
+  function formatDate(iso) {
+    try {
+      const d = new Date(iso + 'T12:00:00Z');
+      return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (e) { return iso; }
+  }
+
+  function saveTagFilter() {
+    try { localStorage.setItem('fm-tags', JSON.stringify([...activeTags])); } catch (_) {}
+  }
+
+  // ── Filter logic ─────────────────────────────────────────────────────
+  // matchesFilter: search + tag only (no audience — audience handled per-column)
+  function matchesFilter(entry) {
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const haystack = [
+        entry.summary || '', entry.feature_id || '', entry.feature_title || '',
+        entry.git_author || '', entry.git_message || '', entry.jira_ticket || '',
+        (entry.kind || []).join(' '), (entry.paths || []).join(' '), (entry.tags || []).join(' '),
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    if (activeTags.size > 0) {
+      const entryTags = new Set(entry.tags || []);
+      const byCat = {};
+      for (const t of activeTags) {
+        const c = tagCat(t);
+        (byCat[c] = byCat[c] || []).push(t);
+      }
+      for (const catTags of Object.values(byCat)) {
+        if (!catTags.some(t => entryTags.has(t))) return false;
+      }
+    }
+    return true;
+  }
+
+  function matchesAudience(entry, audience) {
+    if (audience === 'all') return true;
+    const a = entry.audience || 'developer';
+    return a === audience || a === 'both';
+  }
+
+  // ── Entry rendering ───────────────────────────────────────────────────
+  // ctx: null (single column) | 'product' | 'developer'
+  function renderEntry(entry, ctx) {
     const kinds = Array.isArray(entry.kind) ? entry.kind : [];
     const aud = entry.audience || 'developer';
+    const isBoth = aud === 'both';
     const conf = entry.confidence || 'auto';
 
-    const kindTagsHtml = kinds.slice(0, 2).map(k =>
+    // Audience dot: in columns, 'both' adopts the column's color
+    let dotClass = audienceClass(aud);
+    if (isBoth && ctx === 'product')   dotClass = 'product';
+    if (isBoth && ctx === 'developer') dotClass = 'developer';
+
+    // Summary text: use product_summary in product context if available
+    const summaryText = (ctx === 'product' && entry.product_summary)
+      ? entry.product_summary
+      : (entry.summary || '');
+
+    // Kind tags: hide 'path-touched' and 'refactor' in product context
+    const showKinds = ctx === 'product'
+      ? kinds.filter(k => k !== 'path_touched' && k !== 'path-touched' && k !== 'refactor')
+      : kinds;
+
+    const kindTagsHtml = showKinds.slice(0, 2).map(k =>
       `<span class="kind-tag ${getKindClass(k)}">${escHtml(k.replace(/-/g, ' '))}</span>`
     ).join('');
 
     const authorHtml = entry.git_author
-      ? `<span class="author-chip" style="color:${authorColor(entry.git_author)}">@${escHtml(entry.git_author)}</span>`
+      ? `<span class="author-chip" title="${escHtml(entry.git_author)}" style="color:${authorColor(entry.git_author)}">@${escHtml(firstNameOnly(entry.git_author))}</span>`
       : '';
 
-    const pathsHtml = (entry.paths || []).map(p =>
-      `<span class="path-chip">${escHtml(p)}</span>`
-    ).join('');
+    // Inline tag chips (collapsed row, max 3)
+    const headerTagsHtml = (entry.tags || []).length > 0
+      ? `<span class="entry-header-tags">${(entry.tags || []).slice(0, 3).map(t =>
+          `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`
+        ).join('')}</span>`
+      : '';
+
+    // Expanded detail: hide technical rows in product context
+    const pathsHtml = (entry.paths || []).map(p => `<span class="path-chip">${escHtml(p)}</span>`).join('');
 
     const gitMsgHtml = entry.git_message
-      ? `<div class="detail-row">
-           <span class="detail-label">Git message</span>
-           <span class="detail-value">${escHtml(entry.git_message)}</span>
-         </div>`
+      ? `<div class="detail-row"><span class="detail-label">Git message</span><span class="detail-value">${escHtml(entry.git_message)}</span></div>`
       : '';
 
-    const gitHashHtml = entry.git_hash
-      ? `<div class="detail-row">
-           <span class="detail-label">Commit</span>
-           <span class="detail-value mono">${escHtml(entry.git_hash.slice(0, 12))}</span>
-         </div>`
+    const gitHashHtml = (entry.git_hash && ctx !== 'product')
+      ? `<div class="detail-row"><span class="detail-label">Commit</span><span class="detail-value mono">${escHtml(entry.git_hash.slice(0, 12))}</span></div>`
       : '';
 
-    const pathsRowHtml = pathsHtml
-      ? `<div class="detail-row">
-           <span class="detail-label">Files</span>
-           <span class="detail-value paths">${pathsHtml}</span>
-         </div>`
+    const pathsRowHtml = (pathsHtml && ctx !== 'product')
+      ? `<div class="detail-row"><span class="detail-label">Files</span><span class="detail-value paths">${pathsHtml}</span></div>`
       : '';
 
     const jiraHtml = entry.jira_ticket
-      ? `<div class="detail-row">
-           <span class="detail-label">Jira</span>
-           <span class="detail-value mono jira-ticket">${escHtml(entry.jira_ticket)}</span>
-         </div>`
+      ? `<div class="detail-row"><span class="detail-label">Jira</span><span class="detail-value mono">${escHtml(entry.jira_ticket)}</span></div>`
       : '';
 
     const tagsHtml = (entry.tags || []).length > 0
-      ? `<div class="detail-row">
-           <span class="detail-label">Tags</span>
-           <span class="entry-tags">${(entry.tags || []).map(t =>
-             `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`
-           ).join('')}</span>
-         </div>`
+      ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="entry-tags">${(entry.tags || []).map(t =>
+          `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`
+        ).join('')}</span></div>`
+      : '';
+
+    // Cross-channel note for 'both' entries
+    let crossNote = '';
+    if (isBoth && ctx === 'product')
+      crossNote = '<p class="cross-channel-note">Also visible in Developer channel</p>';
+    else if (isBoth && ctx === 'developer')
+      crossNote = '<p class="cross-channel-note">Also visible in Product channel</p>';
+
+    const confidenceHtml = ctx !== 'product'
+      ? `<div class="detail-row"><span class="detail-label">Confidence</span><span class="confidence-badge ${escHtml(conf)}">${escHtml(conf)}</span></div>`
       : '';
 
     return `
       <article class="entry" data-audience="${escHtml(aud)}" data-id="${escHtml(entry.event_id || '')}">
         <div class="entry-header" onclick="toggleEntry(this.parentElement)">
-          <span class="audience-dot ${audienceClass(aud)}"></span>
+          <span class="audience-dot ${dotClass}"></span>
           ${entry.feature_id ? `<span class="feature-badge" title="${escHtml(entry.feature_id)}">${escHtml(entry.feature_title || entry.feature_id)}</span>` : ''}
           ${kindTagsHtml}
-          <span class="summary" title="${escHtml(entry.summary)}">${escHtml(entry.summary)}</span>
+          <span class="summary" title="${escHtml(summaryText)}">${escHtml(summaryText)}</span>
+          ${headerTagsHtml}
           ${entry.jira_ticket ? `<span class="jira-chip">${escHtml(entry.jira_ticket)}</span>` : ''}
           ${authorHtml}
           <button class="expand-btn" title="Expand">▼</button>
@@ -948,129 +1035,236 @@
           ${tagsHtml}
           ${pathsRowHtml}
           ${gitHashHtml}
-          <div class="detail-row">
-            <span class="detail-label">Audience</span>
-            <span class="detail-value">${escHtml(aud)}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Confidence</span>
-            <span class="confidence-badge ${escHtml(conf)}">${escHtml(conf)}</span>
-          </div>
+          ${ctx ? '' : `<div class="detail-row"><span class="detail-label">Audience</span><span class="detail-value">${escHtml(aud)}</span></div>`}
+          ${confidenceHtml}
+          ${crossNote}
         </div>
       </article>`;
   }
 
-  function render() {
-    const timeline = document.getElementById('timeline');
-    const aboutPanel = document.getElementById('about-panel');
-    const filtered = entries.filter(matchesFilter);
+  window.toggleEntry = function (el) { el.classList.toggle('expanded'); };
 
-    document.getElementById('count').textContent =
-      filtered.length + ' of ' + entries.length + ' entries';
+  // ── Column rendering ──────────────────────────────────────────────────
+  function renderColumn(bodyId, countId, list, ctx) {
+    const body = document.getElementById(bodyId);
+    const countEl = document.getElementById(countId);
+    if (!body) return;
+    countEl.textContent = list.length ? `(${list.length})` : '';
+    if (!list.length) {
+      body.innerHTML = `<div class="empty" style="padding:32px 0">No entries.</div>`;
+      return;
+    }
+    const groups = {};
+    for (const e of list) { const d = e.date || 'unknown'; (groups[d] = groups[d] || []).push(e); }
+    const dates = Object.keys(groups).sort().reverse();
+    body.innerHTML = dates.map(d => `
+      <section class="date-group">
+        <h2 class="date-label">${d === 'unknown' ? 'Unknown date' : formatDate(d)}</h2>
+        ${groups[d].map(e => renderEntry(e, ctx)).join('')}
+      </section>`).join('');
+  }
 
-    if (filtered.length === 0) {
-      timeline.innerHTML = '';
-      if (aboutPanel) timeline.appendChild(aboutPanel);
-      const empty = document.createElement('div');
-      empty.className = 'empty';
-      empty.textContent = 'No entries match your search.';
-      timeline.appendChild(empty);
+  // ── Dev Sync ──────────────────────────────────────────────────────────
+  function buildDevSync(baseFiltered) {
+    const qualifying = baseFiltered.filter(e => {
+      const a = e.audience || 'developer';
+      return a === 'developer' || a === 'both';
+    });
+    const features = new Map();
+    const authors = new Set();
+    const highlights = [];
+
+    for (const e of qualifying) {
+      const fid = e.feature_id || '__none__';
+      const ftitle = e.feature_title || e.feature_id || 'Unscoped';
+      if (!features.has(fid)) features.set(fid, { featureId: fid, featureTitle: ftitle, entries: [] });
+      features.get(fid).entries.push(e);
+      if (e.git_author) authors.add(firstNameOnly(e.git_author));
+      if ((e.tags || []).some(t => HIGHLIGHT_TAGS.includes(t))) highlights.push(e);
+    }
+
+    for (const g of features.values())
+      g.entries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    const byFeature = [...features.values()].sort((a, b) => {
+      const da = a.entries[0]?.date || '';
+      const db = b.entries[0]?.date || '';
+      return db.localeCompare(da);
+    });
+
+    const total = qualifying.length;
+    const featureCount = byFeature.filter(g => g.featureId !== '__none__').length || byFeature.length;
+    const authorCount = authors.size;
+
+    return {
+      total, featureCount, authorCount,
+      summaryLine: `${total} change${total === 1 ? '' : 's'} across ${featureCount} feature${featureCount === 1 ? '' : 's'}` +
+        (authorCount ? ` by ${authorCount} author${authorCount === 1 ? '' : 's'}` : ''),
+      highlights, byFeature, isEmpty: total === 0,
+    };
+  }
+
+  function renderDevSync(baseFiltered) {
+    const body = document.getElementById('col-devsync-body');
+    const countEl = document.getElementById('count-devsync');
+    if (!body) return;
+
+    const sync = buildDevSync(baseFiltered);
+    countEl.textContent = sync.total ? `(${sync.total})` : '';
+
+    if (sync.isEmpty) {
+      body.innerHTML = `<div class="empty" style="padding:32px 0">No developer changes match your filters.</div>`;
       return;
     }
 
-    // Group by date
+    const highlightsHtml = sync.highlights.length
+      ? `<div class="ds-section">
+           <div class="ds-section-title">⚠ Highlights (${sync.highlights.length})</div>
+           ${sync.highlights.map(e => renderEntry(e, 'developer')).join('')}
+         </div>`
+      : '';
+
+    const featuresHtml = sync.byFeature.map(g => `
+      <div class="ds-feature-group">
+        <div class="ds-feature-title">${escHtml(g.featureTitle)}<span class="ds-feature-count">${g.entries.length}</span></div>
+        ${g.entries.map(e => renderEntry(e, 'developer')).join('')}
+      </div>`).join('');
+
+    body.innerHTML = `
+      <div class="ds-summary">${escHtml(sync.summaryLine)}</div>
+      ${highlightsHtml}
+      ${featuresHtml}`;
+  }
+
+  // ── Layout mode ───────────────────────────────────────────────────────
+  function isThreeCol() { return window.innerWidth >= THREE_COL_MIN; }
+
+  function updateHeaderHeight() {
+    const h = document.querySelector('header').getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--header-h', h + 'px');
+  }
+
+  function syncLayoutMode() {
+    document.body.classList.toggle('three-col', isThreeCol());
+    if (isThreeCol() && activeAudience !== 'all') {
+      activeAudience = 'all';
+      document.querySelectorAll('.tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.audience === 'all'));
+    }
+    updateHeaderHeight();
+  }
+
+  new ResizeObserver(updateHeaderHeight).observe(document.querySelector('header'));
+  window.addEventListener('resize', () => { syncLayoutMode(); render(); });
+
+  // ── Relocate about-panel out of #timeline ─────────────────────────────
+  (function relocateAbout() {
+    const ap = document.getElementById('about-panel');
+    const host = document.getElementById('about-panel-host');
+    if (ap && host) host.appendChild(ap);
+  })();
+
+  // ── Main render ───────────────────────────────────────────────────────
+  function render() {
+    updateHeaderHeight();
+    const entries = viewCleared ? [] : allEntries;
+    const baseFiltered = entries.filter(matchesFilter);
+
+    document.getElementById('count').textContent =
+      baseFiltered.length + ' of ' + entries.length + ' entries';
+
+    if (isThreeCol()) {
+      renderColumn('col-product-body',   'count-product',   baseFiltered.filter(e => matchesAudience(e, 'product')),   'product');
+      renderColumn('col-developer-body', 'count-developer', baseFiltered.filter(e => matchesAudience(e, 'developer')), 'developer');
+      renderDevSync(baseFiltered);
+      return;
+    }
+
+    // Mobile / single-column path
+    const filtered = baseFiltered.filter(e => matchesAudience(e, activeAudience));
+    const timeline = document.getElementById('timeline');
+
+    if (filtered.length === 0) {
+      timeline.innerHTML = '<div class="empty">No entries match your search.</div>';
+      return;
+    }
+
     const groups = {};
     for (const entry of filtered) {
       const date = entry.date || 'unknown';
-      if (!groups[date]) groups[date] = [];
-      groups[date].push(entry);
+      (groups[date] = groups[date] || []).push(entry);
     }
 
-    const sortedDates = Object.keys(groups).sort().reverse();
-    const html = sortedDates.map(date => {
-      const label = date === 'unknown' ? 'Unknown date' : formatDate(date);
-      const entriesHtml = groups[date].map(renderEntry).join('');
-      return `<section class="date-group">
-        <h2 class="date-label">${label}</h2>
-        ${entriesHtml}
-      </section>`;
-    }).join('');
+    const html = Object.keys(groups).sort().reverse().map(date => `
+      <section class="date-group">
+        <h2 class="date-label">${date === 'unknown' ? 'Unknown date' : formatDate(date)}</h2>
+        ${groups[date].map(e => renderEntry(e, null)).join('')}
+      </section>`).join('');
 
-    timeline.innerHTML = '';
-    if (aboutPanel) timeline.appendChild(aboutPanel);
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    while (div.firstChild) timeline.appendChild(div.firstChild);
+    timeline.innerHTML = html;
   }
 
-  function formatDate(iso) {
-    try {
-      const d = new Date(iso + 'T12:00:00Z');
-      return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-    } catch (e) {
-      return iso;
-    }
+  // ── Developer tab visibility ──────────────────────────────────────────
+  const devCount = allEntries.filter(e => {
+    const a = e.audience || 'developer';
+    return a === 'developer' || a === 'both';
+  }).length;
+  if (devCount <= 1) {
+    const devTab = document.querySelector('.tab[data-audience="developer"]');
+    if (devTab) devTab.style.display = 'none';
   }
 
-  window.toggleEntry = function (el) {
-    el.classList.toggle('expanded');
-  };
-
-  // Tabs
+  // ── Tabs ──────────────────────────────────────────────────────────────
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       activeAudience = tab.dataset.audience;
+      allExpanded = false;
+      expandAllBtn.textContent = 'Expand All';
       render();
     });
   });
 
-  // Search
+  // ── Search ────────────────────────────────────────────────────────────
   let searchTimer;
   document.getElementById('search').addEventListener('input', e => {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
       searchQuery = e.target.value.trim();
+      allExpanded = false;
+      expandAllBtn.textContent = 'Expand All';
       render();
     }, 150);
   });
 
-  // ── Tag filter panel ─────────────────────────────────────────────
+  // ── Tag filter panel ──────────────────────────────────────────────────
   function buildTagFilter() {
-    // Count occurrences of each tag across ALL entries (not filtered)
     const counts = {};
-    for (const e of entries) {
-      for (const t of (e.tags || [])) {
-        counts[t] = (counts[t] || 0) + 1;
-      }
+    for (const e of allEntries) {
+      for (const t of (e.tags || [])) { counts[t] = (counts[t] || 0) + 1; }
     }
-
     const cats = { impact: [], quality: [], process: [], tech: [] };
     for (const [tag, count] of Object.entries(counts)) {
       const c = tagCat(tag);
       if (cats[c]) cats[c].push({ tag, count });
     }
-
     const catLabels = { impact: 'Impact', quality: 'Quality', process: 'Process', tech: 'Tech' };
     let html = '';
     for (const [cat, tags] of Object.entries(cats)) {
-      if (tags.length === 0) continue;
+      if (!tags.length) continue;
       tags.sort((a, b) => b.count - a.count);
-      const chipsHtml = tags.map(({ tag, count }) => {
+      const chips = tags.map(({ tag, count }) => {
         const active = activeTags.has(tag) ? ' active' : '';
         return `<button class="filter-chip ${cat}${active}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`;
       }).join('');
-      html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${catLabels[cat]}</span><div class="tag-chips-row">${chipsHtml}</div></div>`;
+      html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${catLabels[cat]}</span><div class="tag-chips-row">${chips}</div></div>`;
     }
     document.getElementById('tag-filter-body').innerHTML = html;
-
-    // Wire up chip clicks
     document.getElementById('tag-filter-body').querySelectorAll('.filter-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         const tag = btn.dataset.tag;
-        if (activeTags.has(tag)) activeTags.delete(tag);
-        else activeTags.add(tag);
+        activeTags.has(tag) ? activeTags.delete(tag) : activeTags.add(tag);
         saveTagFilter();
         updateTagUI();
         render();
@@ -1079,14 +1273,10 @@
   }
 
   function updateTagUI() {
-    // Sync active state on all chips
-    document.querySelectorAll('.filter-chip').forEach(btn => {
-      btn.classList.toggle('active', activeTags.has(btn.dataset.tag));
-    });
-    // Show/hide clear button
+    document.querySelectorAll('.filter-chip').forEach(btn =>
+      btn.classList.toggle('active', activeTags.has(btn.dataset.tag)));
     const clearBtn = document.getElementById('clear-tags');
     if (clearBtn) clearBtn.style.display = activeTags.size > 0 ? '' : 'none';
-    // Update active tag summary (shown when panel is collapsed)
     const summary = document.getElementById('active-tag-summary');
     if (summary) {
       if (activeTags.size > 0) {
@@ -1096,7 +1286,6 @@
         summary.style.display = 'none';
       }
     }
-    // Reflect open state on toggle button
     const toggleBtn = document.getElementById('tag-filter-toggle');
     if (toggleBtn) {
       const isOpen = document.getElementById('tag-filter').style.display !== 'none';
@@ -1104,23 +1293,20 @@
     }
   }
 
-  // Toggle filter panel
   document.getElementById('tag-filter-toggle').addEventListener('click', () => {
     const panel = document.getElementById('tag-filter');
     const open = panel.style.display !== 'none';
     panel.style.display = open ? 'none' : 'block';
     try { localStorage.setItem('fm-tag-panel', open ? 'closed' : 'open'); } catch (_) {}
     updateTagUI();
+    updateHeaderHeight();
   });
 
-  // Restore panel state
   try {
-    if (localStorage.getItem('fm-tag-panel') === 'open') {
+    if (localStorage.getItem('fm-tag-panel') === 'open')
       document.getElementById('tag-filter').style.display = 'block';
-    }
   } catch (_) {}
 
-  // Clear all tags
   document.getElementById('clear-tags').addEventListener('click', () => {
     activeTags.clear();
     saveTagFilter();
@@ -1130,181 +1316,156 @@
 
   buildTagFilter();
   updateTagUI();
-  render();
 
-  // ── Toolbar ────────────────────────────────────────────────────────────
-
-  // Helper: copy text to clipboard with execCommand fallback
+  // ── Toolbar ───────────────────────────────────────────────────────────
   function copyText(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
+    if (navigator.clipboard && navigator.clipboard.writeText)
       return navigator.clipboard.writeText(text);
-    }
-    // fallback
     return new Promise((resolve, reject) => {
       const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
       const ok = document.execCommand('copy');
       document.body.removeChild(ta);
       ok ? resolve() : reject(new Error('execCommand failed'));
     });
   }
 
-  // Helper: flash a button green briefly
   function flashBtn(btn, label) {
-    const original = btn.textContent;
+    const orig = btn.textContent;
     btn.textContent = label || 'Copied!';
     btn.classList.add('flash');
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.classList.remove('flash');
-    }, 1500);
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('flash'); }, 1500);
   }
 
-  // Helper: get currently-visible (filtered) entries
   function getFilteredEntries() {
-    return entries.filter(matchesFilter);
+    return (viewCleared ? [] : allEntries).filter(matchesFilter).filter(e => matchesAudience(e, activeAudience));
   }
 
-  // ── 1. Expand All / Collapse All ──────────────────────────────────────
-  let allExpanded = false;
+  // Expand All
   const expandAllBtn = document.getElementById('expand-all-btn');
-
   expandAllBtn.addEventListener('click', () => {
     allExpanded = !allExpanded;
-    // Only affect currently-visible entry cards
-    document.querySelectorAll('#timeline .entry').forEach(el => {
-      el.classList.toggle('expanded', allExpanded);
-    });
+    document.querySelectorAll('#timeline .entry, #columns .entry').forEach(el =>
+      el.classList.toggle('expanded', allExpanded));
     expandAllBtn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
   });
 
-  // Reset expand-all state whenever the list re-renders
-  const _origRender = render;
-  // (We patch render after initial call — see bottom of toolbar block)
-
-  // ── 2. Copy JSON ──────────────────────────────────────────────────────
+  // Copy JSON
   const copyJsonBtn = document.getElementById('copy-json-btn');
   const copyJsonMode = document.getElementById('copy-json-mode');
-
   copyJsonBtn.addEventListener('click', () => {
     const useFiltered = copyJsonMode.value === 'filtered';
-    const payload = useFiltered ? getFilteredEntries() : entries;
+    const payload = useFiltered ? getFilteredEntries() : allEntries;
     copyText(JSON.stringify(payload, null, 2))
       .then(() => flashBtn(copyJsonBtn, 'Copied!'))
       .catch(() => flashBtn(copyJsonBtn, 'Failed'));
   });
 
-  // ── 3. Copy Markdown ──────────────────────────────────────────────────
-  const copyMdBtn = document.getElementById('copy-md-btn');
-
+  // Copy Markdown
   function entriesToMarkdown(list) {
     if (!list.length) return '';
-    // Group by date, descending
     const groups = {};
-    for (const e of list) {
-      const d = e.date || 'unknown';
-      if (!groups[d]) groups[d] = [];
-      groups[d].push(e);
-    }
+    for (const e of list) { const d = e.date || 'unknown'; (groups[d] = groups[d] || []).push(e); }
     const lines = [];
     for (const date of Object.keys(groups).sort().reverse()) {
       lines.push('## ' + date);
       for (const e of groups[date]) {
         const feature = e.feature_id ? `**[${e.feature_id}]**` : '';
-        const summary = e.summary || '';
-        const tags = Array.isArray(e.kind) && e.kind.length
-          ? ' `' + e.kind.join(', ') + '`'
-          : '';
-        lines.push('- ' + [feature, summary].filter(Boolean).join(' ') + tags);
+        const tags = Array.isArray(e.kind) && e.kind.length ? ' `' + e.kind.join(', ') + '`' : '';
+        lines.push('- ' + [feature, e.summary || ''].filter(Boolean).join(' ') + tags);
       }
       lines.push('');
     }
     return lines.join('\n').trimEnd();
   }
 
+  const copyMdBtn = document.getElementById('copy-md-btn');
   copyMdBtn.addEventListener('click', () => {
-    const md = entriesToMarkdown(getFilteredEntries());
-    copyText(md)
+    copyText(entriesToMarkdown(getFilteredEntries()))
       .then(() => flashBtn(copyMdBtn, 'Copied!'))
       .catch(() => flashBtn(copyMdBtn, 'Failed'));
   });
 
-  // ── 4. Export CSV ─────────────────────────────────────────────────────
-  const exportCsvBtn = document.getElementById('export-csv-btn');
-
+  // Export CSV
   function entriesToCsv(list) {
     const cols = ['date', 'feature_id', 'summary', 'kind', 'tags', 'git_hash'];
-    const escape = v => {
+    const esc = v => {
       const s = String(v == null ? '' : v);
       return s.includes(',') || s.includes('"') || s.includes('\n')
-        ? '"' + s.replace(/"/g, '""') + '"'
-        : s;
+        ? '"' + s.replace(/"/g, '""') + '"' : s;
     };
     const rows = [cols.join(',')];
     for (const e of list) {
       rows.push([
-        e.date || '',
-        e.feature_id || '',
-        e.summary || '',
+        e.date || '', e.feature_id || '', e.summary || '',
         Array.isArray(e.kind) ? e.kind.join(';') : (e.kind || ''),
         Array.isArray(e.tags) ? e.tags.join(';') : (e.tags || ''),
         e.git_hash || '',
-      ].map(escape).join(','));
+      ].map(esc).join(','));
     }
     return rows.join('\r\n');
   }
 
+  const exportCsvBtn = document.getElementById('export-csv-btn');
   exportCsvBtn.addEventListener('click', () => {
     const csv = entriesToCsv(getFilteredEntries());
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = 'changelog.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    a.href = url; a.download = 'changelog.csv';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
     flashBtn(exportCsvBtn, 'Saved!');
   });
 
-  // Reset expand-all button label whenever render() fires (filters changed)
-  // Wrap render so allExpanded resets on each filter change
-  (function patchRender() {
-    const original = render;
-    // render is already defined and called; we override global reference inside IIFE
-    // by replacing the event-listener calls. Simplest: hook onto tab/search events
-    // to reset state. We do this by patching the re-render trigger points:
-    function resetExpandState() {
-      allExpanded = false;
-      expandAllBtn.textContent = 'Expand All';
-    }
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', resetExpandState);
-    });
-    document.getElementById('search').addEventListener('input', resetExpandState);
-  })();
+  // ── Clear view ────────────────────────────────────────────────────────
+  const clearViewBtn = document.getElementById('clear-view-btn');
+  const clearBanner = document.getElementById('clear-banner');
+  const restoreBtn = document.getElementById('restore-btn');
 
-  // ── End Toolbar ────────────────────────────────────────────────────────
+  clearViewBtn.addEventListener('click', () => {
+    if (!confirm('Clear all entries from this view?\n\nThis only affects the current browser session — your changelog files are untouched.\n\nTo permanently clear, run:\n  python plugin/hooks/fm_backfill.py --clear')) return;
+    viewCleared = true;
+    clearBanner.style.display = 'flex';
+    render();
+  });
 
-  // Light/dark toggle
+  restoreBtn.addEventListener('click', () => {
+    viewCleared = false;
+    clearBanner.style.display = 'none';
+    render();
+  });
+
+  // ── Focus toggle ──────────────────────────────────────────────────────
+  const focusCycle = [null, 'product', 'developer', 'devsync'];
+  const focusToggleBtn = document.getElementById('focus-toggle');
+
+  focusToggleBtn.addEventListener('click', () => {
+    focusMode = focusCycle[(focusCycle.indexOf(focusMode) + 1) % focusCycle.length];
+    document.body.classList.remove('focus-product', 'focus-developer', 'focus-devsync');
+    if (focusMode) document.body.classList.add('focus-' + focusMode);
+    const label = focusMode ? (focusMode[0].toUpperCase() + focusMode.slice(1)) : 'All';
+    focusToggleBtn.textContent = '⛶ Focus: ' + label;
+  });
+
+  // ── Theme toggle ──────────────────────────────────────────────────────
   const root = document.documentElement;
-  const toggleBtn = document.getElementById('theme-toggle');
+  const themeBtn = document.getElementById('theme-toggle');
   try {
     const saved = localStorage.getItem('fm-theme');
-    if (saved === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.textContent = '☾'; }
+    if (saved === 'light') { root.setAttribute('data-theme', 'light'); themeBtn.textContent = '☾'; }
   } catch (_) {}
-
-  toggleBtn.addEventListener('click', () => {
+  themeBtn.addEventListener('click', () => {
     const isLight = root.getAttribute('data-theme') === 'light';
     root.setAttribute('data-theme', isLight ? 'dark' : 'light');
-    toggleBtn.textContent = isLight ? '☀︎' : '☾';
+    themeBtn.textContent = isLight ? '☀︎' : '☾';
     try { localStorage.setItem('fm-theme', isLight ? 'dark' : 'light'); } catch (_) {}
   });
+
+  // ── Init ──────────────────────────────────────────────────────────────
+  syncLayoutMode();
+  render();
 })();
 </script>
 </body>

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated": "2026-05-18T18:11:59.613063+00:00",
+  "generated": "2026-05-18T18:31:09.963739+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -577,6 +577,203 @@
       ]
     },
     {
+      "event_id": "20260518T180920Z-c5fa",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/claude_stop.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T180926Z-2ddf",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T180929Z-a96a",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T181037Z-6675",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified README.md",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "paths": [
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T181043Z-6e21",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified README.md",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "paths": [
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T181049Z-281a",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified README.md",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "paths": [
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T181057Z-eccb",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified README.md",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "paths": [
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T181105Z-d324",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified README.md",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "paths": [
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.4.0 commit entries",
+      "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
       "event_id": "1f27c8c5880e-plugin-core",
       "date": "2026-05-18",
       "feature_id": "plugin-core",
@@ -953,6 +1150,28 @@
         "docs",
         "markdown"
       ]
+    },
+    {
+      "event_id": "467a0fd75597-unmapped",
+      "date": "2026-05-17",
+      "feature_id": null,
+      "feature_title": "unmapped",
+      "audience": "developer",
+      "summary": "Remove draft gist files from repo and gitignore them",
+      "kind": [
+        "refactor"
+      ],
+      "tags": [],
+      "paths": [
+        ".gitignore"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Remove draft gist files from repo and gitignore them",
+      "git_hash": "467a0fd75597af9af8c560249bdb535cf2a77266",
+      "confidence": "medium",
+      "review_status": "auto",
+      "source": "git-backfill"
     },
     {
       "event_id": "304b840fdc59-cli",

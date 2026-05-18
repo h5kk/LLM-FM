@@ -57,6 +57,8 @@ def _compile_changelog(project_dir, events, features, git_info):
         path = event.get("path", "")
         if path.startswith("docs/feature-memory/"):
             continue
+        if path.endswith(".md"):
+            continue
         matched = match_path_to_features(path, features)
         entry = {
             "event_id": eid,
@@ -192,7 +194,7 @@ def main():
             path = event.get("path", "")
             if path.startswith("docs/feature-memory/"):
                 doc_paths_touched.add(path)
-            else:
+            elif not path.endswith(".md"):
                 touched_paths.add(path)
 
     features = load_config(project_dir)

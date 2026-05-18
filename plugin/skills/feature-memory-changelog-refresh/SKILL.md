@@ -1,10 +1,9 @@
 ---
 description: >
-  Refreshes an existing Feature Memory changelog — re-infers tags for all entries
-  that predate the tag system, and regenerates the changelog viewer. Safe to run
-  multiple times (skips entries that already have tags). Use when the user says
-  "refresh changelog", "add tags to existing changelog", "retag changelog",
-  "update changelog entries", or "/changelog-refresh".
+  Refreshes an existing Feature Memory changelog — re-infers and replaces tags for
+  ALL entries, then regenerates the changelog viewer. Safe to run multiple times.
+  Use when the user says "refresh changelog", "add tags to existing changelog",
+  "retag changelog", "update changelog entries", or "/changelog-refresh".
 allowed-tools: Bash, Read
 ---
 
@@ -31,11 +30,11 @@ If it does not exist, stop and tell the user to run backfill first:
 
 ## What this does
 
-The refresh command re-infers tags for every existing changelog entry that does not
-yet have tags (entries created before tag support was added in v0.4.0). It uses the
-stored `paths` and `git_message` fields already in the JSON — no git re-scan needed.
+The refresh command re-infers and **replaces** tags for every existing changelog
+entry. It uses the stored `paths` and `git_message` fields already in the JSON —
+no git re-scan needed.
 
-- Entries that already have tags are left untouched.
+- All entries get fresh tags (existing tags are replaced, not kept).
 - The changelog viewer HTML is regenerated with the updated data.
 - Safe to run multiple times.
 
@@ -61,8 +60,7 @@ Example report:
 
 > Changelog refresh complete:
 >
-> - Re-tagged 23 entries that were missing tags (of 31 total)
-> - 8 entries already had tags — untouched
+> - Re-tagged 31 entries (of 31 total) — all tags replaced with latest inference
 > - Changelog viewer refreshed at `docs/feature-memory/changelog-viewer.html`
 >
 > Open the viewer to explore entries by tag. Run `/backfill` to pull in any commits not yet in the changelog.
