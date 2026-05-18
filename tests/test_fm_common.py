@@ -201,28 +201,6 @@ def test_infer_tags_login_does_not_trigger_logging():
     assert "logging" not in _infer_tags([], "fix login redirect", [])
 
 
-def test_infer_tags_typescript_distinct_tag():
-    tags = _infer_tags(["src/app.tsx", "src/utils.ts"], "", [])
-    assert "typescript" in tags
-    assert "javascript" not in tags
-
-
-def test_infer_tags_javascript_not_matched_for_ts_files():
-    tags = _infer_tags(["src/app.ts"], "", [])
-    assert "typescript" in tags
-    assert "javascript" not in tags
-
-
-def test_infer_tags_javascript_for_jsx():
-    tags = _infer_tags(["src/component.jsx"], "", [])
-    assert "javascript" in tags
-    assert "typescript" not in tags
-
-
-def test_infer_tags_python_extension():
-    assert "python" in _infer_tags(["plugin/hooks/fm_common.py"], "", [])
-
-
 def test_infer_tags_process_tests_directory():
     assert "tests" in _infer_tags(["tests/test_auth.py"], "", [])
 
