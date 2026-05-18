@@ -17,13 +17,11 @@ claude plugin marketplace add h5kk/LLM-FM
 claude plugin install feature-memory@h5kk-plugins
 ```
 
-Then initialize Feature Memory in your project:
+Then open a Claude Code session in your project and say:
 
-```bash
-python fm_init.py --project-name my-project
-```
+> Initialize feature memory
 
-The plugin registers lifecycle hooks, a maintainer skill, and a reviewer agent. Hooks are inert until you run the initializer.
+The agent scaffolds the docs structure, scans your codebase, proposes features, and creates initial feature pages. No scripts to run — the plugin handles everything through skills.
 
 ## How It Works
 
@@ -39,7 +37,6 @@ docs/feature-memory/
 .feature-memory/
   config.yaml           # globs, route patterns, policies
   events.jsonl          # hook event log
-  hooks/                # Claude Code lifecycle hooks
 ```
 
 Three hooks wire into Claude Code's lifecycle:
@@ -56,29 +53,21 @@ A companion **skill** (`feature-memory`) gives the agent a structured workflow f
 
 ## Quick Start
 
-### Phase 0 (now): Paper prototype with Claude Code hooks
+1. Install the plugin (see above)
+2. Open Claude Code in your project
+3. Say **"initialize feature memory"** — the init skill walks you through setup
+4. Say **"update feature memory"** after making code changes — the maintainer skill keeps docs current
 
-No CLI needed. Run the bootstrapper from your project root:
+### What the plugin includes
 
-```bash
-python fm_init.py --project-name my-project
-```
-
-This creates the full directory structure, hook scripts, Claude Code settings, skill definition, and project instructions. Then ask Claude to scan your project and populate feature pages.
-
-#### Options
-
-```
---project-name NAME   Set the project name in config.yaml (default: directory name)
---dry-run             Show what would be created without writing files
---force               Overwrite existing files
-```
-
-#### Requirements
-
-- Python 3.6+
-- Claude Code (for hooks and skill)
-- No external dependencies (stdlib only)
+| Component | Purpose |
+|-----------|---------|
+| **Init skill** | One-time setup: scaffolds docs, scans codebase, creates feature pages |
+| **Maintainer skill** | Ongoing: updates feature pages, changelogs, source maps after code changes |
+| **Reviewer agent** | Read-only audit: checks docs for stale claims, broken links, missing sources |
+| **SessionStart hook** | Injects feature list and recent activity into agent context |
+| **PostToolUse hook** | Logs edits, reminds which feature docs to update |
+| **Stop hook** | Reports features with source changes but no doc updates |
 
 ### Phase 1 (planned): `fm` CLI
 
@@ -138,13 +127,16 @@ Key numbers:
 ## Project Structure
 
 ```
-fm_init.py                          # Zero-dependency bootstrapper
+plugin/                             # Claude Code plugin
+  .claude-plugin/plugin.json        # Plugin manifest
+  hooks/                            # Lifecycle hook scripts
+  skills/                           # Init and maintainer skills
+  agents/                           # Reviewer agent
 images/                             # Architectural diagrams and value-prop visuals
 docs/
   specs/                            # Implementation specifications (00-11)
   RepoTest_Iteration1/              # Phase 0 test results and findings
   image-catalog.md                  # Image descriptions and alt text
-  reviewer-feedback-plan.md         # Review protocol
 ```
 
 ## License

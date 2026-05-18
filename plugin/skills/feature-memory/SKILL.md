@@ -19,7 +19,6 @@ Feature Memory docs are at `docs/feature-memory/`.
 - User asks to update docs after a change
 - Code changes affect user-facing behavior, APIs, routes, data models, or tests
 - User mentions "feature memory", "docs update", "changelog", or "source map"
-- User asks to "initialize feature memory", "set up FM", or "bootstrap docs"
 - After significant code changes that touch multiple files
 
 ## Instructions
@@ -52,10 +51,4 @@ You maintain `docs/feature-memory/` as a compiled memory layer for this reposito
 
 ### Initialization
 
-If `docs/feature-memory/` does not exist, Feature Memory has not been initialized in this project.
-
-To bootstrap:
-1. Run `python fm_init.py` from the LLM-FM plugin directory (copies the initializer to the project and scaffolds the FM structure).
-2. Or manually create the structure: `docs/feature-memory/` (index.md, recent.md, changelog.md, features/), `.feature-memory/config.yaml`, `.feature-memory/events.jsonl`.
-
-The plugin hooks are inert until the FM structure exists — this is by design.
+If `docs/feature-memory/` does not exist, tell the user to say "initialize feature memory" to trigger the `feature-memory-init` skill, which scaffolds the structure and scans the project for features.
