@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update
+from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update, generate_topic_tags_batch
 
 _JIRA_RE = re.compile(r'\b([A-Z][A-Z0-9]{1,9}-\d+)\b')
 
@@ -208,7 +208,7 @@ def _clear_changelog(project_dir, changelog_path, docs_root):
 
 
 def _retag_existing(project_dir, changelog_path, docs_root):
-    """Re-infer and replace tags for all entries. No git scan — uses stored paths+message."""
+    """Two-phase retag: regex Impact/Quality/Process tags, then LLM semantic topic tags."""
     if not changelog_path.exists():
         print("No changelog.json found. Run backfill first.")
         return
@@ -220,26 +220,62 @@ def _retag_existing(project_dir, changelog_path, docs_root):
         return
 
     entries = data.get("entries", [])
-    updated = 0
+
+    # Phase 1 — regex tags (fast, in-process)
     for entry in entries:
-        new_tags = _infer_tags(
+        entry["tags"] = _infer_tags(
             entry.get("paths") or [],
             entry.get("git_message") or "",
             entry.get("kind") or [],
         )
-        entry["tags"] = new_tags
-        updated += 1
+        entry.pop("topic_pending", None)
 
-    print(f"Re-tagged {updated} entr{'y' if updated == 1 else 'ies'} (of {len(entries)} total).")
+    print(f"Regex tags refreshed for {len(entries)} entries. Generating topic tags via LLM...")
 
-    if updated > 0:
-        from datetime import datetime, timezone
-        data["generated"] = datetime.now(timezone.utc).isoformat()
-        changelog_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-        _update_viewer(docs_root, data)
-        print("Done.")
-    else:
-        print("Nothing to update — all entries already have tags.")
+    # Phase 2 — LLM semantic topic tags (batched claude CLI calls)
+    topic_lists = generate_topic_tags_batch(entries)
+    for entry, topic_tags in zip(entries, topic_lists):
+        entry["topic_tags"] = topic_tags
+
+    tagged = sum(1 for tl in topic_lists if tl)
+    print(f"Topic tags generated for {tagged} of {len(entries)} entries.")
+
+    from datetime import datetime, timezone
+    data["generated"] = datetime.now(timezone.utc).isoformat()
+    changelog_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    _update_viewer(docs_root, data)
+    print("Done.")
+
+
+def _drain_pending(changelog_path, docs_root):
+    """Generate LLM topic tags for entries marked topic_pending=True."""
+    if not changelog_path.exists():
+        print("No changelog.json found.")
+        return
+    try:
+        data = json.loads(changelog_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"Error reading changelog: {e}")
+        return
+
+    pending = [e for e in data.get("entries", []) if e.get("topic_pending")]
+    if not pending:
+        print("No pending entries — all topic tags already generated.")
+        return
+
+    print(f"Generating topic tags for {len(pending)} pending entries...")
+    topic_lists = generate_topic_tags_batch(pending)
+    for entry, topic_tags in zip(pending, topic_lists):
+        entry["topic_tags"] = topic_tags
+        entry.pop("topic_pending", None)
+
+    tagged = sum(1 for tl in topic_lists if tl)
+    print(f"Done. Tagged {tagged} of {len(pending)} entries.")
+
+    from datetime import datetime, timezone
+    data["generated"] = datetime.now(timezone.utc).isoformat()
+    changelog_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    _update_viewer(docs_root, data)
 
 
 def main():
@@ -258,7 +294,9 @@ def main():
     group.add_argument("--all", action="store_true", dest="all_commits",
                        help="All commits in the repo")
     group.add_argument("--retag", action="store_true",
-                       help="Re-infer and replace tags for ALL existing entries (no git scan)")
+                       help="Regenerate tags for ALL entries: regex pass + LLM topic tags (no git scan)")
+    group.add_argument("--drain-pending", action="store_true", dest="drain_pending",
+                       help="Generate LLM topic tags for entries marked topic_pending=True")
     group.add_argument("--purge-md-only", action="store_true", dest="purge_md_only",
                        help="Remove entries whose every path is a .md file")
     group.add_argument("--clear", action="store_true",
@@ -266,7 +304,7 @@ def main():
     args = parser.parse_args()
 
     if not any([args.hours, args.since, args.since_commit, args.all_commits,
-                args.retag, args.purge_md_only, args.clear]):
+                args.retag, args.drain_pending, args.purge_md_only, args.clear]):
         args.hours = 48
 
     project_dir = Path.cwd()
@@ -282,6 +320,10 @@ def main():
 
     if args.retag:
         _retag_existing(project_dir, changelog_path, docs_root)
+        return
+
+    if args.drain_pending:
+        _drain_pending(changelog_path, docs_root)
         return
 
     if args.purge_md_only:
@@ -382,6 +424,8 @@ def main():
                     "summary": commit["message"],
                     "kind": kinds,
                     "tags": _infer_tags(fid_files, commit["message"], kinds),
+                    "topic_tags": [],
+                    "topic_pending": True,
                     "paths": fid_files,
                     "git_author": commit["author"],
                     "git_email": commit["email"],
@@ -412,6 +456,8 @@ def main():
                 "summary": commit["message"],
                 "kind": kinds,
                 "tags": _infer_tags(unmapped_files, commit["message"], kinds),
+                "topic_tags": [],
+                "topic_pending": True,
                 "paths": unmapped_files[:10],
                 "git_author": commit["author"],
                 "git_email": commit["email"],

@@ -69,6 +69,8 @@ def _compile_changelog(project_dir, events, features, git_info):
             "summary": f"Modified {path}",
             "kind": ["path_touched"],
             "tags": _infer_tags([path], "", ["path_touched"]),
+            "topic_tags": [],
+            "topic_pending": True,
             "paths": [path],
             "git_author": git_info.get("git_author") if git_info else None,
             "git_email": git_info.get("git_email") if git_info else None,

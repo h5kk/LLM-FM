@@ -1,4 +1,4 @@
-<!-- fm-viewer-version: 7 -->
+<!-- fm-viewer-version: 8 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,7 +143,7 @@
     .cat-label.impact  { color: #f97316; }
     .cat-label.quality { color: #a855f7; }
     .cat-label.process { color: #14b8a6; }
-    .cat-label.tech    { color: #3b82f6; }
+    .cat-label.topic   { color: #93c5fd; }
     .tag-chips-row { display: flex; flex-wrap: wrap; gap: 4px; }
 
     .filter-chip {
@@ -156,16 +156,16 @@
     .filter-chip.impact  { background: #431407; color: #fb923c; }
     .filter-chip.quality { background: #2e1065; color: #c084fc; }
     .filter-chip.process { background: #042f2e; color: #2dd4bf; }
-    .filter-chip.tech    { background: #1e3a5f; color: #60a5fa; }
+    .filter-chip.topic   { background: #1e293b; color: #93c5fd; }
     .filter-chip.active         { opacity: 1; }
     .filter-chip.impact.active  { border-color: #f97316; }
     .filter-chip.quality.active { border-color: #a855f7; }
     .filter-chip.process.active { border-color: #14b8a6; }
-    .filter-chip.tech.active    { border-color: #3b82f6; }
+    .filter-chip.topic.active   { border-color: #93c5fd; }
     :root[data-theme="light"] .filter-chip.impact  { background: #fff7ed; color: #c2410c; }
     :root[data-theme="light"] .filter-chip.quality { background: #faf5ff; color: #7e22ce; }
     :root[data-theme="light"] .filter-chip.process { background: #f0fdfa; color: #0f766e; }
-    :root[data-theme="light"] .filter-chip.tech    { background: #eff6ff; color: #1d4ed8; }
+    :root[data-theme="light"] .filter-chip.topic   { background: #eff6ff; color: #1d4ed8; font-style: italic; }
     .chip-count { opacity: 0.65; font-size: 9px; }
 
     /* ── Toolbar ──────────────────────────────────────────────────────── */
@@ -726,8 +726,6 @@
     'security': 'quality', 'auth': 'quality', 'performance': 'quality',
     'error-handling': 'quality', 'logging': 'quality', 'accessibility': 'quality', 'ux': 'quality',
     'tests': 'process', 'docs': 'process', 'dependency': 'process', 'tooling': 'process', 'ci-cd': 'process',
-    'typescript': 'tech', 'python': 'tech', 'javascript': 'tech', 'html-css': 'tech',
-    'shell': 'tech', 'yaml': 'tech', 'sql': 'tech', 'markdown': 'tech',
   };
   const kindClass = {
     'new-feature': 'new-feature', 'bug-fix': 'bug-fix',
@@ -736,7 +734,7 @@
   };
 
   // ── Helpers ──────────────────────────────────────────────────────────
-  function tagCat(t) { return TAG_CATEGORIES[t] || 'tech'; }
+  function tagCat(t) { return TAG_CATEGORIES[t] || 'topic'; }
 
   function firstNameOnly(str) {
     const s = String(str || '').trim();
@@ -769,15 +767,16 @@
       const hay = [
         entry.summary || '', entry.feature_id || '', entry.feature_title || '',
         entry.git_author || '', entry.git_message || '', entry.jira_ticket || '',
-        (entry.kind || []).join(' '), (entry.paths || []).join(' '), (entry.tags || []).join(' '),
+        (entry.kind || []).join(' '), (entry.paths || []).join(' '),
+        (entry.tags || []).join(' '), (entry.topic_tags || []).join(' '),
       ].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     if (activeTags.size > 0) {
-      const et = new Set(entry.tags || []);
+      const allTags = new Set([...(entry.tags || []), ...(entry.topic_tags || [])]);
       const byCat = {};
       for (const t of activeTags) { const c = tagCat(t); (byCat[c] = byCat[c] || []).push(t); }
-      for (const cats of Object.values(byCat)) { if (!cats.some(t => et.has(t))) return false; }
+      for (const cats of Object.values(byCat)) { if (!cats.some(t => allTags.has(t))) return false; }
     }
     return true;
   }
@@ -813,8 +812,9 @@
       ? `<span class="author-chip" title="${escHtml(entry.git_author)}" style="color:${authorColor(entry.git_author)}">@${escHtml(firstNameOnly(entry.git_author))}</span>`
       : '';
 
-    const headerTagsHtml = (entry.tags || []).length > 0
-      ? `<span class="entry-header-tags">${(entry.tags || []).slice(0, 3).map(t =>
+    const visibleTags = [...(entry.tags || []).slice(0, 2), ...(entry.topic_tags || []).slice(0, 2)].slice(0, 3);
+    const headerTagsHtml = visibleTags.length > 0
+      ? `<span class="entry-header-tags">${visibleTags.map(t =>
           `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span>`
       : '';
 
@@ -823,8 +823,9 @@
     const gitHashHtml = (entry.git_hash && ctx !== 'product') ? `<div class="detail-row"><span class="detail-label">Commit</span><span class="detail-value mono">${escHtml(entry.git_hash.slice(0, 12))}</span></div>` : '';
     const pathsRowHtml = (pathsHtml && ctx !== 'product') ? `<div class="detail-row"><span class="detail-label">Files</span><span class="detail-value paths">${pathsHtml}</span></div>` : '';
     const jiraHtml = entry.jira_ticket ? `<div class="detail-row"><span class="detail-label">Jira</span><span class="detail-value mono">${escHtml(entry.jira_ticket)}</span></div>` : '';
-    const tagsHtml = (entry.tags || []).length > 0
-      ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="entry-tags">${(entry.tags || []).map(t => `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span></div>`
+    const allTagsForDetail = [...(entry.tags || []), ...(entry.topic_tags || [])];
+    const tagsHtml = allTagsForDetail.length > 0
+      ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="entry-tags">${allTagsForDetail.map(t => `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span></div>`
       : '';
     const crossNote = (isBoth && ctx === 'product') ? '<p class="cross-channel-note">Also in Developer channel</p>'
       : (isBoth && ctx === 'developer') ? '<p class="cross-channel-note">Also in Product channel</p>' : '';
@@ -1148,11 +1149,17 @@
 
   // ── Tag filter ────────────────────────────────────────────────────────
   function buildTagFilter() {
-    const counts = {};
-    for (const e of allEntries) for (const t of (e.tags || [])) counts[t] = (counts[t] || 0) + 1;
-    const cats = { impact: [], quality: [], process: [], tech: [] };
-    for (const [tag, count] of Object.entries(counts)) { const c = tagCat(tag); if (cats[c]) cats[c].push({ tag, count }); }
-    const labels = { impact: 'Impact', quality: 'Quality', process: 'Process', tech: 'Tech' };
+    const regexCounts = {}, topicCounts = {};
+    for (const e of allEntries) {
+      for (const t of (e.tags || []))       regexCounts[t] = (regexCounts[t] || 0) + 1;
+      for (const t of (e.topic_tags || [])) topicCounts[t]  = (topicCounts[t]  || 0) + 1;
+    }
+    const cats = { impact: [], quality: [], process: [] };
+    for (const [tag, count] of Object.entries(regexCounts)) {
+      const c = TAG_CATEGORIES[tag];
+      if (c && cats[c]) cats[c].push({ tag, count });
+    }
+    const labels = { impact: 'Impact', quality: 'Quality', process: 'Process' };
     let html = '';
     for (const [cat, tags] of Object.entries(cats)) {
       if (!tags.length) continue;
@@ -1161,6 +1168,13 @@
         `<button class="filter-chip ${cat}${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`
       ).join('');
       html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${labels[cat]}</span><div class="tag-chips-row">${chips}</div></div>`;
+    }
+    const topicTags = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
+    if (topicTags.length) {
+      const chips = topicTags.map(([tag, count]) =>
+        `<button class="filter-chip topic${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`
+      ).join('');
+      html += `<div class="tag-filter-row"><span class="cat-label topic">Topic</span><div class="tag-chips-row">${chips}</div></div>`;
     }
     document.getElementById('tag-filter-body').innerHTML = html;
     document.getElementById('tag-filter-body').querySelectorAll('.filter-chip').forEach(btn => {

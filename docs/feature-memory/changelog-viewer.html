@@ -1,4 +1,4 @@
-<!-- fm-viewer-version: 7 -->
+<!-- fm-viewer-version: 8 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,7 +143,7 @@
     .cat-label.impact  { color: #f97316; }
     .cat-label.quality { color: #a855f7; }
     .cat-label.process { color: #14b8a6; }
-    .cat-label.tech    { color: #3b82f6; }
+    .cat-label.topic   { color: #93c5fd; }
     .tag-chips-row { display: flex; flex-wrap: wrap; gap: 4px; }
 
     .filter-chip {
@@ -156,16 +156,16 @@
     .filter-chip.impact  { background: #431407; color: #fb923c; }
     .filter-chip.quality { background: #2e1065; color: #c084fc; }
     .filter-chip.process { background: #042f2e; color: #2dd4bf; }
-    .filter-chip.tech    { background: #1e3a5f; color: #60a5fa; }
+    .filter-chip.topic   { background: #1e293b; color: #93c5fd; }
     .filter-chip.active         { opacity: 1; }
     .filter-chip.impact.active  { border-color: #f97316; }
     .filter-chip.quality.active { border-color: #a855f7; }
     .filter-chip.process.active { border-color: #14b8a6; }
-    .filter-chip.tech.active    { border-color: #3b82f6; }
+    .filter-chip.topic.active   { border-color: #93c5fd; }
     :root[data-theme="light"] .filter-chip.impact  { background: #fff7ed; color: #c2410c; }
     :root[data-theme="light"] .filter-chip.quality { background: #faf5ff; color: #7e22ce; }
     :root[data-theme="light"] .filter-chip.process { background: #f0fdfa; color: #0f766e; }
-    :root[data-theme="light"] .filter-chip.tech    { background: #eff6ff; color: #1d4ed8; }
+    :root[data-theme="light"] .filter-chip.topic   { background: #eff6ff; color: #1d4ed8; font-style: italic; }
     .chip-count { opacity: 0.65; font-size: 9px; }
 
     /* ── Toolbar ──────────────────────────────────────────────────────── */
@@ -670,7 +670,7 @@
 <script id="changelog-data" type="application/json">
 {
   "schema_version": 2,
-  "generated": "2026-05-18T19:08:50.920142+00:00",
+  "generated": "2026-05-18T19:23:33.497368+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -693,8 +693,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "readme",
+        "documentation-assets"
       ]
     },
     {
@@ -708,8 +711,7 @@
         "new-feature"
       ],
       "tags": [
-        "ux",
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/.claude-plugin/plugin.json",
@@ -721,7 +723,12 @@
       "git_hash": "f20a68ec657a6bc5f54ddce89008584e9d685516",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync",
+        "plugin-versioning"
+      ]
     },
     {
       "event_id": "f20a68ec657a-hooks",
@@ -734,8 +741,7 @@
         "new-feature"
       ],
       "tags": [
-        "ux",
-        "python"
+        "ux"
       ],
       "paths": [
         "plugin/hooks/claude_stop.py",
@@ -748,7 +754,11 @@
       "git_hash": "f20a68ec657a6bc5f54ddce89008584e9d685516",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "session-hooks",
+        "backfill"
+      ]
     },
     {
       "event_id": "e866d1624738-hooks",
@@ -774,8 +784,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "python"
+      "tags": [],
+      "topic_tags": [
+        "session-hooks",
+        "hook-wiring"
       ]
     },
     {
@@ -788,9 +800,7 @@
       "kind": [
         "new-feature"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -800,7 +810,11 @@
       "git_hash": "e6d8fdf4a196bdeb77dc944c32b2ee5584471f0c",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "changelog-viewer",
+        "developer-tab"
+      ]
     },
     {
       "event_id": "e6d8fdf4a196-hooks",
@@ -812,9 +826,7 @@
       "kind": [
         "new-feature"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/claude_stop.py",
         "plugin/hooks/fm_backfill.py"
@@ -825,7 +837,11 @@
       "git_hash": "e6d8fdf4a196bdeb77dc944c32b2ee5584471f0c",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "session-hooks",
+        "viewer-bootstrap"
+      ]
     },
     {
       "event_id": "e38a6a9053d9-plugin-core",
@@ -851,8 +867,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "readme",
+        "documentation-assets"
       ]
     },
     {
@@ -879,8 +898,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "plugin-marketplace",
+        "plugin-init"
       ]
     },
     {
@@ -903,8 +925,9 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "markdown"
+      "tags": [],
+      "topic_tags": [
+        "reviewer-agent"
       ]
     },
     {
@@ -931,8 +954,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "python"
+      "tags": [],
+      "topic_tags": [
+        "session-hooks",
+        "plugin-init"
       ]
     },
     {
@@ -955,8 +980,9 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "markdown"
+      "tags": [],
+      "topic_tags": [
+        "feature-memory-skill"
       ]
     },
     {
@@ -979,7 +1005,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": []
+      "tags": [],
+      "topic_tags": [
+        "plugin-marketplace"
+      ]
     },
     {
       "event_id": "b7ee1a6518da-specs",
@@ -992,8 +1021,7 @@
         "bug-fix"
       ],
       "tags": [
-        "config-change",
-        "yaml"
+        "config-change"
       ],
       "paths": [
         ".feature-memory/config.yaml"
@@ -1004,7 +1032,11 @@
       "git_hash": "b7ee1a6518da36cabf73eec702c9a70595651229",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "config-parser",
+        "feature-config"
+      ]
     },
     {
       "event_id": "b7ee1a6518da-hooks",
@@ -1016,9 +1048,7 @@
       "kind": [
         "bug-fix"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_common.py"
       ],
@@ -1028,7 +1058,10 @@
       "git_hash": "b7ee1a6518da36cabf73eec702c9a70595651229",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "config-parser"
+      ]
     },
     {
       "event_id": "b2eea5b0227c-plugin-core",
@@ -1051,8 +1084,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "readme",
+        "plugin-install"
       ]
     },
     {
@@ -1075,7 +1111,11 @@
       "git_hash": "b1adc6bbf6b422926f49efb6b83b059c9b333ef9",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "backfill-skill",
+        "plugin-versioning"
+      ]
     },
     {
       "event_id": "b1adc6bbf6b4-skills",
@@ -1087,9 +1127,7 @@
       "kind": [
         "new-feature"
       ],
-      "tags": [
-        "markdown"
-      ],
+      "tags": [],
       "paths": [
         "plugin/skills/feature-memory-backfill/SKILL.md"
       ],
@@ -1099,7 +1137,10 @@
       "git_hash": "b1adc6bbf6b422926f49efb6b83b059c9b333ef9",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "backfill-skill"
+      ]
     },
     {
       "event_id": "93a0ca2e8a7d-plugin-core",
@@ -1111,9 +1152,7 @@
       "kind": [
         "bug-fix"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -1123,7 +1162,11 @@
       "git_hash": "93a0ca2e8a7dc76c308efbce771a9279c54deac4",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "changelog-viewer",
+        "test-suite"
+      ]
     },
     {
       "event_id": "93a0ca2e8a7d-hooks",
@@ -1135,9 +1178,7 @@
       "kind": [
         "bug-fix"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/claude_session_start.py",
         "plugin/hooks/fm_backfill.py"
@@ -1148,7 +1189,11 @@
       "git_hash": "93a0ca2e8a7dc76c308efbce771a9279c54deac4",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "session-hooks",
+        "backfill"
+      ]
     },
     {
       "event_id": "91f90b0f1a37-plugin-core",
@@ -1173,6 +1218,10 @@
       "source": "git-backfill",
       "tags": [
         "schema-change"
+      ],
+      "topic_tags": [
+        "marketplace-schema",
+        "init-skill"
       ]
     },
     {
@@ -1196,8 +1245,10 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "schema-change",
-        "markdown"
+        "schema-change"
+      ],
+      "topic_tags": [
+        "init-skill"
       ]
     },
     {
@@ -1220,8 +1271,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "python"
+      "tags": [],
+      "topic_tags": [
+        "backfill",
+        "git-history"
       ]
     },
     {
@@ -1245,8 +1298,10 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "config-change",
-        "yaml"
+        "config-change"
+      ],
+      "topic_tags": [
+        "feature-memory-init"
       ]
     },
     {
@@ -1270,8 +1325,10 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "init-skill"
       ]
     },
     {
@@ -1295,8 +1352,9 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "markdown"
+      "tags": [],
+      "topic_tags": [
+        "init-skill"
       ]
     },
     {
@@ -1309,9 +1367,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/claude_stop.py"
       ],
@@ -1321,7 +1377,10 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T180926Z-2ddf",
@@ -1333,9 +1392,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_backfill.py"
       ],
@@ -1345,7 +1402,10 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T180929Z-a96a",
@@ -1357,9 +1417,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_backfill.py"
       ],
@@ -1369,7 +1427,10 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T181037Z-6675",
@@ -1382,8 +1443,7 @@
         "path_touched"
       ],
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
       ],
       "paths": [
         "README.md"
@@ -1394,7 +1454,10 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T181043Z-6e21",
@@ -1407,8 +1470,7 @@
         "path_touched"
       ],
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
       ],
       "paths": [
         "README.md"
@@ -1419,7 +1481,10 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T181049Z-281a",
@@ -1432,8 +1497,7 @@
         "path_touched"
       ],
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
       ],
       "paths": [
         "README.md"
@@ -1444,7 +1508,11 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill",
+        "plugin-core"
+      ]
     },
     {
       "event_id": "20260518T181057Z-eccb",
@@ -1457,8 +1525,7 @@
         "path_touched"
       ],
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
       ],
       "paths": [
         "README.md"
@@ -1469,7 +1536,11 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill",
+        "plugin-core"
+      ]
     },
     {
       "event_id": "20260518T181105Z-d324",
@@ -1482,8 +1553,7 @@
         "path_touched"
       ],
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
       ],
       "paths": [
         "README.md"
@@ -1494,7 +1564,11 @@
       "git_hash": "30189039edb62132d5bb821e258333a99bc0b212",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill",
+        "plugin-core"
+      ]
     },
     {
       "event_id": "1f27c8c5880e-plugin-core",
@@ -1519,9 +1593,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "html-css",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "changelog-viewer",
+        "jira-integration"
       ]
     },
     {
@@ -1545,8 +1621,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "markdown"
+      "tags": [],
+      "topic_tags": [
+        "feature-memory",
+        "skills"
       ]
     },
     {
@@ -1560,8 +1638,7 @@
         "behavior-change"
       ],
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
       ],
       "paths": [
         "README.md"
@@ -1572,7 +1649,11 @@
       "git_hash": "1df9a5698c71541c9a36e70570348bfb16673544",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "readme-docs",
+        "agent-commands"
+      ]
     },
     {
       "event_id": "04b56adea919-plugin-core",
@@ -1585,9 +1666,7 @@
         "new-feature"
       ],
       "tags": [
-        "docs",
-        "html-css",
-        "markdown"
+        "docs"
       ],
       "paths": [
         "README.md",
@@ -1600,7 +1679,11 @@
       "git_hash": "04b56adea91965e05f2e6349df68f8d170730216",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "changelog-viewer",
+        "tag-system"
+      ]
     },
     {
       "event_id": "04b56adea919-hooks",
@@ -1612,9 +1695,7 @@
       "kind": [
         "new-feature"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/claude_session_start.py",
         "plugin/hooks/claude_stop.py",
@@ -1627,7 +1708,11 @@
       "git_hash": "04b56adea91965e05f2e6349df68f8d170730216",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "session-hooks",
+        "changelog-tagging"
+      ]
     },
     {
       "event_id": "04b56adea919-skills",
@@ -1639,9 +1724,7 @@
       "kind": [
         "new-feature"
       ],
-      "tags": [
-        "markdown"
-      ],
+      "tags": [],
       "paths": [
         "plugin/skills/feature-memory-changelog-refresh/SKILL.md"
       ],
@@ -1651,7 +1734,11 @@
       "git_hash": "04b56adea91965e05f2e6349df68f8d170730216",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "changelog-refresh",
+        "skills"
+      ]
     },
     {
       "event_id": "20260518T182551Z-6d73",
@@ -1663,9 +1750,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/claude_stop.py"
       ],
@@ -1675,7 +1760,11 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "session-hooks",
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T182600Z-89a1",
@@ -1687,9 +1776,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/claude_stop.py"
       ],
@@ -1699,7 +1786,11 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "session-hooks",
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T182605Z-ecc2",
@@ -1711,9 +1802,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_backfill.py"
       ],
@@ -1723,7 +1812,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T182615Z-45bf",
@@ -1735,9 +1827,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_backfill.py"
       ],
@@ -1747,7 +1837,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T182620Z-0e98",
@@ -1759,9 +1852,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_backfill.py"
       ],
@@ -1771,7 +1862,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T182629Z-f90d",
@@ -1783,9 +1877,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_backfill.py"
       ],
@@ -1795,7 +1887,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill"
+      ]
     },
     {
       "event_id": "20260518T182633Z-a26a",
@@ -1807,9 +1902,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_backfill.py"
       ],
@@ -1819,7 +1912,11 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-backfill",
+        "session-hooks"
+      ]
     },
     {
       "event_id": "20260518T182717Z-1983",
@@ -1841,7 +1938,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "plugin-manifest"
+      ]
     },
     {
       "event_id": "20260518T182722Z-9326",
@@ -1863,7 +1963,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "plugin-manifest"
+      ]
     },
     {
       "event_id": "20260518T182726Z-fc73",
@@ -1875,9 +1978,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_common.py"
       ],
@@ -1887,7 +1988,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "session-hooks"
+      ]
     },
     {
       "event_id": "20260518T183026Z-045c",
@@ -1899,9 +2003,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -1911,7 +2013,10 @@
       "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T185817Z-3f5a",
@@ -1924,7 +2029,7 @@
         "path_touched"
       ],
       "tags": [
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/assets/changelog-viewer.html"
@@ -1935,7 +2040,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T185826Z-89e7",
@@ -1948,7 +2057,7 @@
         "path_touched"
       ],
       "tags": [
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/assets/changelog-viewer.html"
@@ -1959,7 +2068,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T185831Z-67e8",
@@ -1972,7 +2085,7 @@
         "path_touched"
       ],
       "tags": [
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/assets/changelog-viewer.html"
@@ -1983,7 +2096,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T185841Z-6204",
@@ -1996,7 +2113,7 @@
         "path_touched"
       ],
       "tags": [
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/assets/changelog-viewer.html"
@@ -2007,7 +2124,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T185851Z-c2f5",
@@ -2020,7 +2141,7 @@
         "path_touched"
       ],
       "tags": [
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/assets/changelog-viewer.html"
@@ -2031,7 +2152,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T185854Z-839f",
@@ -2044,7 +2169,7 @@
         "path_touched"
       ],
       "tags": [
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/assets/changelog-viewer.html"
@@ -2055,7 +2180,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T185857Z-89d0",
@@ -2068,7 +2197,7 @@
         "path_touched"
       ],
       "tags": [
-        "python"
+        "ux"
       ],
       "paths": [
         "plugin/hooks/fm_common.py"
@@ -2079,7 +2208,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "session-hooks"
+      ]
     },
     {
       "event_id": "20260518T190038Z-1cfc",
@@ -2092,7 +2225,7 @@
         "path_touched"
       ],
       "tags": [
-        "html-css"
+        "ux"
       ],
       "paths": [
         "plugin/assets/changelog-viewer.html"
@@ -2103,7 +2236,11 @@
       "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "changelog-viewer"
+      ]
     },
     {
       "event_id": "20260518T190543Z-58de",
@@ -2115,9 +2252,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -2127,7 +2262,11 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "catch-up"
+      ]
     },
     {
       "event_id": "20260518T190548Z-8127",
@@ -2139,9 +2278,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -2151,7 +2288,11 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "dev-sync",
+        "catch-up"
+      ]
     },
     {
       "event_id": "20260518T190611Z-6caf",
@@ -2163,9 +2304,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -2175,7 +2314,11 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
     },
     {
       "event_id": "20260518T190615Z-5786",
@@ -2187,9 +2330,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -2199,7 +2340,11 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
     },
     {
       "event_id": "20260518T190624Z-8964",
@@ -2211,9 +2356,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -2223,7 +2366,11 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
     },
     {
       "event_id": "20260518T190758Z-b6cf",
@@ -2235,9 +2382,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -2247,7 +2392,11 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
     },
     {
       "event_id": "20260518T190803Z-a216",
@@ -2259,9 +2408,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "html-css"
-      ],
+      "tags": [],
       "paths": [
         "plugin/assets/changelog-viewer.html"
       ],
@@ -2271,7 +2418,11 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
     },
     {
       "event_id": "20260518T190810Z-2909",
@@ -2283,9 +2434,7 @@
       "kind": [
         "path_touched"
       ],
-      "tags": [
-        "python"
-      ],
+      "tags": [],
       "paths": [
         "plugin/hooks/fm_common.py"
       ],
@@ -2295,7 +2444,219 @@
       "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "hook"
+      "source": "hook",
+      "topic_tags": [
+        "session-hooks",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191108Z-c929",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191112Z-4b56",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191116Z-66ef",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191120Z-b541",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191126Z-ac34",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191141Z-eca9",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191146Z-0aa0",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
+    },
+    {
+      "event_id": "20260518T191151Z-91ec",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Polish Dev Sync: catch-up expanded by default, stats in header, inline âš",
+      "git_hash": "6e8800e468c66b9b55cff96f8c5e863f3f94af79",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook",
+      "topic_tags": [
+        "changelog-viewer",
+        "dev-sync"
+      ]
     },
     {
       "event_id": "fad7fe86bd01-plugin-core",
@@ -2327,8 +2688,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "documentation",
+        "image-catalog"
       ]
     },
     {
@@ -2352,8 +2716,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "plugin-init",
+        "documentation"
       ]
     },
     {
@@ -2377,8 +2744,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "whats-new",
+        "spec"
       ]
     },
     {
@@ -2402,8 +2772,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "testing",
+        "findings"
       ]
     },
     {
@@ -2426,7 +2799,10 @@
       "git_hash": "5c90910a3dbd6756b42ae5b965d663ade1594bf0",
       "confidence": "medium",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "repo-init"
+      ]
     },
     {
       "event_id": "49036feaf2d8-specs",
@@ -2465,8 +2841,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "testing",
+        "installer"
       ]
     },
     {
@@ -2489,8 +2868,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "python"
+      "tags": [],
+      "topic_tags": [
+        "installer",
+        "plugin-init"
       ]
     },
     {
@@ -2514,8 +2895,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "documentation",
+        "gitignore"
       ]
     },
     {
@@ -2538,7 +2922,10 @@
       "git_hash": "467a0fd75597af9af8c560249bdb535cf2a77266",
       "confidence": "medium",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "topic_tags": [
+        "gitignore"
+      ]
     },
     {
       "event_id": "304b840fdc59-cli",
@@ -2560,8 +2947,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "python"
+      "tags": [],
+      "topic_tags": [
+        "installer",
+        "session-hooks"
       ]
     },
     {
@@ -2585,8 +2974,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "testing",
+        "session-hooks"
       ]
     },
     {
@@ -2612,8 +3004,11 @@
       "source": "git-backfill",
       "tags": [
         "performance",
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "testing",
+        "performance"
       ]
     },
     {
@@ -2639,8 +3034,11 @@
       "review_status": "auto",
       "source": "git-backfill",
       "tags": [
-        "docs",
-        "markdown"
+        "docs"
+      ],
+      "topic_tags": [
+        "cross-platform",
+        "installer"
       ]
     },
     {
@@ -2663,8 +3061,10 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill",
-      "tags": [
-        "python"
+      "tags": [],
+      "topic_tags": [
+        "cross-platform",
+        "installer"
       ]
     }
   ]
@@ -2705,8 +3105,6 @@
     'security': 'quality', 'auth': 'quality', 'performance': 'quality',
     'error-handling': 'quality', 'logging': 'quality', 'accessibility': 'quality', 'ux': 'quality',
     'tests': 'process', 'docs': 'process', 'dependency': 'process', 'tooling': 'process', 'ci-cd': 'process',
-    'typescript': 'tech', 'python': 'tech', 'javascript': 'tech', 'html-css': 'tech',
-    'shell': 'tech', 'yaml': 'tech', 'sql': 'tech', 'markdown': 'tech',
   };
   const kindClass = {
     'new-feature': 'new-feature', 'bug-fix': 'bug-fix',
@@ -2715,7 +3113,7 @@
   };
 
   // ── Helpers ──────────────────────────────────────────────────────────
-  function tagCat(t) { return TAG_CATEGORIES[t] || 'tech'; }
+  function tagCat(t) { return TAG_CATEGORIES[t] || 'topic'; }
 
   function firstNameOnly(str) {
     const s = String(str || '').trim();
@@ -2748,15 +3146,16 @@
       const hay = [
         entry.summary || '', entry.feature_id || '', entry.feature_title || '',
         entry.git_author || '', entry.git_message || '', entry.jira_ticket || '',
-        (entry.kind || []).join(' '), (entry.paths || []).join(' '), (entry.tags || []).join(' '),
+        (entry.kind || []).join(' '), (entry.paths || []).join(' '),
+        (entry.tags || []).join(' '), (entry.topic_tags || []).join(' '),
       ].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     if (activeTags.size > 0) {
-      const et = new Set(entry.tags || []);
+      const allTags = new Set([...(entry.tags || []), ...(entry.topic_tags || [])]);
       const byCat = {};
       for (const t of activeTags) { const c = tagCat(t); (byCat[c] = byCat[c] || []).push(t); }
-      for (const cats of Object.values(byCat)) { if (!cats.some(t => et.has(t))) return false; }
+      for (const cats of Object.values(byCat)) { if (!cats.some(t => allTags.has(t))) return false; }
     }
     return true;
   }
@@ -2792,8 +3191,9 @@
       ? `<span class="author-chip" title="${escHtml(entry.git_author)}" style="color:${authorColor(entry.git_author)}">@${escHtml(firstNameOnly(entry.git_author))}</span>`
       : '';
 
-    const headerTagsHtml = (entry.tags || []).length > 0
-      ? `<span class="entry-header-tags">${(entry.tags || []).slice(0, 3).map(t =>
+    const visibleTags = [...(entry.tags || []).slice(0, 2), ...(entry.topic_tags || []).slice(0, 2)].slice(0, 3);
+    const headerTagsHtml = visibleTags.length > 0
+      ? `<span class="entry-header-tags">${visibleTags.map(t =>
           `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span>`
       : '';
 
@@ -2802,8 +3202,9 @@
     const gitHashHtml = (entry.git_hash && ctx !== 'product') ? `<div class="detail-row"><span class="detail-label">Commit</span><span class="detail-value mono">${escHtml(entry.git_hash.slice(0, 12))}</span></div>` : '';
     const pathsRowHtml = (pathsHtml && ctx !== 'product') ? `<div class="detail-row"><span class="detail-label">Files</span><span class="detail-value paths">${pathsHtml}</span></div>` : '';
     const jiraHtml = entry.jira_ticket ? `<div class="detail-row"><span class="detail-label">Jira</span><span class="detail-value mono">${escHtml(entry.jira_ticket)}</span></div>` : '';
-    const tagsHtml = (entry.tags || []).length > 0
-      ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="entry-tags">${(entry.tags || []).map(t => `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span></div>`
+    const allTagsForDetail = [...(entry.tags || []), ...(entry.topic_tags || [])];
+    const tagsHtml = allTagsForDetail.length > 0
+      ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="entry-tags">${allTagsForDetail.map(t => `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span></div>`
       : '';
     const crossNote = (isBoth && ctx === 'product') ? '<p class="cross-channel-note">Also in Developer channel</p>'
       : (isBoth && ctx === 'developer') ? '<p class="cross-channel-note">Also in Product channel</p>' : '';
@@ -3127,11 +3528,17 @@
 
   // ── Tag filter ────────────────────────────────────────────────────────
   function buildTagFilter() {
-    const counts = {};
-    for (const e of allEntries) for (const t of (e.tags || [])) counts[t] = (counts[t] || 0) + 1;
-    const cats = { impact: [], quality: [], process: [], tech: [] };
-    for (const [tag, count] of Object.entries(counts)) { const c = tagCat(tag); if (cats[c]) cats[c].push({ tag, count }); }
-    const labels = { impact: 'Impact', quality: 'Quality', process: 'Process', tech: 'Tech' };
+    const regexCounts = {}, topicCounts = {};
+    for (const e of allEntries) {
+      for (const t of (e.tags || []))       regexCounts[t] = (regexCounts[t] || 0) + 1;
+      for (const t of (e.topic_tags || [])) topicCounts[t]  = (topicCounts[t]  || 0) + 1;
+    }
+    const cats = { impact: [], quality: [], process: [] };
+    for (const [tag, count] of Object.entries(regexCounts)) {
+      const c = TAG_CATEGORIES[tag];
+      if (c && cats[c]) cats[c].push({ tag, count });
+    }
+    const labels = { impact: 'Impact', quality: 'Quality', process: 'Process' };
     let html = '';
     for (const [cat, tags] of Object.entries(cats)) {
       if (!tags.length) continue;
@@ -3140,6 +3547,13 @@
         `<button class="filter-chip ${cat}${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`
       ).join('');
       html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${labels[cat]}</span><div class="tag-chips-row">${chips}</div></div>`;
+    }
+    const topicTags = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
+    if (topicTags.length) {
+      const chips = topicTags.map(([tag, count]) =>
+        `<button class="filter-chip topic${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`
+      ).join('');
+      html += `<div class="tag-filter-row"><span class="cat-label topic">Topic</span><div class="tag-chips-row">${chips}</div></div>`;
     }
     document.getElementById('tag-filter-body').innerHTML = html;
     document.getElementById('tag-filter-body').querySelectorAll('.filter-chip').forEach(btn => {

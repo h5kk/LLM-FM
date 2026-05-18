@@ -143,15 +143,14 @@ def log_error(message):
 _TAGS_IMPACT  = ["breaking-change", "api-change", "schema-change", "config-change", "data-migration"]
 _TAGS_QUALITY = ["security", "auth", "performance", "error-handling", "logging", "accessibility", "ux"]
 _TAGS_PROCESS = ["tests", "docs", "dependency", "tooling", "ci-cd"]
-_TAGS_TECH    = ["typescript", "python", "javascript", "html-css", "shell", "yaml", "sql", "markdown"]
-_TAG_PRIORITY = [_TAGS_IMPACT, _TAGS_QUALITY, _TAGS_PROCESS, _TAGS_TECH]
+_TAG_PRIORITY = [_TAGS_IMPACT, _TAGS_QUALITY, _TAGS_PROCESS]
 _TAG_LIMIT    = 5
 
 
 def _infer_tags(paths, message, kind):
-    """Return up to 5 canonical tags inferred from file paths, commit message, and kind.
+    """Return up to 5 canonical Impact/Quality/Process tags inferred from paths and message.
 
-    Priority order: Impact > Quality > Process > Tech.
+    Tech/language tags removed — use generate_topic_tags_batch() for semantic topic tags.
     Safe with None/empty inputs — never raises.
     """
     msg    = (message or "").lower()
@@ -159,7 +158,6 @@ def _infer_tags(paths, message, kind):
     tags   = set()
     npaths = [p.replace("\\", "/").lower() for p in (paths or [])]
     bases  = [p.rsplit("/", 1)[-1] for p in npaths]
-    exts   = {b.rsplit(".", 1)[-1] for b in bases if "." in b}
 
     # ── Impact ────────────────────────────────────────────────────────────────
     if re.search(r'\bbreaking\b|\bBREAKING\b|\bincompatible\b|\bdeprecated\b', raw):
@@ -222,16 +220,6 @@ def _infer_tags(paths, message, kind):
     ):
         tags.add("tooling")
 
-    # ── Tech (file extensions) ────────────────────────────────────────────────
-    if exts & {"ts", "tsx"}:                    tags.add("typescript")
-    if "py" in exts:                            tags.add("python")
-    if exts & {"js", "jsx"}:                   tags.add("javascript")
-    if exts & {"html", "css", "scss", "less"}: tags.add("html-css")
-    if exts & {"sh", "bash", "zsh"}:           tags.add("shell")
-    if exts & {"yaml", "yml"}:                 tags.add("yaml")
-    if "sql" in exts:                          tags.add("sql")
-    if exts & {"md", "rst"}:                   tags.add("markdown")
-
     # ── Cap at 5, honouring priority order ───────────────────────────────────
     result = []
     for category in _TAG_PRIORITY:
@@ -243,7 +231,89 @@ def _infer_tags(paths, message, kind):
     return result
 
 
-_VIEWER_VERSION = 7  # increment when the viewer template gets significant UI changes
+_TOPIC_TAG_RE = re.compile(r'^[a-z][a-z0-9-]{0,29}$')
+
+
+def _build_topic_prompt(entries):
+    """Build a batched prompt for generating semantic topic tags.
+
+    Uses numeric indices (0, 1, 2 ...) to avoid event_id format issues.
+    Each entry needs: feature_id, paths, git_message.
+    """
+    lines = [
+        "You are tagging software changelog entries with 1-3 semantic topic tags.",
+        "Rules:",
+        "- 1 to 3 tags per entry, lowercase kebab-case, 1-3 words each",
+        "- Tags describe the SUBSYSTEM or CONCEPT being worked on",
+        "  (e.g. session-hooks, changelog-viewer, tag-system, plugin-init, config-parser)",
+        "- NO language/tech tags (no python, typescript, html, yaml, shell, etc.)",
+        "- NO generic verbs (no update, fix, refactor, change, add)",
+        "- Output EXACTLY one line per entry: <index>: tag-one, tag-two",
+        "- Only output those lines, nothing else",
+        "",
+    ]
+    for i, e in enumerate(entries):
+        fid = e.get("feature_id") or "unmapped"
+        msg = (e.get("git_message") or "").strip()[:120]
+        paths_str = ", ".join((e.get("paths") or [])[:5])
+        lines.append(f"---")
+        lines.append(f"{i}: feature={fid} | files={paths_str} | msg={msg}")
+    return "\n".join(lines)
+
+
+def _parse_topic_tags(text, count):
+    """Parse lines like '0: tag-one, tag-two' from LLM output.
+
+    Returns a list of tag lists indexed 0..count-1.
+    """
+    result = [[] for _ in range(count)]
+    for line in (text or "").splitlines():
+        m = re.match(r'^(\d+):\s*(.+)$', line.strip())
+        if not m:
+            continue
+        idx = int(m.group(1))
+        if idx >= count:
+            continue
+        parts = [p.strip().lower() for p in m.group(2).split(",")]
+        result[idx] = [p for p in parts if _TOPIC_TAG_RE.match(p)][:3]
+    return result
+
+
+def generate_topic_tags_batch(entries, batch_size=15, timeout=45):
+    """Generate semantic topic tags for a list of changelog entries via claude CLI.
+
+    Returns a list of tag lists aligned with the input entries list.
+    Falls back silently to empty lists if claude is unavailable.
+    Never raises.
+    """
+    import shutil
+    result = [[] for _ in entries]
+    if not shutil.which("claude"):
+        return result
+
+    def _chunks(lst, n):
+        for i in range(0, len(lst), n):
+            yield lst[i:i + n]
+
+    offset = 0
+    for batch in _chunks(entries, batch_size):
+        prompt = _build_topic_prompt(batch)
+        try:
+            r = subprocess.run(
+                ["claude", "-p", prompt, "--output-format", "text"],
+                capture_output=True, text=True, timeout=timeout,
+            )
+            if r.returncode == 0:
+                parsed = _parse_topic_tags(r.stdout, len(batch))
+                for j, tags in enumerate(parsed):
+                    result[offset + j] = tags
+        except (subprocess.TimeoutExpired, OSError, Exception):
+            pass
+        offset += len(batch)
+    return result
+
+
+_VIEWER_VERSION = 8  # increment when the viewer template gets significant UI changes
 
 
 def _check_viewer_update(docs_root):
