@@ -1,9 +1,9 @@
 ---
 description: >
   Initializes Feature Memory in the current project. Creates the docs structure,
-  config, and event log. Scans the codebase to detect features and creates initial
-  feature pages. Use when the user says "initialize feature memory", "set up FM",
-  "bootstrap docs", or "scan and create feature pages".
+  config, changelog viewer, and event log. Scans the codebase to detect features
+  and creates initial feature pages. Use when the user says "initialize feature
+  memory", "set up FM", "bootstrap docs", or "scan and create feature pages".
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 ---
 
@@ -35,6 +35,12 @@ updated: "YYYY-MM-DD"
 
 | Feature | Summary | Status | Review | Updated |
 |---------|---------|--------|--------|---------|
+
+## Relationship Diagram
+
+```mermaid
+graph TD
+```
 ```
 
 ### `docs/feature-memory/recent.md`
@@ -64,8 +70,21 @@ updated: "YYYY-MM-DD"
 ```
 
 ### `docs/feature-memory/features/` (empty directory — use .gitkeep)
-
 ### `docs/feature-memory/reports/` (empty directory — use .gitkeep)
+### `docs/feature-memory/changelogs/` (empty directory)
+
+### `docs/feature-memory/changelogs/changelog.json`
+```json
+{
+  "schema_version": 2,
+  "generated": "YYYY-MM-DDTHH:MM:SSZ",
+  "entries": []
+}
+```
+
+### `docs/feature-memory/changelog-viewer.html`
+
+Copy the viewer template from the plugin assets. If the plugin root is available via `${CLAUDE_PLUGIN_ROOT}`, copy from `${CLAUDE_PLUGIN_ROOT}/assets/changelog-viewer.html`. Otherwise create a minimal placeholder with a note to copy the template.
 
 ### `.feature-memory/config.yaml`
 ```yaml
@@ -108,15 +127,20 @@ Identify features by heuristic:
 - Each route file that groups endpoints is likely a feature
 - Group related tests with their source directories
 
-Present the proposed features to the user as a list:
-- Feature ID (slug), title, source globs
-- Ask: "Should I create pages for these? Add or remove any?"
+For each proposed feature, estimate its size (number of source files). Mark features with 10+ source files as candidates for split mode.
+
+Present the proposed features to the user:
+- Feature ID (slug), title, source globs, estimated file count
+- For large features: "This feature has N source files. Use split mode (sub-folder with product/engineering/changelog pages)?"
+- Ask: "Should I create pages for these? Add or remove any? Mark any as split mode?"
 
 **Wait for confirmation before proceeding.**
 
 ## Step 4: Create feature pages
 
-For each confirmed feature, create `docs/feature-memory/features/{id}.md`:
+### Small mode (default): single file
+
+For each confirmed small-mode feature, create `docs/feature-memory/features/{id}.md`:
 
 ```markdown
 ---
@@ -149,6 +173,92 @@ test_count: <N>
 ## Relationships
 
 - <links to related features via [[feature-id]]>
+  - Use `[[feature-id]]` for siblings
+  - Use `[[feature-id|parent]]` for parent features
+  - Use `[[feature-id|child]]` for child features
+  - Use `[[feature-id|reuses]]` for shared components
+
+## Changelog
+
+### Developer
+
+- YYYY-MM-DD: Initial documentation created
+
+### Product
+
+- YYYY-MM-DD: Feature documented
+```
+
+### Split mode: sub-folder
+
+For each confirmed split-mode feature, create `docs/feature-memory/features/{id}/`:
+
+**`features/{id}/index.md`** (navigation hub):
+```markdown
+---
+title: <Feature Title>
+id: <feature-id>
+type: feature
+status: active
+confidence: medium
+review_status: needs_review
+updated: "YYYY-MM-DD"
+---
+
+# <Feature Title>
+
+<One-sentence summary.>
+
+- [Product summary](product.md)
+- [Engineering summary](engineering.md)
+- [Changelog](changelog.md)
+
+## Relationships
+
+- <[[feature-id]] links>
+```
+
+**`features/{id}/product.md`** (product audience):
+```markdown
+---
+type: feature-section
+section: product
+parent_feature: <feature-id>
+audience: product
+updated: "YYYY-MM-DD"
+---
+
+# <Feature Title> — Product Summary
+
+## What it does
+
+<One paragraph for non-engineers.>
+
+## Changelog
+
+- YYYY-MM-DD: Initial documentation created
+```
+
+**`features/{id}/engineering.md`** (engineering audience):
+```markdown
+---
+type: feature-section
+section: engineering
+parent_feature: <feature-id>
+audience: developer
+updated: "YYYY-MM-DD"
+---
+
+# <Feature Title> — Engineering Summary
+
+## Overview
+
+<One paragraph: key files, patterns, dependencies. Cite paths.>
+
+## Source map
+
+| Path | Role | Notes |
+|------|------|-------|
 
 ## Changelog
 
@@ -159,14 +269,18 @@ Read key source files (first 80 lines each) to write grounded summaries. Cite ac
 
 ## Step 5: Update config, index, and logs
 
-1. **config.yaml**: Add each feature under `features:` with its globs:
+1. **config.yaml**: Add each feature under `features:` with its globs. For split-mode features, add `mode: split`:
    ```yaml
    features:
      auth:
+       mode: split
        globs:
          - "src/auth/**"
          - "routes/auth.*"
          - "tests/test_auth.*"
+     billing:
+       globs:
+         - "src/billing/**"
    ```
 
 2. **index.md**: Add a row per feature to the table.
@@ -175,9 +289,22 @@ Read key source files (first 80 lines each) to write grounded summaries. Cite ac
 
 4. **changelog.md**: Add initialization entries per feature.
 
-## Step 6: Report
+## Step 6: Generate relationship diagram
+
+After all feature pages are created, generate the Mermaid diagram in `docs/feature-memory/index.md`.
+
+Parse each feature page's `## Relationships` section and extract `[[feature-id]]` links:
+- `[[id]]` → sibling edge: `A --- B`
+- `[[id|parent]]` → parent edge: `id --> A` (parent points to child)
+- `[[id|child]]` → child edge: `A --> id`
+- `[[id|reuses]]` → reuse edge: `A -.-> id`
+
+Replace the `graph TD` block in `index.md` with the compiled diagram. If there are no relationships, leave the block empty with a comment.
+
+## Step 7: Report
 
 Summarize what was created:
-- Number of features documented
+- Number of features documented (N small, M split)
 - Files created
+- Changelog viewer available at `docs/feature-memory/changelog-viewer.html`
 - Suggest: "Review pages and bump confidence to 'high' after verifying claims."

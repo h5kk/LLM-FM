@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Memory Changelog</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3348;
+      --accent: #6366f1;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --dev-color: #6366f1;
+      --prod-color: #10b981;
+      --both-color: #f59e0b;
+      --tag-bg: #1e2235;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f8f9fb;
+      --surface: #ffffff;
+      --surface2: #f1f3f7;
+      --border: #e2e6ee;
+      --accent: #5254cc;
+      --text: #1a1f2e;
+      --muted: #7a8499;
+      --dev-color: #5254cc;
+      --prod-color: #0d9e6e;
+      --both-color: #d97706;
+      --tag-bg: #eef0f6;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px 0;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #search {
+      flex: 1;
+      min-width: 200px;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 7px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--muted); }
+
+    .tabs {
+      display: flex;
+      gap: 2px;
+      padding-bottom: 0;
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 14px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .tab[data-audience="product"].active { border-bottom-color: var(--prod-color); }
+    .tab[data-audience="developer"].active { border-bottom-color: var(--dev-color); }
+
+    #count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+      align-self: center;
+      padding-bottom: 10px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 24px 64px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 64px 0;
+      font-size: 15px;
+    }
+
+    .date-group { margin-bottom: 32px; }
+
+    .date-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .date-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .entry {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .entry:hover { border-color: var(--accent); }
+
+    .entry-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .audience-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .audience-dot.developer { background: var(--dev-color); }
+    .audience-dot.product   { background: var(--prod-color); }
+    .audience-dot.both      { background: var(--both-color); }
+
+    .feature-badge {
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 7px;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .kind-tag {
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 4px;
+      padding: 1px 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .kind-tag.new-feature   { background: #0d3321; color: #34d399; }
+    .kind-tag.bug-fix       { background: #3b0f0f; color: #f87171; }
+    .kind-tag.behavior-change { background: #1e1b3a; color: #a78bfa; }
+    .kind-tag.refactor      { background: #1a2030; color: #94a3b8; }
+    .kind-tag.path-touched  { background: #1a1f2e; color: #64748b; }
+    .kind-tag.default       { background: var(--tag-bg); color: var(--muted); }
+
+    :root[data-theme="light"] .kind-tag.new-feature   { background: #d1fae5; color: #065f46; }
+    :root[data-theme="light"] .kind-tag.bug-fix        { background: #fee2e2; color: #991b1b; }
+    :root[data-theme="light"] .kind-tag.behavior-change { background: #ede9fe; color: #4c1d95; }
+    :root[data-theme="light"] .kind-tag.refactor       { background: #e2e8f0; color: #475569; }
+    :root[data-theme="light"] .kind-tag.path-touched   { background: #f1f5f9; color: #64748b; }
+
+    :root[data-theme="light"] .confidence-badge.high   { background: #d1fae5; color: #065f46; }
+    :root[data-theme="light"] .confidence-badge.medium { background: #fef9c3; color: #854d0e; }
+    :root[data-theme="light"] .confidence-badge.low    { background: #fee2e2; color: #991b1b; }
+    :root[data-theme="light"] .confidence-badge.auto   { background: var(--tag-bg); color: var(--muted); }
+
+    .summary {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .author-chip {
+      font-size: 11px;
+      background: var(--tag-bg);
+      border-radius: 12px;
+      padding: 2px 8px;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .jira-chip {
+      font-size: 10px;
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      background: #1e2a3a;
+      border: 1px solid #2d4a6a;
+      border-radius: 3px;
+      padding: 1px 6px;
+      color: #60a5fa;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    :root[data-theme="light"] .jira-chip {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1d4ed8;
+    }
+    .detail-value.mono.jira-ticket { color: #60a5fa; }
+
+    .expand-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 4px;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .entry.expanded .expand-btn { transform: rotate(180deg); }
+
+    .entry-detail {
+      border-top: 1px solid var(--border);
+      padding: 12px 14px;
+      background: var(--surface2);
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .entry.expanded .entry-detail { display: flex; }
+
+    .detail-row {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .detail-label {
+      color: var(--muted);
+      min-width: 90px;
+      flex-shrink: 0;
+    }
+    .detail-value {
+      color: var(--text);
+      word-break: break-all;
+    }
+    .detail-value.mono {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .detail-value.paths {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .path-chip {
+      background: var(--tag-bg);
+      border-radius: 3px;
+      padding: 1px 6px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .confidence-badge {
+      font-size: 10px;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .confidence-badge.high   { background: #0d3321; color: #34d399; }
+    .confidence-badge.medium { background: #2d2000; color: #fbbf24; }
+    .confidence-badge.low    { background: #3b0f0f; color: #f87171; }
+    .confidence-badge.auto   { background: var(--tag-bg); color: var(--muted); }
+
+    #theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      padding: 5px 9px;
+      flex-shrink: 0;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    #theme-toggle:hover { color: var(--text); border-color: var(--accent); }
+
+    @media (max-width: 600px) {
+      header { padding: 12px 16px 0; }
+      main { padding: 16px 16px 48px; }
+      .kind-tag, .feature-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <h1>Feature Memory Changelog</h1>
+    <span class="subtitle" id="generated-label"></span>
+    <input type="search" id="search" placeholder="Search features, authors, changes…" autocomplete="off">
+    <button id="theme-toggle" title="Toggle light/dark mode">☀︎</button>
+    <span id="count"></span>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-audience="all">All</button>
+    <button class="tab" data-audience="product">Product</button>
+    <button class="tab" data-audience="developer">Developer</button>
+  </div>
+</header>
+
+<main id="timeline"></main>
+
+<script id="changelog-data" type="application/json">
+{
+  "schema_version": 2,
+  "generated": "2026-05-18T21:44:00+00:00",
+  "entries": [
+    {
+      "event_id": "20260518T214400Z-a1b2",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "Hooks",
+      "audience": "developer",
+      "summary": "Added get_feature_doc_path() and get_git_info() to fm_common.py",
+      "kind": ["new-feature"],
+      "paths": ["plugin/hooks/fm_common.py"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add sub-folder hierarchy, Mermaid diagram, dual changelogs",
+      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T214401Z-c3d4",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "Hooks",
+      "audience": "developer",
+      "summary": "SessionStart now archives events.jsonl before clearing to prevent data loss on session resume",
+      "kind": ["bug-fix"],
+      "paths": ["plugin/hooks/claude_session_start.py"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix: archive events before SessionStart clears log",
+      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T214402Z-e5f6",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "Hooks",
+      "audience": "both",
+      "summary": "Stop hook now captures git author and compiles changelog.json automatically at session end",
+      "kind": ["new-feature"],
+      "paths": ["plugin/hooks/claude_stop.py"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Stop hook: compile changelog.json from JSONL events with git attribution",
+      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T214403Z-g7h8",
+      "date": "2026-05-18",
+      "feature_id": "skills",
+      "feature_title": "Skills",
+      "audience": "both",
+      "summary": "Init skill now supports split mode — large features get sub-folder with product/engineering/changelog pages",
+      "kind": ["new-feature"],
+      "paths": ["plugin/skills/feature-memory-init/SKILL.md"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add split mode, Mermaid diagram generation, and changelog viewer to init skill",
+      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T214404Z-i9j0",
+      "date": "2026-05-18",
+      "feature_id": "skills",
+      "feature_title": "Skills",
+      "audience": "developer",
+      "summary": "Maintainer skill routes updates to product.md or engineering.md in split mode",
+      "kind": ["behavior-change"],
+      "paths": ["plugin/skills/feature-memory/SKILL.md"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Maintainer: split mode routing + audience-tagged changelog entries",
+      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T214405Z-k1l2",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "Plugin Core",
+      "audience": "product",
+      "summary": "Plugin version bumped to 0.2.0 with dual changelog viewer, relationship diagram, and split-mode support",
+      "kind": ["new-feature"],
+      "paths": ["plugin/.claude-plugin/plugin.json"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Bump plugin to v0.2.0",
+      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260517T100000Z-m3n4",
+      "date": "2026-05-17",
+      "feature_id": "plugin-core",
+      "feature_title": "Plugin Core",
+      "audience": "product",
+      "summary": "Plugin published to h5kk marketplace with install instructions in README",
+      "kind": ["new-feature"],
+      "paths": ["README.md", "plugin/.claude-plugin/plugin.json"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add plugin install instructions to README",
+      "git_hash": "b2eea5b",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260517T090000Z-o5p6",
+      "date": "2026-05-17",
+      "feature_id": "skills",
+      "feature_title": "Skills",
+      "audience": "both",
+      "summary": "Replaced fm_init.py script with init skill — no more manual Python script, everything runs through Claude",
+      "kind": ["behavior-change", "refactor"],
+      "paths": ["plugin/skills/feature-memory-init/SKILL.md", "fm_init.py"],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Replace fm_init.py workflow with init skill",
+      "git_hash": "73cd33c",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  const data = JSON.parse(document.getElementById('changelog-data').textContent || '{}');
+  const entries = Array.isArray(data.entries) ? data.entries : [];
+
+  if (data.generated) {
+    const d = new Date(data.generated);
+    document.getElementById('generated-label').textContent =
+      'Updated ' + d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  let activeAudience = 'all';
+  let searchQuery = '';
+
+  const kindClass = {
+    'new-feature': 'new-feature',
+    'bug-fix': 'bug-fix',
+    'behavior-change': 'behavior-change',
+    'refactor': 'refactor',
+    'path_touched': 'path-touched',
+    'path-touched': 'path-touched',
+  };
+
+  function getKindClass(kind) {
+    return kindClass[kind] || 'default';
+  }
+
+  function audienceClass(a) {
+    if (a === 'both') return 'both';
+    return a === 'product' ? 'product' : 'developer';
+  }
+
+  function matchesFilter(entry) {
+    if (activeAudience !== 'all') {
+      const a = entry.audience || 'developer';
+      if (a !== activeAudience && a !== 'both') return false;
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const haystack = [
+        entry.summary || '',
+        entry.feature_id || '',
+        entry.feature_title || '',
+        entry.git_author || '',
+        entry.git_message || '',
+        entry.jira_ticket || '',
+        (entry.kind || []).join(' '),
+        (entry.paths || []).join(' '),
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  }
+
+  function escHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function renderEntry(entry) {
+    const kinds = Array.isArray(entry.kind) ? entry.kind : [];
+    const primaryKind = kinds[0] || 'path_touched';
+    const aud = entry.audience || 'developer';
+    const conf = entry.confidence || 'auto';
+
+    const kindTagsHtml = kinds.slice(0, 2).map(k =>
+      `<span class="kind-tag ${getKindClass(k)}">${escHtml(k.replace(/-/g, ' '))}</span>`
+    ).join('');
+
+    const authorHtml = entry.git_author
+      ? `<span class="author-chip">@${escHtml(entry.git_author)}</span>`
+      : '';
+
+    const pathsHtml = (entry.paths || []).map(p =>
+      `<span class="path-chip">${escHtml(p)}</span>`
+    ).join('');
+
+    const gitMsgHtml = entry.git_message
+      ? `<div class="detail-row">
+           <span class="detail-label">Git message</span>
+           <span class="detail-value">${escHtml(entry.git_message)}</span>
+         </div>`
+      : '';
+
+    const gitHashHtml = entry.git_hash
+      ? `<div class="detail-row">
+           <span class="detail-label">Commit</span>
+           <span class="detail-value mono">${escHtml(entry.git_hash.slice(0, 12))}</span>
+         </div>`
+      : '';
+
+    const pathsRowHtml = pathsHtml
+      ? `<div class="detail-row">
+           <span class="detail-label">Files</span>
+           <span class="detail-value paths">${pathsHtml}</span>
+         </div>`
+      : '';
+
+    const jiraHtml = entry.jira_ticket
+      ? `<div class="detail-row">
+           <span class="detail-label">Jira</span>
+           <span class="detail-value mono jira-ticket">${escHtml(entry.jira_ticket)}</span>
+         </div>`
+      : '';
+
+    return `
+      <article class="entry" data-audience="${escHtml(aud)}" data-id="${escHtml(entry.event_id || '')}">
+        <div class="entry-header" onclick="toggleEntry(this.parentElement)">
+          <span class="audience-dot ${audienceClass(aud)}"></span>
+          ${entry.feature_id ? `<span class="feature-badge">${escHtml(entry.feature_id)}</span>` : ''}
+          ${kindTagsHtml}
+          <span class="summary" title="${escHtml(entry.summary)}">${escHtml(entry.summary)}</span>
+          ${entry.jira_ticket ? `<span class="jira-chip">${escHtml(entry.jira_ticket)}</span>` : ''}
+          ${authorHtml}
+          <button class="expand-btn" title="Expand">▼</button>
+        </div>
+        <div class="entry-detail">
+          ${gitMsgHtml}
+          ${jiraHtml}
+          ${pathsRowHtml}
+          ${gitHashHtml}
+          <div class="detail-row">
+            <span class="detail-label">Audience</span>
+            <span class="detail-value">${escHtml(aud)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Confidence</span>
+            <span class="confidence-badge ${escHtml(conf)}">${escHtml(conf)}</span>
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function render() {
+    const timeline = document.getElementById('timeline');
+    const filtered = entries.filter(matchesFilter);
+
+    document.getElementById('count').textContent =
+      filtered.length + ' of ' + entries.length + ' entries';
+
+    if (filtered.length === 0) {
+      timeline.innerHTML = '<div class="empty">No entries match your search.</div>';
+      return;
+    }
+
+    // Group by date
+    const groups = {};
+    for (const entry of filtered) {
+      const date = entry.date || 'unknown';
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(entry);
+    }
+
+    const sortedDates = Object.keys(groups).sort().reverse();
+    const html = sortedDates.map(date => {
+      const label = date === 'unknown' ? 'Unknown date' : formatDate(date);
+      const entriesHtml = groups[date].map(renderEntry).join('');
+      return `<section class="date-group">
+        <h2 class="date-label">${label}</h2>
+        ${entriesHtml}
+      </section>`;
+    }).join('');
+
+    timeline.innerHTML = html;
+  }
+
+  function formatDate(iso) {
+    try {
+      const d = new Date(iso + 'T12:00:00Z');
+      return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  window.toggleEntry = function (el) {
+    el.classList.toggle('expanded');
+  };
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeAudience = tab.dataset.audience;
+      render();
+    });
+  });
+
+  // Search
+  let searchTimer;
+  document.getElementById('search').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      render();
+    }, 150);
+  });
+
+  render();
+
+  // Light/dark toggle
+  const root = document.documentElement;
+  const toggleBtn = document.getElementById('theme-toggle');
+  const saved = localStorage.getItem('fm-theme');
+  if (saved === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.textContent = '☾'; }
+
+  toggleBtn.addEventListener('click', () => {
+    const isLight = root.getAttribute('data-theme') === 'light';
+    root.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    toggleBtn.textContent = isLight ? '☀︎' : '☾';
+    localStorage.setItem('fm-theme', isLight ? 'dark' : 'light');
+  });
+})();
+</script>
+</body>
+</html>

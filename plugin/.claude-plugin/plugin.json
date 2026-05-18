@@ -1,7 +1,7 @@
 {
   "name": "feature-memory",
-  "version": "0.1.0",
-  "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, changelogs, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
+  "version": "0.2.0",
+  "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, dual developer+product changelogs, relationship diagrams, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
   "author": {
     "name": "Hanny Noueilaty",
     "url": "https://github.com/h5kk"

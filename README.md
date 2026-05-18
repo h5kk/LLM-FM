@@ -27,27 +27,69 @@ The agent scaffolds the docs structure, scans your codebase, proposes features, 
 
 ```
 docs/feature-memory/
-  index.md              # feature table: title, status, one-liner
-  recent.md             # last 5 days of activity
-  changelog.md          # append-only global log
+  index.md                    # feature table + auto-generated Mermaid relationship diagram
+  recent.md                   # last 5 days of activity
+  changelog.md                # append-only global log
+  changelog-viewer.html       # interactive changelog browser (open in any browser)
   features/
-    auth.md             # one page per feature
-    billing.md
+    auth/                     # large feature — split mode
+      index.md                # navigation hub
+      product.md              # product audience: what it does for users
+      engineering.md          # engineering audience: files, routes, patterns
+    billing.md                # small feature — single file
+  changelogs/
+    changelog.json            # compiled changelog data (loaded by viewer)
+  reports/                    # lint reports, reorg proposals
 
 .feature-memory/
-  config.yaml           # globs, route patterns, policies
-  events.jsonl          # hook event log
+  config.yaml                 # globs, route patterns, mode (small | split | mixed)
+  events.jsonl                # hook event log (current session)
+  events-{session-id}.jsonl   # archived per-session logs
 ```
 
 Three hooks wire into Claude Code's lifecycle:
 
 | Hook | When | What it does |
 |------|------|--------------|
-| **SessionStart** | Agent opens a session | Injects feature list, recent activity, and FM rules into context |
-| **PostToolUse** | After every Edit/Write | Logs the edit, reminds agent which feature docs to update |
-| **Stop** | Session ends | Reports features with source changes but no doc updates |
+| **SessionStart** | Agent opens a session | Archives previous session events, injects feature list + recent activity |
+| **PostToolUse** | After every Edit/Write | Logs the edit, reminds agent which feature docs to update (split-mode aware) |
+| **Stop** | Session ends | Captures git author, compiles `changelog.json`, reports features with missing doc updates |
 
 A companion **skill** (`feature-memory`) gives the agent a structured workflow for reading and updating feature pages, changelogs, and the index.
+
+### Dual Developer + Product Changelogs
+
+Every changelog entry is tagged with an audience:
+
+- **Developer** — internal changes: refactors, dependency bumps, test changes
+- **Product** — user-facing changes: new behavior, UI changes, API contract changes
+- **Both** — when the change matters to both audiences (default)
+
+The **Changelog Viewer** (`docs/feature-memory/changelog-viewer.html`) renders these as a searchable timeline:
+- Tabs: **All** | **Product** | **Developer**
+- Search by feature, author, summary, or file path
+- Timeline grouped by date with expandable entries
+- Git author attribution on every entry (captured automatically at session end)
+- Works offline — data is embedded inline, no server required
+
+### Large Feature Support (Split Mode)
+
+Set `mode: split` for a feature to get a sub-folder structure instead of a single file:
+
+```yaml
+# .feature-memory/config.yaml
+features:
+  auth:
+    mode: split        # creates features/auth/{index,product,engineering}.md
+    globs:
+      - "src/auth/**"
+```
+
+Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc updates correctly without reading the parent file.
+
+### Relationship Diagram
+
+`docs/feature-memory/index.md` includes an auto-generated Mermaid diagram compiled from `[[feature-id]]` relationship links across all feature pages. The maintainer skill regenerates it when relationships change.
 
 ![The Pipeline — two agent roles consume and maintain compiled docs](images/v2_ThePipeline.png)
 
