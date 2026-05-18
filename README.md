@@ -124,28 +124,16 @@ Key numbers:
 - Stop hook: 50ms for 1000 events
 - SessionStart context: ~2KB for 8 features
 
-## Concept Gists
-
-Three progressively detailed concept documents capture the design thinking:
-
-| File | Audience |
-|------|----------|
-| `feature-memory-gist-minimal.md` | 2-minute overview |
-| `feature-memory-gist.md` | Full concept with examples |
-| `feature-memory-gist-ar.md` | Architecture review version |
-
 ## Project Structure
 
 ```
 fm_init.py                          # Zero-dependency bootstrapper
+images/                             # Architectural diagrams and value-prop visuals
 docs/
   specs/                            # Implementation specifications (00-11)
   RepoTest_Iteration1/              # Phase 0 test results and findings
+  image-catalog.md                  # Image descriptions and alt text
   reviewer-feedback-plan.md         # Review protocol
-feature-memory-gist.md              # Concept document (full)
-feature-memory-gist-minimal.md      # Concept document (brief)
-feature-memory-gist-ar.md           # Concept document (architecture review)
-feature-memory-architecture-plan.md # Architecture plan (gitignored, local ref)
 ```
 
 ## License

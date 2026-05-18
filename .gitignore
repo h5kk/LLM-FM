@@ -1,4 +1,7 @@
 # Draft design documents (local reference, not for commit)
+feature-memory-gist.md
+feature-memory-gist-minimal.md
+feature-memory-gist-ar.md
 feature-memory-architecture-plan.md
 
 # Feature Memory runtime state (rebuild from markdown)
