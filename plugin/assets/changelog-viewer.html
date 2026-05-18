@@ -1,4 +1,4 @@
-<!-- fm-viewer-version: 8 -->
+<!-- fm-viewer-version: 9 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,13 +74,12 @@
     #search {
       flex: 1;
       min-width: 160px;
-      max-width: 340px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       color: var(--text);
-      padding: 6px 12px;
-      font-size: 13px;
+      padding: 5px 12px;
+      font-size: 12px;
       outline: none;
       transition: border-color 0.15s;
     }
@@ -200,28 +199,29 @@
       transition: color 0.15s, border-color 0.15s;
     }
     .toolbar-btn:hover { color: var(--text); border-color: var(--accent); }
-    .toolbar-btn.danger:hover { color: #f87171; border-color: #f87171; }
+    .toolbar-btn.danger-solid { color: #f87171; border-color: #7f1d1d; }
+    .toolbar-btn.danger-solid:hover { color: #fca5a5; border-color: #f87171; }
     .toolbar-btn.flash { color: var(--prod-color); border-color: var(--prod-color); }
 
-    .copy-json-group {
-      display: flex; align-items: stretch;
-      border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
-      transition: border-color 0.15s;
+    .toolbar-right { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+
+    .copy-dropdown-wrap { position: relative; }
+    .copy-dropdown-menu {
+      position: absolute; top: calc(100% + 4px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      min-width: 168px; z-index: 100;
     }
-    .copy-json-group:focus-within, .copy-json-group:hover { border-color: var(--accent); }
-    .copy-json-select {
-      background: var(--surface); border: none; border-right: 1px solid var(--border);
-      color: var(--muted); font-size: 12px; font-family: var(--font); padding: 5px 8px;
-      cursor: pointer; outline: none;
+    .copy-dropdown-menu button {
+      display: block; width: 100%;
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 12px; font-family: var(--font);
+      padding: 7px 12px; text-align: left; white-space: nowrap;
+      transition: color 0.15s, background-color 0.15s;
     }
-    .copy-json-select:hover { color: var(--text); }
-    .copy-json-btn {
-      background: var(--surface); border: none; color: var(--muted); cursor: pointer;
-      font-size: 12px; font-family: var(--font); padding: 5px 10px; white-space: nowrap;
-      transition: color 0.15s;
-    }
-    .copy-json-btn:hover { color: var(--text); }
-    .copy-json-btn.flash { color: var(--prod-color); }
+    .copy-dropdown-menu button:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    :root[data-theme="light"] .copy-dropdown-menu button:hover { background: rgba(0,0,0,0.05); }
+    .copy-dropdown-menu button.flash { color: var(--prod-color); }
 
     /* ── Clear banner ─────────────────────────────────────────────────── */
     #clear-banner {
@@ -625,9 +625,6 @@
   <div class="header-row">
     <h1>Feature Memory Changelog</h1>
     <span class="subtitle" id="generated-label"></span>
-    <input type="search" id="search" placeholder="Search features, authors, tags…" autocomplete="off">
-    <button class="hdr-btn" id="tag-filter-toggle">🏷 Tags</button>
-    <span id="active-tag-summary" style="display:none"></span>
     <button class="hdr-btn" id="theme-toggle" title="Toggle light/dark">☀︎</button>
     <span id="count"></span>
   </div>
@@ -645,16 +642,21 @@
   </div>
   <div class="toolbar">
     <button class="toolbar-btn" id="expand-all-btn">Expand All</button>
-    <div class="copy-json-group">
-      <select class="copy-json-select" id="copy-json-mode">
-        <option value="filtered">Copy filtered JSON</option>
-        <option value="all">Copy all JSON</option>
-      </select>
-      <button class="copy-json-btn" id="copy-json-btn">Copy JSON</button>
+    <button class="hdr-btn" id="tag-filter-toggle">🏷 Tags</button>
+    <span id="active-tag-summary" style="display:none"></span>
+    <input type="search" id="search" placeholder="Search features, authors, tags…" autocomplete="off">
+    <div class="toolbar-right">
+      <div class="copy-dropdown-wrap">
+        <button class="toolbar-btn" id="copy-btn">📋 Copy ▾</button>
+        <div class="copy-dropdown-menu" id="copy-dropdown-menu" style="display:none">
+          <button id="copy-filtered-json-btn">Copy filtered JSON</button>
+          <button id="copy-all-json-btn">Copy all JSON</button>
+          <button id="copy-md-btn">Copy Markdown</button>
+        </div>
+      </div>
+      <button class="toolbar-btn" id="export-csv-btn">Export CSV</button>
+      <button class="toolbar-btn danger-solid" id="clear-view-btn">⊗ Clear entries</button>
     </div>
-    <button class="toolbar-btn" id="copy-md-btn">Copy Markdown</button>
-    <button class="toolbar-btn" id="export-csv-btn">Export CSV</button>
-    <button class="toolbar-btn danger" id="clear-view-btn">⊗ Clear entries</button>
   </div>
 </header>
 
@@ -1286,14 +1288,31 @@
     expandAllBtn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
   });
 
-  document.getElementById('copy-json-btn').addEventListener('click', () => {
-    const payload = document.getElementById('copy-json-mode').value === 'filtered' ? getFilteredEntries() : allEntries;
-    copyText(JSON.stringify(payload, null, 2))
-      .then(() => flashBtn(document.getElementById('copy-json-btn'), 'Copied!'))
-      .catch(() => flashBtn(document.getElementById('copy-json-btn'), 'Failed'));
+  // ── Copy dropdown ─────────────────────────────────────────────────────
+  const copyDropMenu = document.getElementById('copy-dropdown-menu');
+  document.getElementById('copy-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    copyDropMenu.style.display = copyDropMenu.style.display === 'none' ? '' : 'none';
+  });
+  document.addEventListener('click', () => { copyDropMenu.style.display = 'none'; });
+  copyDropMenu.addEventListener('click', e => e.stopPropagation());
+
+  document.getElementById('copy-filtered-json-btn').addEventListener('click', () => {
+    copyDropMenu.style.display = 'none';
+    copyText(JSON.stringify(getFilteredEntries(), null, 2))
+      .then(() => flashBtn(document.getElementById('copy-btn'), '📋 Copied!'))
+      .catch(() => flashBtn(document.getElementById('copy-btn'), 'Failed'));
+  });
+
+  document.getElementById('copy-all-json-btn').addEventListener('click', () => {
+    copyDropMenu.style.display = 'none';
+    copyText(JSON.stringify(allEntries, null, 2))
+      .then(() => flashBtn(document.getElementById('copy-btn'), '📋 Copied!'))
+      .catch(() => flashBtn(document.getElementById('copy-btn'), 'Failed'));
   });
 
   document.getElementById('copy-md-btn').addEventListener('click', () => {
+    copyDropMenu.style.display = 'none';
     const list = getFilteredEntries();
     const groups = {};
     for (const e of list) { const d = e.date || 'unknown'; (groups[d] = groups[d] || []).push(e); }
@@ -1304,8 +1323,8 @@
       lines.push('');
     }
     copyText(lines.join('\n').trimEnd())
-      .then(() => flashBtn(document.getElementById('copy-md-btn'), 'Copied!'))
-      .catch(() => flashBtn(document.getElementById('copy-md-btn'), 'Failed'));
+      .then(() => flashBtn(document.getElementById('copy-btn'), '📋 Copied!'))
+      .catch(() => flashBtn(document.getElementById('copy-btn'), 'Failed'));
   });
 
   document.getElementById('export-csv-btn').addEventListener('click', () => {

@@ -313,7 +313,7 @@ def generate_topic_tags_batch(entries, batch_size=15, timeout=45):
     return result
 
 
-_VIEWER_VERSION = 8  # increment when the viewer template gets significant UI changes
+_VIEWER_VERSION = 9  # increment when the viewer template gets significant UI changes
 
 
 def _check_viewer_update(docs_root):
