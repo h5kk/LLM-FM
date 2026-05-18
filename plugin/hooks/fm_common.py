@@ -47,7 +47,7 @@ def load_config(project_dir):
                 continue
 
             if in_globs and stripped.startswith("- "):
-                glob_pattern = stripped[2:].strip()
+                glob_pattern = stripped[2:].strip().strip('"').strip("'")
                 if current_feature:
                     features[current_feature].append(glob_pattern)
                 continue

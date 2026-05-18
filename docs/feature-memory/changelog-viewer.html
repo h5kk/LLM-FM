@@ -370,13 +370,13 @@
 <script id="changelog-data" type="application/json">
 {
   "schema_version": 2,
-  "generated": "2026-05-18T17:00:30.602879+00:00",
+  "generated": "2026-05-18T17:15:55.918259+00:00",
   "entries": [
     {
-      "event_id": "f3327e8d096f-unmapped",
+      "event_id": "f3327e8d096f-plugin-core",
       "date": "2026-05-18",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "developer",
       "summary": "Move Evolution image under The Problem, remove value.png reference",
       "kind": [
@@ -389,15 +389,40 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Move Evolution image under The Problem, remove value.png reference",
       "git_hash": "f3327e8d096fe4d285c338bc0a6176a66055f7b7",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "e38a6a9053d9-unmapped",
+      "event_id": "e866d1624738-hooks",
       "date": "2026-05-18",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Fix hook wiring and session reliability",
+      "kind": [
+        "bug-fix"
+      ],
+      "paths": [
+        "plugin/hooks/claude_post_tool.py",
+        "plugin/hooks/claude_session_start.py",
+        "plugin/hooks/claude_stop.py",
+        "plugin/hooks/fm_common.py",
+        "plugin/hooks/hooks.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix hook wiring and session reliability",
+      "git_hash": "e866d1624738f81a932aa6e47773ea760ea49c3c",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "e38a6a9053d9-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "both",
       "summary": "Replace README images with v2 visuals",
       "kind": [
@@ -413,16 +438,16 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Replace README images with v2 visuals",
       "git_hash": "e38a6a9053d9661860cd2ce2a459fe843266f3fb",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "cdb207bba181-unmapped",
+      "event_id": "cdb207bba181-plugin-core",
       "date": "2026-05-18",
-      "feature_id": null,
-      "feature_title": "unmapped",
-      "audience": "both",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
       "summary": "Add Claude Code plugin with marketplace support",
       "kind": [
         "new-feature"
@@ -431,8 +456,48 @@
         ".claude-plugin/marketplace.json",
         "docs/github-profile.md",
         "marketplace.json",
-        "plugin/.claude-plugin/plugin.json",
-        "plugin/agents/feature-memory-reviewer.md",
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Claude Code plugin with marketplace support",
+      "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "cdb207bba181-reviewer",
+      "date": "2026-05-18",
+      "feature_id": "reviewer",
+      "feature_title": "reviewer",
+      "audience": "developer",
+      "summary": "Add Claude Code plugin with marketplace support",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
+        "plugin/agents/feature-memory-reviewer.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Claude Code plugin with marketplace support",
+      "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "cdb207bba181-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Add Claude Code plugin with marketplace support",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
         "plugin/hooks/claude_post_tool.py",
         "plugin/hooks/claude_session_start.py",
         "plugin/hooks/claude_stop.py",
@@ -443,15 +508,36 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add Claude Code plugin with marketplace support",
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "c5e4e359a797-unmapped",
+      "event_id": "cdb207bba181-skills",
       "date": "2026-05-18",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "skills",
+      "feature_title": "skills",
+      "audience": "developer",
+      "summary": "Add Claude Code plugin with marketplace support",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
+        "plugin/skills/feature-memory/SKILL.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Claude Code plugin with marketplace support",
+      "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "c5e4e359a797-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "developer",
       "summary": "Fix marketplace source type to relative path",
       "kind": [
@@ -464,15 +550,15 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Fix marketplace source type to relative path",
       "git_hash": "c5e4e359a797db4949134482edb4283165c54840",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "b2eea5b0227c-unmapped",
+      "event_id": "b2eea5b0227c-plugin-core",
       "date": "2026-05-18",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "developer",
       "summary": "Add plugin install instructions to README",
       "kind": [
@@ -485,15 +571,15 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add plugin install instructions to README",
       "git_hash": "b2eea5b0227cabdc49ed13fa770f17b444ca0144",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "91f90b0f1a37-unmapped",
+      "event_id": "91f90b0f1a37-plugin-core",
       "date": "2026-05-18",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "developer",
       "summary": "Fix marketplace schema (add owner) and add init guidance to skill",
       "kind": [
@@ -501,29 +587,111 @@
       ],
       "paths": [
         ".claude-plugin/marketplace.json",
-        "marketplace.json",
+        "marketplace.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix marketplace schema (add owner) and add init guidance to skill",
+      "git_hash": "91f90b0f1a374ba9717146d178eb5db881693ac6",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "91f90b0f1a37-skills",
+      "date": "2026-05-18",
+      "feature_id": "skills",
+      "feature_title": "skills",
+      "audience": "developer",
+      "summary": "Fix marketplace schema (add owner) and add init guidance to skill",
+      "kind": [
+        "bug-fix"
+      ],
+      "paths": [
         "plugin/skills/feature-memory/SKILL.md"
       ],
       "git_author": "h5k",
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Fix marketplace schema (add owner) and add init guidance to skill",
       "git_hash": "91f90b0f1a374ba9717146d178eb5db881693ac6",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "73cd33c44307-unmapped",
+      "event_id": "8eb8cdefa7ba-hooks",
       "date": "2026-05-18",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Add fm_backfill.py: backfill changelog from git history",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add fm_backfill.py: backfill changelog from git history",
+      "git_hash": "8eb8cdefa7ba1aa66ad2d50131c37c5bd46099b3",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "7c13343fe5c7-specs",
+      "date": "2026-05-18",
+      "feature_id": "specs",
+      "feature_title": "specs",
+      "audience": "developer",
+      "summary": "Initialize Feature Memory on LLM-FM repo",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
+        ".feature-memory/config.yaml"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Initialize Feature Memory on LLM-FM repo",
+      "git_hash": "7c13343fe5c7f28207713cb3681ef77e89d63513",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "73cd33c44307-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "developer",
       "summary": "Replace fm_init.py workflow with init skill",
       "kind": [
         "behavior-change"
       ],
       "paths": [
-        "README.md",
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Replace fm_init.py workflow with init skill",
+      "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "73cd33c44307-skills",
+      "date": "2026-05-18",
+      "feature_id": "skills",
+      "feature_title": "skills",
+      "audience": "developer",
+      "summary": "Replace fm_init.py workflow with init skill",
+      "kind": [
+        "behavior-change"
+      ],
+      "paths": [
         "plugin/skills/feature-memory-init/SKILL.md",
         "plugin/skills/feature-memory/SKILL.md"
       ],
@@ -531,67 +699,132 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Replace fm_init.py workflow with init skill",
       "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "fad7fe86bd01-unmapped",
+      "event_id": "1f27c8c5880e-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "both",
+      "summary": "Add changelog viewer, Jira support, and dual changelogs to Feature Memory",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
+        "README.md",
+        "plugin/.claude-plugin/plugin.json",
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add changelog viewer, Jira support, and dual changelogs to Feature Memory",
+      "git_hash": "1f27c8c5880ed36efb29ae9759107d98c4c3c04e",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "1f27c8c5880e-skills",
+      "date": "2026-05-18",
+      "feature_id": "skills",
+      "feature_title": "skills",
+      "audience": "developer",
+      "summary": "Add changelog viewer, Jira support, and dual changelogs to Feature Memory",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
+        "plugin/skills/feature-memory-init/SKILL.md",
+        "plugin/skills/feature-memory/SKILL.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add changelog viewer, Jira support, and dual changelogs to Feature Memory",
+      "git_hash": "1f27c8c5880ed36efb29ae9759107d98c4c3c04e",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "fad7fe86bd01-plugin-core",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "both",
       "summary": "Add images with catalog and incorporate into README and gists",
       "kind": [
         "new-feature"
       ],
       "paths": [
-        ".gitignore",
         "README.md",
-        "docs/image-catalog.md",
-        "docs/image-incorporation-plan.md",
-        "feature-memory-gist-ar.md",
-        "feature-memory-gist-minimal.md",
-        "feature-memory-gist.md",
         "images/changelog-raw-vs-synthesized.png",
         "images/cross-reference-propagation.png",
-        "images/data-pipeline.png"
+        "images/data-pipeline.png",
+        "images/feature-page-anatomy.png",
+        "images/hook-lifecycle.png",
+        "images/lint-review-pipeline.png",
+        "images/project-structure-example.png",
+        "images/three-layer-architecture.png",
+        "images/value.png"
       ],
       "git_author": "h5k",
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add images with catalog and incorporate into README and gists",
       "git_hash": "fad7fe86bd010393b18ffc07cb40047e3a6c422c",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "e967fcbc1150-unmapped",
+      "event_id": "e967fcbc1150-plugin-core",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "developer",
       "summary": "Add What's New generator spec and project README",
       "kind": [
         "new-feature"
       ],
       "paths": [
-        "README.md",
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add What's New generator spec and project README",
+      "git_hash": "e967fcbc1150b3955148e869a6d013eaaa9a2bed",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "e967fcbc1150-specs",
+      "date": "2026-05-17",
+      "feature_id": "specs",
+      "feature_title": "specs",
+      "audience": "developer",
+      "summary": "Add What's New generator spec and project README",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
         "docs/specs/11-whats-new.md"
       ],
       "git_author": "h5k",
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add What's New generator spec and project README",
       "git_hash": "e967fcbc1150b3955148e869a6d013eaaa9a2bed",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "8ba14608a0c1-unmapped",
+      "event_id": "8ba14608a0c1-specs",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "specs",
+      "feature_title": "specs",
       "audience": "developer",
       "summary": "Update findings with expanded testing results and resolved issues",
       "kind": [
@@ -604,70 +837,94 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Update findings with expanded testing results and resolved issues",
       "git_hash": "8ba14608a0c1b60ba0abec52e89620bd5ec78f32",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "49036feaf2d8-unmapped",
+      "event_id": "49036feaf2d8-specs",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "specs",
+      "feature_title": "specs",
+      "audience": "developer",
+      "summary": "Add RepoTest_Iteration1 findings, fm_init.py installer, and concept gists",
+      "kind": [
+        "new-feature"
+      ],
+      "paths": [
+        "docs/RepoTest_Iteration1/findings.md",
+        "docs/RepoTest_Iteration1/hook-results.md",
+        "docs/RepoTest_Iteration1/recommendations.md",
+        "docs/RepoTest_Iteration1/skill-results.md",
+        "docs/RepoTest_Iteration1/test-setup.md",
+        "docs/specs/00-project-bootstrap.md",
+        "docs/specs/01-cli-foundation.md",
+        "docs/specs/02-data-model.md",
+        "docs/specs/03-core-commands.md",
+        "docs/specs/04-hooks-and-triggers.md",
+        "docs/specs/05-skills.md",
+        "docs/specs/06-plugins.md",
+        "docs/specs/07-testing.md",
+        "docs/specs/08-publishing.md",
+        "docs/specs/09-examples-and-docs.md",
+        "docs/specs/10-roadmap.md",
+        "docs/specs/README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add RepoTest_Iteration1 findings, fm_init.py installer, and concept gists",
+      "git_hash": "49036feaf2d83706bebee1b10c33ba641d2f1a1a",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "49036feaf2d8-cli",
+      "date": "2026-05-17",
+      "feature_id": "cli",
+      "feature_title": "cli",
       "audience": "both",
       "summary": "Add RepoTest_Iteration1 findings, fm_init.py installer, and concept gists",
       "kind": [
         "new-feature"
       ],
       "paths": [
-        ".gitignore",
-        "docs/RepoTest_Iteration1/findings.md",
-        "docs/RepoTest_Iteration1/hook-results.md",
-        "docs/RepoTest_Iteration1/recommendations.md",
-        "docs/RepoTest_Iteration1/skill-results.md",
-        "docs/RepoTest_Iteration1/test-setup.md",
-        "docs/reviewer-feedback-plan.md",
-        "docs/specs/00-project-bootstrap.md",
-        "docs/specs/01-cli-foundation.md",
-        "docs/specs/02-data-model.md"
+        "fm_init.py"
       ],
       "git_author": "h5k",
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add RepoTest_Iteration1 findings, fm_init.py installer, and concept gists",
       "git_hash": "49036feaf2d83706bebee1b10c33ba641d2f1a1a",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "467a0fd75597-unmapped",
+      "event_id": "467a0fd75597-plugin-core",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
       "audience": "developer",
       "summary": "Remove draft gist files from repo and gitignore them",
       "kind": [
         "refactor"
       ],
       "paths": [
-        ".gitignore",
-        "README.md",
-        "feature-memory-gist-ar.md",
-        "feature-memory-gist-minimal.md",
-        "feature-memory-gist.md"
+        "README.md"
       ],
       "git_author": "h5k",
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Remove draft gist files from repo and gitignore them",
       "git_hash": "467a0fd75597af9af8c560249bdb535cf2a77266",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "304b840fdc59-unmapped",
+      "event_id": "304b840fdc59-cli",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "cli",
+      "feature_title": "cli",
       "audience": "both",
       "summary": "Update fm_init.py with improved hook templates",
       "kind": [
@@ -680,15 +937,15 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Update fm_init.py with improved hook templates",
       "git_hash": "304b840fdc5921afbfec79c9f4f31629ec458362",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "15a23cfbb330-unmapped",
+      "event_id": "15a23cfbb330-specs",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "specs",
+      "feature_title": "specs",
       "audience": "developer",
       "summary": "Add live Claude Code session test results (all hooks confirmed working)",
       "kind": [
@@ -701,15 +958,15 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add live Claude Code session test results (all hooks confirmed working)",
       "git_hash": "15a23cfbb330a656a85722306f8c52c2555ba2fc",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "120ca650be49-unmapped",
+      "event_id": "120ca650be49-specs",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
+      "feature_id": "specs",
+      "feature_title": "specs",
       "audience": "developer",
       "summary": "Add performance report and improvement proposals from expanded testing",
       "kind": [
@@ -723,16 +980,16 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add performance report and improvement proposals from expanded testing",
       "git_hash": "120ca650be49bd6f3932ee93de4aa2589f1e1adb",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     },
     {
-      "event_id": "043f7d0f66b1-unmapped",
+      "event_id": "043f7d0f66b1-specs",
       "date": "2026-05-17",
-      "feature_id": null,
-      "feature_title": "unmapped",
-      "audience": "both",
+      "feature_id": "specs",
+      "feature_title": "specs",
+      "audience": "developer",
       "summary": "Fix cross-platform compatibility: python3 detection, symlink paths, Py3.6+ compat",
       "kind": [
         "bug-fix"
@@ -740,14 +997,34 @@
       "paths": [
         "docs/RepoTest_Iteration1/findings.md",
         "docs/RepoTest_Iteration1/hook-results.md",
-        "docs/RepoTest_Iteration1/skill-results.md",
+        "docs/RepoTest_Iteration1/skill-results.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix cross-platform compatibility: python3 detection, symlink paths, Py3.6+ compat",
+      "git_hash": "043f7d0f66b12470cd991057634e7d89274e592f",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "043f7d0f66b1-cli",
+      "date": "2026-05-17",
+      "feature_id": "cli",
+      "feature_title": "cli",
+      "audience": "both",
+      "summary": "Fix cross-platform compatibility: python3 detection, symlink paths, Py3.6+ compat",
+      "kind": [
+        "bug-fix"
+      ],
+      "paths": [
         "fm_init.py"
       ],
       "git_author": "h5k",
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Fix cross-platform compatibility: python3 detection, symlink paths, Py3.6+ compat",
       "git_hash": "043f7d0f66b12470cd991057634e7d89274e592f",
-      "confidence": "medium",
+      "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
     }
