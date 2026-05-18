@@ -67,10 +67,14 @@ Every changelog entry is tagged with an audience:
 
 The **Changelog Viewer** (`docs/feature-memory/changelog-viewer.html`) renders these as a searchable timeline:
 - Tabs: **All** | **Product** | **Developer**
-- Search by feature, author, summary, or file path
-- Timeline grouped by date with expandable entries
-- Git author attribution on every entry (captured automatically at session end)
+- Search by feature, author, summary, file path, or tag
+- Tag chips on every entry — up to 5 auto-inferred tags per category (Impact · Quality · Process · Tech)
+- Tag filter panel: click to filter; AND across categories, OR within a category
+- Toolbar: Expand All, Copy JSON, Copy Markdown, Export CSV
+- Git author attribution with consistent color coding
+- Timeline grouped by date with expandable entries showing paths and full git details
 - Works offline — data is embedded inline, no server required
+- Auto-upgrades when a newer plugin version is installed (preserves all existing data)
 
 ### Large Feature Support (Split Mode)
 
@@ -107,6 +111,7 @@ Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc 
 | `initialize feature memory` | One-time setup: scaffolds docs, scans codebase, proposes and creates feature pages |
 | `update feature memory` | Keeps docs current: updates feature pages, changelogs, source maps after code changes |
 | `review feature memory` | Read-only audit: checks docs for stale claims, missing sources, broken relationships |
+| `refresh changelog` / `/changelog-refresh` | Re-infers and replaces tags for all existing changelog entries (no git scan) |
 
 ### Backfill command
 
@@ -124,9 +129,14 @@ python plugin/hooks/fm_backfill.py --since-commit abc1234
 
 # All commits in the repo
 python plugin/hooks/fm_backfill.py --all
+
+# Re-infer and replace tags for all existing entries (no git scan)
+python plugin/hooks/fm_backfill.py --retag
 ```
 
 If your branch follows a Jira naming convention (e.g. `feat/PROJ-123-my-feature`), the ticket identifier is extracted automatically and attached to each changelog entry.
+
+> **Tip for existing installs:** If you installed the plugin before v0.4.0, run `--retag` once to backfill tags on all historical entries, then open `changelog-viewer.html` to use the new tag filter.
 
 ### What the plugin includes
 
@@ -135,10 +145,12 @@ If your branch follows a Jira naming convention (e.g. `feat/PROJ-123-my-feature`
 | **Init skill** | One-time setup: scaffolds docs, scans codebase, creates feature pages |
 | **Maintainer skill** | Ongoing: updates feature pages, changelogs, source maps after code changes |
 | **Reviewer agent** | Read-only audit: checks docs for stale claims, broken links, missing sources |
-| **SessionStart hook** | Injects feature list and recent activity into agent context |
+| **Changelog Refresh skill** | Re-infers and replaces tags for all existing entries (`/changelog-refresh`) |
+| **SessionStart hook** | Injects feature list and recent activity; auto-upgrades viewer if template is newer |
 | **PostToolUse hook** | Logs edits, reminds which feature docs to update |
-| **Stop hook** | Captures git author, compiles `changelog.json`, reports features with missing doc updates |
-| **Backfill script** | Populate changelog from git history on demand |
+| **Stop hook** | Captures git author, compiles `changelog.json` with tags, reports missing doc updates |
+| **Backfill script** | Populate changelog from git history; `--retag` to refresh all tags |
+| **Changelog Viewer** | Interactive HTML viewer: tabs, tag filter, search, toolbar, offline-capable |
 
 ### Phase 1 (planned): `fm` CLI
 
@@ -209,6 +221,23 @@ docs/
   RepoTest_Iteration1/              # Phase 0 test results and findings
   image-catalog.md                  # Image descriptions and alt text
 ```
+
+## Troubleshooting
+
+**Viewer shows no tags after upgrading to v0.4.0**
+Run `python plugin/hooks/fm_backfill.py --retag` once. This re-infers and replaces tags for all existing entries.
+
+**Viewer HTML is outdated (missing tag filter, toolbar)**
+The viewer auto-upgrades on the next SessionStart. Alternatively, copy `plugin/assets/changelog-viewer.html` to `docs/feature-memory/changelog-viewer.html` manually — existing JSON data is preserved.
+
+**`--retag` reports "0 entries" (expected: some)**
+You're on v0.4.0+ and all entries already have tags. `--retag` now always replaces, so re-running is safe — "0 entries updated" means nothing changed.
+
+**Tag filter not showing all tags from my entries**
+Tags are inferred from file paths and commit messages using a closed vocabulary. Check `.feature-memory/config.yaml` to ensure files are mapped to features; unmapped files only get tech-stack tags.
+
+**Changelog viewer is blank**
+Check that `docs/feature-memory/changelogs/changelog.json` exists and has entries. Run `python plugin/hooks/fm_backfill.py --all` to populate it from git history.
 
 ## License
 

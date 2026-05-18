@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import hook_error_wrapper
+from fm_common import hook_error_wrapper, _check_viewer_update
 
 
 def main():
@@ -52,6 +52,9 @@ def main():
                 events_path.write_text("", encoding="utf-8")
         else:
             events_path.write_text("", encoding="utf-8")
+
+    # Silently upgrade viewer if template is newer than what's installed in the project
+    _check_viewer_update(docs_root)
 
     lines = []
     lines.append("=== Feature Memory ===")

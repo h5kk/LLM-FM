@@ -10,3 +10,4 @@ updated: "2026-05-18"
 - 2026-05-18: Plugin v0.2.0 — sub-folder hierarchy, Mermaid diagram, dual changelogs with HTML viewer
 - 2026-05-18: Hooks updated: fm_common adds get_feature_doc_path + get_git_info; Stop compiles changelog.json; SessionStart archives events before clearing; PostToolUse uses split-mode-aware doc paths
 - 2026-05-18: changelog-viewer.html created at docs/feature-memory/changelog-viewer.html
+- 2026-05-18: Plugin v0.4.0 — auto-inferred tags (20-tag vocabulary), tag filter panel, toolbar, author color coding, changelog-refresh skill, viewer auto-upgrade

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated": "2026-05-18T17:15:55.918259+00:00",
+  "generated": "2026-05-18T18:11:31.427230+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -21,7 +21,11 @@
       "git_hash": "f3327e8d096fe4d285c338bc0a6176a66055f7b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "e866d1624738-hooks",
@@ -44,6 +48,58 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Fix hook wiring and session reliability",
       "git_hash": "e866d1624738f81a932aa6e47773ea760ea49c3c",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
+    },
+    {
+      "event_id": "e6d8fdf4a196-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "both",
+      "summary": "Add viewer auto-create and developer tab visibility",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add viewer auto-create and developer tab visibility",
+      "git_hash": "e6d8fdf4a196bdeb77dc944c32b2ee5584471f0c",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "e6d8fdf4a196-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Add viewer auto-create and developer tab visibility",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py",
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add viewer auto-create and developer tab visibility",
+      "git_hash": "e6d8fdf4a196bdeb77dc944c32b2ee5584471f0c",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -70,7 +126,11 @@
       "git_hash": "e38a6a9053d9661860cd2ce2a459fe843266f3fb",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "cdb207bba181-plugin-core",
@@ -94,7 +154,11 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "cdb207bba181-reviewer",
@@ -115,7 +179,10 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
     },
     {
       "event_id": "cdb207bba181-hooks",
@@ -140,7 +207,10 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "cdb207bba181-skills",
@@ -161,7 +231,10 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
     },
     {
       "event_id": "c5e4e359a797-plugin-core",
@@ -180,6 +253,56 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Fix marketplace source type to relative path",
       "git_hash": "c5e4e359a797db4949134482edb4283165c54840",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": []
+    },
+    {
+      "event_id": "b7ee1a6518da-specs",
+      "date": "2026-05-18",
+      "feature_id": "specs",
+      "feature_title": "specs",
+      "audience": "developer",
+      "summary": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "config-change",
+        "yaml"
+      ],
+      "paths": [
+        ".feature-memory/config.yaml"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "git_hash": "b7ee1a6518da36cabf73eec702c9a70595651229",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "b7ee1a6518da-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "git_hash": "b7ee1a6518da36cabf73eec702c9a70595651229",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -201,6 +324,105 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add plugin install instructions to README",
       "git_hash": "b2eea5b0227cabdc49ed13fa770f17b444ca0144",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
+    },
+    {
+      "event_id": "b1adc6bbf6b4-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "git_hash": "b1adc6bbf6b422926f49efb6b83b059c9b333ef9",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "b1adc6bbf6b4-skills",
+      "date": "2026-05-18",
+      "feature_id": "skills",
+      "feature_title": "skills",
+      "audience": "developer",
+      "summary": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "markdown"
+      ],
+      "paths": [
+        "plugin/skills/feature-memory-backfill/SKILL.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "git_hash": "b1adc6bbf6b422926f49efb6b83b059c9b333ef9",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "93a0ca2e8a7d-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "both",
+      "summary": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "git_hash": "93a0ca2e8a7dc76c308efbce771a9279c54deac4",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "93a0ca2e8a7d-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_session_start.py",
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "git_hash": "93a0ca2e8a7dc76c308efbce771a9279c54deac4",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -225,7 +447,10 @@
       "git_hash": "91f90b0f1a374ba9717146d178eb5db881693ac6",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "schema-change"
+      ]
     },
     {
       "event_id": "91f90b0f1a37-skills",
@@ -246,7 +471,11 @@
       "git_hash": "91f90b0f1a374ba9717146d178eb5db881693ac6",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "schema-change",
+        "markdown"
+      ]
     },
     {
       "event_id": "8eb8cdefa7ba-hooks",
@@ -267,7 +496,10 @@
       "git_hash": "8eb8cdefa7ba1aa66ad2d50131c37c5bd46099b3",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "7c13343fe5c7-specs",
@@ -288,7 +520,11 @@
       "git_hash": "7c13343fe5c7f28207713cb3681ef77e89d63513",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "config-change",
+        "yaml"
+      ]
     },
     {
       "event_id": "73cd33c44307-plugin-core",
@@ -309,7 +545,11 @@
       "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "73cd33c44307-skills",
@@ -331,7 +571,10 @@
       "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
     },
     {
       "event_id": "1f27c8c5880e-plugin-core",
@@ -354,7 +597,12 @@
       "git_hash": "1f27c8c5880ed36efb29ae9759107d98c4c3c04e",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "html-css",
+        "markdown"
+      ]
     },
     {
       "event_id": "1f27c8c5880e-skills",
@@ -374,6 +622,34 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add changelog viewer, Jira support, and dual changelogs to Feature Memory",
       "git_hash": "1f27c8c5880ed36efb29ae9759107d98c4c3c04e",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
+    },
+    {
+      "event_id": "1df9a5698c71-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Update README with backfill command usage and agent commands table",
+      "kind": [
+        "behavior-change"
+      ],
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "paths": [
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Update README with backfill command usage and agent commands table",
+      "git_hash": "1df9a5698c71541c9a36e70570348bfb16673544",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -406,7 +682,11 @@
       "git_hash": "fad7fe86bd010393b18ffc07cb40047e3a6c422c",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "e967fcbc1150-plugin-core",
@@ -427,7 +707,11 @@
       "git_hash": "e967fcbc1150b3955148e869a6d013eaaa9a2bed",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "e967fcbc1150-specs",
@@ -448,7 +732,11 @@
       "git_hash": "e967fcbc1150b3955148e869a6d013eaaa9a2bed",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "8ba14608a0c1-specs",
@@ -468,6 +756,32 @@
       "git_message": "Update findings with expanded testing results and resolved issues",
       "git_hash": "8ba14608a0c1b60ba0abec52e89620bd5ec78f32",
       "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
+    },
+    {
+      "event_id": "5c90910a3dbd-unmapped",
+      "date": "2026-05-17",
+      "feature_id": null,
+      "feature_title": "unmapped",
+      "audience": "both",
+      "summary": "Initial commit",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [],
+      "paths": [
+        ".gitattributes"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Initial commit",
+      "git_hash": "5c90910a3dbd6756b42ae5b965d663ade1594bf0",
+      "confidence": "medium",
       "review_status": "auto",
       "source": "git-backfill"
     },
@@ -506,7 +820,11 @@
       "git_hash": "49036feaf2d83706bebee1b10c33ba641d2f1a1a",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "49036feaf2d8-cli",
@@ -527,7 +845,10 @@
       "git_hash": "49036feaf2d83706bebee1b10c33ba641d2f1a1a",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "467a0fd75597-plugin-core",
@@ -548,7 +869,11 @@
       "git_hash": "467a0fd75597af9af8c560249bdb535cf2a77266",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "304b840fdc59-cli",
@@ -569,7 +894,10 @@
       "git_hash": "304b840fdc5921afbfec79c9f4f31629ec458362",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "15a23cfbb330-specs",
@@ -590,7 +918,11 @@
       "git_hash": "15a23cfbb330a656a85722306f8c52c2555ba2fc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "120ca650be49-specs",
@@ -612,7 +944,12 @@
       "git_hash": "120ca650be49bd6f3932ee93de4aa2589f1e1adb",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "performance",
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "043f7d0f66b1-specs",
@@ -635,7 +972,11 @@
       "git_hash": "043f7d0f66b12470cd991057634e7d89274e592f",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "043f7d0f66b1-cli",
@@ -656,7 +997,10 @@
       "git_hash": "043f7d0f66b12470cd991057634e7d89274e592f",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     }
   ]
 }

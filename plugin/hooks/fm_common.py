@@ -6,6 +6,7 @@ Works with Python 3.6+ stdlib only — no external dependencies.
 """
 import fnmatch
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -137,6 +138,171 @@ def log_error(message):
             f.write(f"{datetime.now(timezone.utc).isoformat()} {message}\n")
     except Exception:
         pass
+
+
+_TAGS_IMPACT  = ["breaking-change", "api-change", "schema-change", "config-change", "data-migration"]
+_TAGS_QUALITY = ["security", "auth", "performance", "error-handling", "logging", "accessibility", "ux"]
+_TAGS_PROCESS = ["tests", "docs", "dependency", "tooling", "ci-cd"]
+_TAGS_TECH    = ["typescript", "python", "javascript", "html-css", "shell", "yaml", "sql", "markdown"]
+_TAG_PRIORITY = [_TAGS_IMPACT, _TAGS_QUALITY, _TAGS_PROCESS, _TAGS_TECH]
+_TAG_LIMIT    = 5
+
+
+def _infer_tags(paths, message, kind):
+    """Return up to 5 canonical tags inferred from file paths, commit message, and kind.
+
+    Priority order: Impact > Quality > Process > Tech.
+    Safe with None/empty inputs — never raises.
+    """
+    msg    = (message or "").lower()
+    raw    = message or ""
+    tags   = set()
+    npaths = [p.replace("\\", "/").lower() for p in (paths or [])]
+    bases  = [p.rsplit("/", 1)[-1] for p in npaths]
+    exts   = {b.rsplit(".", 1)[-1] for b in bases if "." in b}
+
+    # ── Impact ────────────────────────────────────────────────────────────────
+    if re.search(r'\bbreaking\b|\bBREAKING\b|\bincompatible\b|\bdeprecated\b', raw):
+        tags.add("breaking-change")
+    if re.search(r'\bapi\s*(change|update|break|version|endpoint)\b|\bopenapi\b|\bswagger\b', msg):
+        tags.add("api-change")
+    if re.search(r'\bschema\b|\balter\s+table\b|\badd\s+column\b|\bdrop\s+column\b', msg):
+        tags.add("schema-change")
+    if re.search(r'\bdata\s+(migration|backfill)\b|\bmigrate\s+data\b', msg):
+        tags.add("data-migration")
+    if any(re.search(r'(^|/)(config\.(yaml|json|py|ini|toml)|settings\.(py|json)|\.env(\..+)?$)', p)
+           for p in npaths):
+        tags.add("config-change")
+
+    # ── Quality ───────────────────────────────────────────────────────────────
+    if re.search(r'\bsecur\w*|\bvuln\w*|\bcve[\s\-]?\d|\bxss\b|\bsqli\b|\binjection\b|\bsanitiz\w*', msg):
+        tags.add("security")
+    if re.search(r'\bauth\w*|\blogin\b|\blogout\b|\bjwt\b|\boauth\b|\bcredential\w*|\bpermission\w*|\brole\b', msg):
+        tags.add("auth")
+    if re.search(r'\bperf\w*|\boptim\w*|\bspeed\b|\bcach\w*|\blatency\b|\bthroughput\b', msg):
+        tags.add("performance")
+    if re.search(r'\berror\b|\bexception\w*|\bretry\w*|\bfallback\w*', msg):
+        tags.add("error-handling")
+    if re.search(r'\blogg\w*|\btracing\b|\bmonitor\w*|\bobserv\w*|\btelemetr\w*', msg):
+        tags.add("logging")
+    if re.search(r'\baccessib\w*|\baria\b|\bwcag\b|\ba11y\b', msg):
+        tags.add("accessibility")
+    if re.search(r'\b(?:ui|ux)\b|\binterface\b|\blayout\b|\btheme\b', msg):
+        tags.add("ux")
+
+    # ── Process ───────────────────────────────────────────────────────────────
+    if any(
+        re.search(r'(^|/)tests?/', p) or re.search(r'(_test\.|\.test\.|\.spec\.)', p)
+        for p in npaths
+    ):
+        tags.add("tests")
+    if any(
+        p.startswith("docs/") or p.startswith("doc/") or
+        re.search(r'(^|/)(readme|changelog)(\.|$)', b)
+        for p, b in zip(npaths, bases)
+    ):
+        tags.add("docs")
+    if any(
+        re.search(
+            r'requirements.*\.txt|pipfile|pyproject\.toml|setup\.(cfg|py)|go\.(mod|sum)'
+            r'|gemfile(\.lock)?|\.lock$|package(-lock)?\.json|yarn\.lock',
+            p,
+        )
+        for p in npaths
+    ):
+        tags.add("dependency")
+    if any(
+        re.search(r'(^|/)\.github/', p) or re.search(r'^(jenkinsfile|\.gitlab-ci)', b)
+        for p, b in zip(npaths, bases)
+    ):
+        tags.add("ci-cd")
+    if any(
+        re.search(r'(^|/)scripts?/', p) or re.search(r'^(makefile|taskfile)', b)
+        for p, b in zip(npaths, bases)
+    ):
+        tags.add("tooling")
+
+    # ── Tech (file extensions) ────────────────────────────────────────────────
+    if exts & {"ts", "tsx"}:                    tags.add("typescript")
+    if "py" in exts:                            tags.add("python")
+    if exts & {"js", "jsx"}:                   tags.add("javascript")
+    if exts & {"html", "css", "scss", "less"}: tags.add("html-css")
+    if exts & {"sh", "bash", "zsh"}:           tags.add("shell")
+    if exts & {"yaml", "yml"}:                 tags.add("yaml")
+    if "sql" in exts:                          tags.add("sql")
+    if exts & {"md", "rst"}:                   tags.add("markdown")
+
+    # ── Cap at 5, honouring priority order ───────────────────────────────────
+    result = []
+    for category in _TAG_PRIORITY:
+        for tag in category:
+            if tag in tags:
+                if len(result) >= _TAG_LIMIT:
+                    return result
+                result.append(tag)
+    return result
+
+
+_VIEWER_VERSION = 4  # increment when the viewer template gets significant UI changes
+
+
+def _check_viewer_update(docs_root):
+    """Copy updated viewer template to docs_root if the installed version is outdated.
+
+    Preserves existing changelog JSON data by re-injecting it after the copy.
+    Silently no-ops if the template cannot be found.
+    """
+    import re as _re
+    import shutil
+    viewer_path = docs_root / "changelog-viewer.html"
+    if not viewer_path.exists():
+        return  # Nothing to update — will be created on next Stop hook run
+
+    try:
+        current = viewer_path.read_text(encoding="utf-8")
+        m = _re.search(r'<!--\s*fm-viewer-version:\s*(\d+)\s*-->', current)
+        installed_ver = int(m.group(1)) if m else 0
+        if installed_ver >= _VIEWER_VERSION:
+            return  # Already up to date
+
+        # Locate the template — try both installed cache layout (../assets/)
+        # and source layout (../../assets/ for plugin/hooks/ → plugin/assets/)
+        hooks_dir = Path(__file__).parent
+        candidates = [
+            hooks_dir / ".." / "assets" / "changelog-viewer.html",
+            hooks_dir / ".." / ".." / "assets" / "changelog-viewer.html",
+            Path.cwd() / "plugin" / "assets" / "changelog-viewer.html",
+        ]
+        template = None
+        for c in candidates:
+            resolved = c.resolve()
+            if resolved.exists():
+                template = resolved
+                break
+        if template is None:
+            return
+
+        # Extract existing JSON data block before overwriting
+        data_match = _re.search(
+            r'(<script id="changelog-data"[^>]*>)([\s\S]*?)(</script>)',
+            current,
+        )
+        existing_json = data_match.group(2) if data_match else None
+
+        shutil.copy2(str(template), str(viewer_path))
+
+        # Re-inject the existing data if we extracted it
+        if existing_json:
+            new_content = viewer_path.read_text(encoding="utf-8")
+            patched = _re.sub(
+                r'(<script id="changelog-data"[^>]*>)([\s\S]*?)(</script>)',
+                lambda m2: m2.group(1) + existing_json + m2.group(3),
+                new_content,
+                count=1,
+            )
+            viewer_path.write_text(patched, encoding="utf-8")
+    except Exception:
+        pass  # Viewer update is best-effort; never fail a session over it
 
 
 def hook_error_wrapper(hook_name, main_func):

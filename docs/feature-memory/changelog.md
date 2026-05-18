@@ -5,6 +5,17 @@ updated: "2026-05-18"
 
 # Feature Memory Changelog
 
+## 2026-05-18 (v0.4.0)
+
+- **plugin-core**: Version bumped to 0.4.0; plugin.json now registers changelog-refresh skill
+- **hooks**: `fm_common.py` — added `_infer_tags()` (closed 20-tag vocabulary, 4 categories: Impact/Quality/Process/Tech, capped at 5 with priority ordering); added `_check_viewer_update()` for automatic viewer self-upgrade
+- **hooks**: `claude_stop.py` — path_touched events now include auto-inferred tags; viewer auto-upgrades on session end
+- **hooks**: `claude_session_start.py` — calls `_check_viewer_update()` so viewer upgrades on session start
+- **hooks**: `fm_backfill.py` — all backfill entries tagged at generation time; `--retag` flag added to re-infer and replace tags on all existing entries
+- **changelog-viewer**: v4 — tag chips with category colors, tag filter panel (AND-across/OR-within), toolbar (Expand All, Copy JSON, Copy Markdown, Export CSV), consistent author color coding, feature title shown in entry rows
+- **skills**: `changelog-refresh` skill added (`/changelog-refresh` command)
+- **tests**: 77 tests total (up from 50); 27 new `_infer_tags` tests covering all tag categories, priority ordering, cap behavior, and edge cases
+
 ## 2026-05-18
 
 - **system**: Feature Memory initialized for LLM-FM project

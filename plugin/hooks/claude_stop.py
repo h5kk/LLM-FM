@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from fm_common import (
     load_config, match_path_to_features, hook_error_wrapper,
-    get_feature_doc_path, get_git_info,
+    get_feature_doc_path, get_git_info, _infer_tags, _check_viewer_update,
 )
 
 
@@ -66,6 +66,7 @@ def _compile_changelog(project_dir, events, features, git_info):
             "audience": "developer",
             "summary": f"Modified {path}",
             "kind": ["path_touched"],
+            "tags": _infer_tags([path], "", ["path_touched"]),
             "paths": [path],
             "git_author": git_info.get("git_author") if git_info else None,
             "git_email": git_info.get("git_email") if git_info else None,
@@ -132,6 +133,8 @@ def _update_viewer_data(docs_root, data):
             shutil.copy2(str(template), str(viewer_path))
         except Exception:
             return
+    else:
+        _check_viewer_update(docs_root)
     try:
         content = viewer_path.read_text(encoding="utf-8")
         json_str = json.dumps(data, indent=2, ensure_ascii=False)

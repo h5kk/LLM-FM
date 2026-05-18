@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import load_config, match_path_to_features
+from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update
 
 _JIRA_RE = re.compile(r'\b([A-Z][A-Z0-9]{1,9}-\d+)\b')
 
@@ -148,6 +148,8 @@ def _update_viewer(docs_root, data):
         except Exception as e:
             print(f"  Warning: could not copy viewer template: {e}")
             return
+    else:
+        _check_viewer_update(docs_root)
     try:
         content = viewer.read_text(encoding="utf-8")
         json_str = json.dumps(data, indent=2, ensure_ascii=False)
@@ -162,6 +164,41 @@ def _update_viewer(docs_root, data):
             print(f"  Updated {viewer.relative_to(docs_root.parent.parent)}")
     except Exception as e:
         print(f"  Warning: viewer update failed: {e}")
+
+
+def _retag_existing(project_dir, changelog_path, docs_root):
+    """Re-infer and replace tags for all entries. No git scan — uses stored paths+message."""
+    if not changelog_path.exists():
+        print("No changelog.json found. Run backfill first.")
+        return
+
+    try:
+        data = json.loads(changelog_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"Error reading changelog: {e}")
+        return
+
+    entries = data.get("entries", [])
+    updated = 0
+    for entry in entries:
+        new_tags = _infer_tags(
+            entry.get("paths") or [],
+            entry.get("git_message") or "",
+            entry.get("kind") or [],
+        )
+        entry["tags"] = new_tags
+        updated += 1
+
+    print(f"Re-tagged {updated} entr{'y' if updated == 1 else 'ies'} (of {len(entries)} total).")
+
+    if updated > 0:
+        from datetime import datetime, timezone
+        data["generated"] = datetime.now(timezone.utc).isoformat()
+        changelog_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        _update_viewer(docs_root, data)
+        print("Done.")
+    else:
+        print("Nothing to update — all entries already have tags.")
 
 
 def main():
@@ -179,9 +216,11 @@ def main():
                        help="Commits after this hash (exclusive)")
     group.add_argument("--all", action="store_true", dest="all_commits",
                        help="All commits in the repo")
+    group.add_argument("--retag", action="store_true",
+                       help="Re-infer and replace tags for ALL existing entries (no git scan)")
     args = parser.parse_args()
 
-    if not any([args.hours, args.since, args.since_commit, args.all_commits]):
+    if not any([args.hours, args.since, args.since_commit, args.all_commits, args.retag]):
         args.hours = 48
 
     project_dir = Path.cwd()
@@ -194,6 +233,10 @@ def main():
         sys.exit(1)
 
     changelogs_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.retag:
+        _retag_existing(project_dir, changelog_path, docs_root)
+        return
 
     # Primary dedup: event_id. Secondary: (hash12, feature_id) to catch Stop-hook entries
     # which use UUID event_ids but cover the same commit+feature pair.
@@ -283,6 +326,7 @@ def main():
                     "audience": audience,
                     "summary": commit["message"],
                     "kind": kinds,
+                    "tags": _infer_tags(fid_files, commit["message"], kinds),
                     "paths": fid_files,
                     "git_author": commit["author"],
                     "git_email": commit["email"],
@@ -312,6 +356,7 @@ def main():
                 "audience": audience,
                 "summary": commit["message"],
                 "kind": kinds,
+                "tags": _infer_tags(unmapped_files, commit["message"], kinds),
                 "paths": unmapped_files[:10],
                 "git_author": commit["author"],
                 "git_email": commit["email"],

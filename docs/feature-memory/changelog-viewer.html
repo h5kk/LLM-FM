@@ -1,3 +1,4 @@
+<!-- fm-viewer-version: 4 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,9 +238,9 @@
       background: var(--tag-bg);
       border-radius: 12px;
       padding: 2px 8px;
-      color: var(--muted);
       white-space: nowrap;
       flex-shrink: 0;
+      font-weight: 500;
     }
 
     .jira-chip {
@@ -341,10 +342,218 @@
     }
     #theme-toggle:hover { color: var(--text); border-color: var(--accent); }
 
+    /* ── Tag chips (in expanded detail) ──────────────────────────── */
+    .tag-chip {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 1px 7px;
+    }
+    .tag-chip.impact   { background: #431407; color: #fb923c; }
+    .tag-chip.quality  { background: #2e1065; color: #c084fc; }
+    .tag-chip.process  { background: #042f2e; color: #2dd4bf; }
+    .tag-chip.tech     { background: #1e3a5f; color: #60a5fa; }
+
+    :root[data-theme="light"] .tag-chip.impact  { background: #fff7ed; color: #c2410c; }
+    :root[data-theme="light"] .tag-chip.quality { background: #faf5ff; color: #7e22ce; }
+    :root[data-theme="light"] .tag-chip.process { background: #f0fdfa; color: #0f766e; }
+    :root[data-theme="light"] .tag-chip.tech    { background: #eff6ff; color: #1d4ed8; }
+
+    .entry-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    /* ── Tag filter panel ─────────────────────────────────────────── */
+    #tag-filter-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: var(--font);
+      line-height: 1;
+      padding: 5px 9px;
+      flex-shrink: 0;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    #tag-filter-toggle:hover { color: var(--text); border-color: var(--accent); }
+    #tag-filter-toggle.panel-open { color: var(--text); border-color: var(--accent); }
+
+    #active-tag-summary {
+      font-size: 11px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    #tag-filter {
+      border-top: 1px solid var(--border);
+      padding: 10px 0 12px;
+    }
+
+    .tag-filter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    #clear-tags {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 8px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    #clear-tags:hover { color: var(--text); border-color: var(--accent); }
+
+    .tag-filter-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .cat-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      min-width: 52px;
+      padding-top: 3px;
+      flex-shrink: 0;
+    }
+    .cat-label.impact  { color: #f97316; }
+    .cat-label.quality { color: #a855f7; }
+    .cat-label.process { color: #14b8a6; }
+    .cat-label.tech    { color: #3b82f6; }
+
+    .tag-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 2px 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: opacity 0.15s, border-color 0.15s;
+      opacity: 0.65;
+    }
+    .filter-chip:hover { opacity: 1; }
+
+    .filter-chip.impact  { background: #431407; color: #fb923c; }
+    .filter-chip.quality { background: #2e1065; color: #c084fc; }
+    .filter-chip.process { background: #042f2e; color: #2dd4bf; }
+    .filter-chip.tech    { background: #1e3a5f; color: #60a5fa; }
+
+    .filter-chip.active         { opacity: 1; }
+    .filter-chip.impact.active  { border-color: #f97316; }
+    .filter-chip.quality.active { border-color: #a855f7; }
+    .filter-chip.process.active { border-color: #14b8a6; }
+    .filter-chip.tech.active    { border-color: #3b82f6; }
+
+    :root[data-theme="light"] .filter-chip.impact  { background: #fff7ed; color: #c2410c; }
+    :root[data-theme="light"] .filter-chip.quality { background: #faf5ff; color: #7e22ce; }
+    :root[data-theme="light"] .filter-chip.process { background: #f0fdfa; color: #0f766e; }
+    :root[data-theme="light"] .filter-chip.tech    { background: #eff6ff; color: #1d4ed8; }
+
+    .chip-count {
+      opacity: 0.65;
+      font-size: 9px;
+    }
+
+    /* ── Toolbar ─────────────────────────────────────────────────── */
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 0 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: var(--font);
+      line-height: 1;
+      padding: 5px 10px;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .toolbar-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    /* Copy JSON: select + button side-by-side, visually joined */
+    .copy-json-group {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .copy-json-group:focus-within,
+    .copy-json-group:hover { border-color: var(--accent); }
+
+    .copy-json-select {
+      background: var(--surface);
+      border: none;
+      border-right: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--font);
+      padding: 5px 8px;
+      cursor: pointer;
+      outline: none;
+    }
+    .copy-json-select:hover { color: var(--text); }
+
+    .copy-json-btn {
+      background: var(--surface);
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: var(--font);
+      padding: 5px 10px;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .copy-json-btn:hover { color: var(--text); }
+
+    /* Flash feedback shared by all copy/export buttons */
+    .toolbar-btn.flash,
+    .copy-json-btn.flash { color: var(--prod-color); border-color: var(--prod-color); }
+
     @media (max-width: 600px) {
       header { padding: 12px 16px 0; }
       main { padding: 16px 16px 48px; }
       .kind-tag, .feature-badge { display: none; }
+      .toolbar { gap: 6px; }
     }
   </style>
 </head>
@@ -355,6 +564,8 @@
     <h1>Feature Memory Changelog</h1>
     <span class="subtitle" id="generated-label"></span>
     <input type="search" id="search" placeholder="Search features, authors, changes…" autocomplete="off">
+    <button id="tag-filter-toggle" title="Filter by tags">🏷 Tags</button>
+    <span id="active-tag-summary" style="display:none"></span>
     <button id="theme-toggle" title="Toggle light/dark mode">☀︎</button>
     <span id="count"></span>
   </div>
@@ -363,14 +574,45 @@
     <button class="tab" data-audience="product">Product</button>
     <button class="tab" data-audience="developer">Developer</button>
   </div>
+  <div id="tag-filter" style="display:none">
+    <div class="tag-filter-header">
+      <span>Filter by tags</span>
+      <button id="clear-tags" style="display:none">Clear all</button>
+    </div>
+    <div id="tag-filter-body"></div>
+  </div>
+  <div class="toolbar" id="toolbar">
+    <button class="toolbar-btn" id="expand-all-btn" title="Expand or collapse all visible entries">Expand All</button>
+    <div class="copy-json-group" title="Copy entries as JSON">
+      <select class="copy-json-select" id="copy-json-mode" aria-label="JSON copy scope">
+        <option value="filtered">Copy filtered JSON</option>
+        <option value="all">Copy all JSON</option>
+      </select>
+      <button class="copy-json-btn" id="copy-json-btn">Copy JSON</button>
+    </div>
+    <button class="toolbar-btn" id="copy-md-btn" title="Copy filtered entries as Markdown changelog">Copy Markdown</button>
+    <button class="toolbar-btn" id="export-csv-btn" title="Download filtered entries as CSV">Export CSV</button>
+  </div>
 </header>
 
-<main id="timeline"></main>
+<main id="timeline">
+  <details id="about-panel" style="margin-bottom:16px">
+    <summary style="cursor:pointer; font-size:12px; color:var(--muted); padding:8px 0">About this changelog ▸</summary>
+    <div style="font-size:12px; color:var(--muted); padding:8px 0 0; line-height:1.7">
+      <p><strong style="color:var(--text)">Product entries</strong> — business-facing changes visible to users or stakeholders. Shown in the Product tab.</p>
+      <p><strong style="color:var(--text)">Developer entries</strong> — technical implementation details: file changes, refactors, test additions. Shown in the Developer tab.</p>
+      <p><strong style="color:var(--text)">Confidence</strong> — <em>high</em>: verified claims; <em>medium</em>: inferred from patterns; <em>low</em>: needs review.</p>
+      <p><strong style="color:var(--text)">review_status: auto</strong> — generated automatically from git history or session hooks, not manually reviewed.</p>
+      <p><strong style="color:var(--text)">source: git-backfill</strong> — entry created by scanning git commit history (fm_backfill). <strong>source: hook</strong> — created live at session end.</p>
+      <p style="margin-top:6px">Tags are inferred automatically from file paths and commit messages.</p>
+    </div>
+  </details>
+</main>
 
 <script id="changelog-data" type="application/json">
 {
   "schema_version": 2,
-  "generated": "2026-05-18T17:15:55.918259+00:00",
+  "generated": "2026-05-18T18:11:31.427230+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -391,7 +633,11 @@
       "git_hash": "f3327e8d096fe4d285c338bc0a6176a66055f7b7",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "e866d1624738-hooks",
@@ -414,6 +660,58 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Fix hook wiring and session reliability",
       "git_hash": "e866d1624738f81a932aa6e47773ea760ea49c3c",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
+    },
+    {
+      "event_id": "e6d8fdf4a196-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "both",
+      "summary": "Add viewer auto-create and developer tab visibility",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add viewer auto-create and developer tab visibility",
+      "git_hash": "e6d8fdf4a196bdeb77dc944c32b2ee5584471f0c",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "e6d8fdf4a196-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Add viewer auto-create and developer tab visibility",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py",
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add viewer auto-create and developer tab visibility",
+      "git_hash": "e6d8fdf4a196bdeb77dc944c32b2ee5584471f0c",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -440,7 +738,11 @@
       "git_hash": "e38a6a9053d9661860cd2ce2a459fe843266f3fb",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "cdb207bba181-plugin-core",
@@ -464,7 +766,11 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "cdb207bba181-reviewer",
@@ -485,7 +791,10 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
     },
     {
       "event_id": "cdb207bba181-hooks",
@@ -510,7 +819,10 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "cdb207bba181-skills",
@@ -531,7 +843,10 @@
       "git_hash": "cdb207bba181f67d85aa8f4c234747bcdeea71dc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
     },
     {
       "event_id": "c5e4e359a797-plugin-core",
@@ -550,6 +865,56 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Fix marketplace source type to relative path",
       "git_hash": "c5e4e359a797db4949134482edb4283165c54840",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": []
+    },
+    {
+      "event_id": "b7ee1a6518da-specs",
+      "date": "2026-05-18",
+      "feature_id": "specs",
+      "feature_title": "specs",
+      "audience": "developer",
+      "summary": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "config-change",
+        "yaml"
+      ],
+      "paths": [
+        ".feature-memory/config.yaml"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "git_hash": "b7ee1a6518da36cabf73eec702c9a70595651229",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "b7ee1a6518da-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Fix glob quote stripping in YAML parser; expand feature config mappings",
+      "git_hash": "b7ee1a6518da36cabf73eec702c9a70595651229",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -571,6 +936,105 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add plugin install instructions to README",
       "git_hash": "b2eea5b0227cabdc49ed13fa770f17b444ca0144",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
+    },
+    {
+      "event_id": "b1adc6bbf6b4-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "git_hash": "b1adc6bbf6b422926f49efb6b83b059c9b333ef9",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "b1adc6bbf6b4-skills",
+      "date": "2026-05-18",
+      "feature_id": "skills",
+      "feature_title": "skills",
+      "audience": "developer",
+      "summary": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [
+        "markdown"
+      ],
+      "paths": [
+        "plugin/skills/feature-memory-backfill/SKILL.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add backfill skill for slash-command invocation; bump plugin to v0.3.0",
+      "git_hash": "b1adc6bbf6b422926f49efb6b83b059c9b333ef9",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "93a0ca2e8a7d-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "both",
+      "summary": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "git_hash": "93a0ca2e8a7dc76c308efbce771a9279c54deac4",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill"
+    },
+    {
+      "event_id": "93a0ca2e8a7d-hooks",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "both",
+      "summary": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "kind": [
+        "bug-fix"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_session_start.py",
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Apply Codex review fixes; add test suite (50 tests, all passing)",
+      "git_hash": "93a0ca2e8a7dc76c308efbce771a9279c54deac4",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -595,7 +1059,10 @@
       "git_hash": "91f90b0f1a374ba9717146d178eb5db881693ac6",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "schema-change"
+      ]
     },
     {
       "event_id": "91f90b0f1a37-skills",
@@ -616,7 +1083,11 @@
       "git_hash": "91f90b0f1a374ba9717146d178eb5db881693ac6",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "schema-change",
+        "markdown"
+      ]
     },
     {
       "event_id": "8eb8cdefa7ba-hooks",
@@ -637,7 +1108,10 @@
       "git_hash": "8eb8cdefa7ba1aa66ad2d50131c37c5bd46099b3",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "7c13343fe5c7-specs",
@@ -658,7 +1132,11 @@
       "git_hash": "7c13343fe5c7f28207713cb3681ef77e89d63513",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "config-change",
+        "yaml"
+      ]
     },
     {
       "event_id": "73cd33c44307-plugin-core",
@@ -679,7 +1157,11 @@
       "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "73cd33c44307-skills",
@@ -701,7 +1183,10 @@
       "git_hash": "73cd33c44307e168cf50438441348677c83932d5",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
     },
     {
       "event_id": "1f27c8c5880e-plugin-core",
@@ -724,7 +1209,12 @@
       "git_hash": "1f27c8c5880ed36efb29ae9759107d98c4c3c04e",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "html-css",
+        "markdown"
+      ]
     },
     {
       "event_id": "1f27c8c5880e-skills",
@@ -744,6 +1234,34 @@
       "git_email": "31630310+h5kk@users.noreply.github.com",
       "git_message": "Add changelog viewer, Jira support, and dual changelogs to Feature Memory",
       "git_hash": "1f27c8c5880ed36efb29ae9759107d98c4c3c04e",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "markdown"
+      ]
+    },
+    {
+      "event_id": "1df9a5698c71-plugin-core",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Update README with backfill command usage and agent commands table",
+      "kind": [
+        "behavior-change"
+      ],
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "paths": [
+        "README.md"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Update README with backfill command usage and agent commands table",
+      "git_hash": "1df9a5698c71541c9a36e70570348bfb16673544",
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
@@ -776,7 +1294,11 @@
       "git_hash": "fad7fe86bd010393b18ffc07cb40047e3a6c422c",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "e967fcbc1150-plugin-core",
@@ -797,7 +1319,11 @@
       "git_hash": "e967fcbc1150b3955148e869a6d013eaaa9a2bed",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "e967fcbc1150-specs",
@@ -818,7 +1344,11 @@
       "git_hash": "e967fcbc1150b3955148e869a6d013eaaa9a2bed",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "8ba14608a0c1-specs",
@@ -838,6 +1368,32 @@
       "git_message": "Update findings with expanded testing results and resolved issues",
       "git_hash": "8ba14608a0c1b60ba0abec52e89620bd5ec78f32",
       "confidence": "high",
+      "review_status": "auto",
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
+    },
+    {
+      "event_id": "5c90910a3dbd-unmapped",
+      "date": "2026-05-17",
+      "feature_id": null,
+      "feature_title": "unmapped",
+      "audience": "both",
+      "summary": "Initial commit",
+      "kind": [
+        "new-feature"
+      ],
+      "tags": [],
+      "paths": [
+        ".gitattributes"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Initial commit",
+      "git_hash": "5c90910a3dbd6756b42ae5b965d663ade1594bf0",
+      "confidence": "medium",
       "review_status": "auto",
       "source": "git-backfill"
     },
@@ -876,7 +1432,11 @@
       "git_hash": "49036feaf2d83706bebee1b10c33ba641d2f1a1a",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "49036feaf2d8-cli",
@@ -897,7 +1457,10 @@
       "git_hash": "49036feaf2d83706bebee1b10c33ba641d2f1a1a",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "467a0fd75597-plugin-core",
@@ -918,7 +1481,11 @@
       "git_hash": "467a0fd75597af9af8c560249bdb535cf2a77266",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "304b840fdc59-cli",
@@ -939,7 +1506,10 @@
       "git_hash": "304b840fdc5921afbfec79c9f4f31629ec458362",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     },
     {
       "event_id": "15a23cfbb330-specs",
@@ -960,7 +1530,11 @@
       "git_hash": "15a23cfbb330a656a85722306f8c52c2555ba2fc",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "120ca650be49-specs",
@@ -982,7 +1556,12 @@
       "git_hash": "120ca650be49bd6f3932ee93de4aa2589f1e1adb",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "performance",
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "043f7d0f66b1-specs",
@@ -1005,7 +1584,11 @@
       "git_hash": "043f7d0f66b12470cd991057634e7d89274e592f",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
     },
     {
       "event_id": "043f7d0f66b1-cli",
@@ -1026,7 +1609,10 @@
       "git_hash": "043f7d0f66b12470cd991057634e7d89274e592f",
       "confidence": "high",
       "review_status": "auto",
-      "source": "git-backfill"
+      "source": "git-backfill",
+      "tags": [
+        "python"
+      ]
     }
   ]
 }
@@ -1057,6 +1643,29 @@
   if (devCount <= 1) {
     const devTab = document.querySelector('.tab[data-audience="developer"]');
     if (devTab) devTab.style.display = 'none';
+  }
+
+  // ── Tag category map ─────────────────────────────────────────────
+  const TAG_CATEGORIES = {
+    'breaking-change': 'impact', 'api-change': 'impact', 'schema-change': 'impact',
+    'config-change': 'impact', 'data-migration': 'impact',
+    'security': 'quality', 'auth': 'quality', 'performance': 'quality',
+    'error-handling': 'quality', 'logging': 'quality', 'accessibility': 'quality', 'ux': 'quality',
+    'tests': 'process', 'docs': 'process', 'dependency': 'process', 'tooling': 'process', 'ci-cd': 'process',
+    'typescript': 'tech', 'python': 'tech', 'javascript': 'tech', 'html-css': 'tech',
+    'shell': 'tech', 'yaml': 'tech', 'sql': 'tech', 'markdown': 'tech',
+  };
+  function tagCat(t) { return TAG_CATEGORIES[t] || 'tech'; }
+
+  // ── Active tag filter state ──────────────────────────────────────
+  let activeTags = new Set();
+  try {
+    const saved = JSON.parse(localStorage.getItem('fm-tags') || '[]');
+    saved.forEach(t => activeTags.add(t));
+  } catch (_) {}
+
+  function saveTagFilter() {
+    try { localStorage.setItem('fm-tags', JSON.stringify([...activeTags])); } catch (_) {}
   }
 
   let activeAudience = 'all';
@@ -1096,8 +1705,22 @@
         entry.jira_ticket || '',
         (entry.kind || []).join(' '),
         (entry.paths || []).join(' '),
+        (entry.tags || []).join(' '),
       ].join(' ').toLowerCase();
       if (!haystack.includes(q)) return false;
+    }
+    if (activeTags.size > 0) {
+      const entryTags = new Set(entry.tags || []);
+      // Group active tags by category
+      const byCat = {};
+      for (const t of activeTags) {
+        const c = tagCat(t);
+        (byCat[c] = byCat[c] || []).push(t);
+      }
+      // AND across categories: entry must satisfy every selected category
+      for (const catTags of Object.values(byCat)) {
+        if (!catTags.some(t => entryTags.has(t))) return false;
+      }
     }
     return true;
   }
@@ -1110,6 +1733,14 @@
       .replace(/"/g, '&quot;');
   }
 
+  function authorColor(name) {
+    let h = 0;
+    for (let i = 0; i < (name || '').length; i++) {
+      h = (h * 31 + name.charCodeAt(i)) & 0xFFFFFF;
+    }
+    return `hsl(${h % 360}, 65%, 62%)`;
+  }
+
   function renderEntry(entry) {
     const kinds = Array.isArray(entry.kind) ? entry.kind : [];
     const aud = entry.audience || 'developer';
@@ -1120,7 +1751,7 @@
     ).join('');
 
     const authorHtml = entry.git_author
-      ? `<span class="author-chip">@${escHtml(entry.git_author)}</span>`
+      ? `<span class="author-chip" style="color:${authorColor(entry.git_author)}">@${escHtml(entry.git_author)}</span>`
       : '';
 
     const pathsHtml = (entry.paths || []).map(p =>
@@ -1155,11 +1786,20 @@
          </div>`
       : '';
 
+    const tagsHtml = (entry.tags || []).length > 0
+      ? `<div class="detail-row">
+           <span class="detail-label">Tags</span>
+           <span class="entry-tags">${(entry.tags || []).map(t =>
+             `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`
+           ).join('')}</span>
+         </div>`
+      : '';
+
     return `
       <article class="entry" data-audience="${escHtml(aud)}" data-id="${escHtml(entry.event_id || '')}">
         <div class="entry-header" onclick="toggleEntry(this.parentElement)">
           <span class="audience-dot ${audienceClass(aud)}"></span>
-          ${entry.feature_id ? `<span class="feature-badge">${escHtml(entry.feature_id)}</span>` : ''}
+          ${entry.feature_id ? `<span class="feature-badge" title="${escHtml(entry.feature_id)}">${escHtml(entry.feature_title || entry.feature_id)}</span>` : ''}
           ${kindTagsHtml}
           <span class="summary" title="${escHtml(entry.summary)}">${escHtml(entry.summary)}</span>
           ${entry.jira_ticket ? `<span class="jira-chip">${escHtml(entry.jira_ticket)}</span>` : ''}
@@ -1169,6 +1809,7 @@
         <div class="entry-detail">
           ${gitMsgHtml}
           ${jiraHtml}
+          ${tagsHtml}
           ${pathsRowHtml}
           ${gitHashHtml}
           <div class="detail-row">
@@ -1185,13 +1826,19 @@
 
   function render() {
     const timeline = document.getElementById('timeline');
+    const aboutPanel = document.getElementById('about-panel');
     const filtered = entries.filter(matchesFilter);
 
     document.getElementById('count').textContent =
       filtered.length + ' of ' + entries.length + ' entries';
 
     if (filtered.length === 0) {
-      timeline.innerHTML = '<div class="empty">No entries match your search.</div>';
+      timeline.innerHTML = '';
+      if (aboutPanel) timeline.appendChild(aboutPanel);
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'No entries match your search.';
+      timeline.appendChild(empty);
       return;
     }
 
@@ -1213,7 +1860,11 @@
       </section>`;
     }).join('');
 
-    timeline.innerHTML = html;
+    timeline.innerHTML = '';
+    if (aboutPanel) timeline.appendChild(aboutPanel);
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    while (div.firstChild) timeline.appendChild(div.firstChild);
   }
 
   function formatDate(iso) {
@@ -1249,7 +1900,260 @@
     }, 150);
   });
 
+  // ── Tag filter panel ─────────────────────────────────────────────
+  function buildTagFilter() {
+    // Count occurrences of each tag across ALL entries (not filtered)
+    const counts = {};
+    for (const e of entries) {
+      for (const t of (e.tags || [])) {
+        counts[t] = (counts[t] || 0) + 1;
+      }
+    }
+
+    const cats = { impact: [], quality: [], process: [], tech: [] };
+    for (const [tag, count] of Object.entries(counts)) {
+      const c = tagCat(tag);
+      if (cats[c]) cats[c].push({ tag, count });
+    }
+
+    const catLabels = { impact: 'Impact', quality: 'Quality', process: 'Process', tech: 'Tech' };
+    let html = '';
+    for (const [cat, tags] of Object.entries(cats)) {
+      if (tags.length === 0) continue;
+      tags.sort((a, b) => b.count - a.count);
+      const chipsHtml = tags.map(({ tag, count }) => {
+        const active = activeTags.has(tag) ? ' active' : '';
+        return `<button class="filter-chip ${cat}${active}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`;
+      }).join('');
+      html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${catLabels[cat]}</span><div class="tag-chips-row">${chipsHtml}</div></div>`;
+    }
+    document.getElementById('tag-filter-body').innerHTML = html;
+
+    // Wire up chip clicks
+    document.getElementById('tag-filter-body').querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+        if (activeTags.has(tag)) activeTags.delete(tag);
+        else activeTags.add(tag);
+        saveTagFilter();
+        updateTagUI();
+        render();
+      });
+    });
+  }
+
+  function updateTagUI() {
+    // Sync active state on all chips
+    document.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.classList.toggle('active', activeTags.has(btn.dataset.tag));
+    });
+    // Show/hide clear button
+    const clearBtn = document.getElementById('clear-tags');
+    if (clearBtn) clearBtn.style.display = activeTags.size > 0 ? '' : 'none';
+    // Update active tag summary (shown when panel is collapsed)
+    const summary = document.getElementById('active-tag-summary');
+    if (summary) {
+      if (activeTags.size > 0) {
+        summary.textContent = activeTags.size + ' tag' + (activeTags.size > 1 ? 's' : '') + ' active';
+        summary.style.display = '';
+      } else {
+        summary.style.display = 'none';
+      }
+    }
+    // Reflect open state on toggle button
+    const toggleBtn = document.getElementById('tag-filter-toggle');
+    if (toggleBtn) {
+      const isOpen = document.getElementById('tag-filter').style.display !== 'none';
+      toggleBtn.classList.toggle('panel-open', isOpen);
+    }
+  }
+
+  // Toggle filter panel
+  document.getElementById('tag-filter-toggle').addEventListener('click', () => {
+    const panel = document.getElementById('tag-filter');
+    const open = panel.style.display !== 'none';
+    panel.style.display = open ? 'none' : 'block';
+    try { localStorage.setItem('fm-tag-panel', open ? 'closed' : 'open'); } catch (_) {}
+    updateTagUI();
+  });
+
+  // Restore panel state
+  try {
+    if (localStorage.getItem('fm-tag-panel') === 'open') {
+      document.getElementById('tag-filter').style.display = 'block';
+    }
+  } catch (_) {}
+
+  // Clear all tags
+  document.getElementById('clear-tags').addEventListener('click', () => {
+    activeTags.clear();
+    saveTagFilter();
+    updateTagUI();
+    render();
+  });
+
+  buildTagFilter();
+  updateTagUI();
   render();
+
+  // ── Toolbar ────────────────────────────────────────────────────────────
+
+  // Helper: copy text to clipboard with execCommand fallback
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    // fallback
+    return new Promise((resolve, reject) => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok ? resolve() : reject(new Error('execCommand failed'));
+    });
+  }
+
+  // Helper: flash a button green briefly
+  function flashBtn(btn, label) {
+    const original = btn.textContent;
+    btn.textContent = label || 'Copied!';
+    btn.classList.add('flash');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('flash');
+    }, 1500);
+  }
+
+  // Helper: get currently-visible (filtered) entries
+  function getFilteredEntries() {
+    return entries.filter(matchesFilter);
+  }
+
+  // ── 1. Expand All / Collapse All ──────────────────────────────────────
+  let allExpanded = false;
+  const expandAllBtn = document.getElementById('expand-all-btn');
+
+  expandAllBtn.addEventListener('click', () => {
+    allExpanded = !allExpanded;
+    // Only affect currently-visible entry cards
+    document.querySelectorAll('#timeline .entry').forEach(el => {
+      el.classList.toggle('expanded', allExpanded);
+    });
+    expandAllBtn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+  });
+
+  // Reset expand-all state whenever the list re-renders
+  const _origRender = render;
+  // (We patch render after initial call — see bottom of toolbar block)
+
+  // ── 2. Copy JSON ──────────────────────────────────────────────────────
+  const copyJsonBtn = document.getElementById('copy-json-btn');
+  const copyJsonMode = document.getElementById('copy-json-mode');
+
+  copyJsonBtn.addEventListener('click', () => {
+    const useFiltered = copyJsonMode.value === 'filtered';
+    const payload = useFiltered ? getFilteredEntries() : entries;
+    copyText(JSON.stringify(payload, null, 2))
+      .then(() => flashBtn(copyJsonBtn, 'Copied!'))
+      .catch(() => flashBtn(copyJsonBtn, 'Failed'));
+  });
+
+  // ── 3. Copy Markdown ──────────────────────────────────────────────────
+  const copyMdBtn = document.getElementById('copy-md-btn');
+
+  function entriesToMarkdown(list) {
+    if (!list.length) return '';
+    // Group by date, descending
+    const groups = {};
+    for (const e of list) {
+      const d = e.date || 'unknown';
+      if (!groups[d]) groups[d] = [];
+      groups[d].push(e);
+    }
+    const lines = [];
+    for (const date of Object.keys(groups).sort().reverse()) {
+      lines.push('## ' + date);
+      for (const e of groups[date]) {
+        const feature = e.feature_id ? `**[${e.feature_id}]**` : '';
+        const summary = e.summary || '';
+        const tags = Array.isArray(e.kind) && e.kind.length
+          ? ' `' + e.kind.join(', ') + '`'
+          : '';
+        lines.push('- ' + [feature, summary].filter(Boolean).join(' ') + tags);
+      }
+      lines.push('');
+    }
+    return lines.join('\n').trimEnd();
+  }
+
+  copyMdBtn.addEventListener('click', () => {
+    const md = entriesToMarkdown(getFilteredEntries());
+    copyText(md)
+      .then(() => flashBtn(copyMdBtn, 'Copied!'))
+      .catch(() => flashBtn(copyMdBtn, 'Failed'));
+  });
+
+  // ── 4. Export CSV ─────────────────────────────────────────────────────
+  const exportCsvBtn = document.getElementById('export-csv-btn');
+
+  function entriesToCsv(list) {
+    const cols = ['date', 'feature_id', 'summary', 'kind', 'tags', 'git_hash'];
+    const escape = v => {
+      const s = String(v == null ? '' : v);
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? '"' + s.replace(/"/g, '""') + '"'
+        : s;
+    };
+    const rows = [cols.join(',')];
+    for (const e of list) {
+      rows.push([
+        e.date || '',
+        e.feature_id || '',
+        e.summary || '',
+        Array.isArray(e.kind) ? e.kind.join(';') : (e.kind || ''),
+        Array.isArray(e.tags) ? e.tags.join(';') : (e.tags || ''),
+        e.git_hash || '',
+      ].map(escape).join(','));
+    }
+    return rows.join('\r\n');
+  }
+
+  exportCsvBtn.addEventListener('click', () => {
+    const csv = entriesToCsv(getFilteredEntries());
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'changelog.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    flashBtn(exportCsvBtn, 'Saved!');
+  });
+
+  // Reset expand-all button label whenever render() fires (filters changed)
+  // Wrap render so allExpanded resets on each filter change
+  (function patchRender() {
+    const original = render;
+    // render is already defined and called; we override global reference inside IIFE
+    // by replacing the event-listener calls. Simplest: hook onto tab/search events
+    // to reset state. We do this by patching the re-render trigger points:
+    function resetExpandState() {
+      allExpanded = false;
+      expandAllBtn.textContent = 'Expand All';
+    }
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', resetExpandState);
+    });
+    document.getElementById('search').addEventListener('input', resetExpandState);
+  })();
+
+  // ── End Toolbar ────────────────────────────────────────────────────────
 
   // Light/dark toggle
   const root = document.documentElement;

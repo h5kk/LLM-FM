@@ -1,7 +1,7 @@
 {
   "name": "feature-memory",
-  "version": "0.3.0",
-  "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, dual developer+product changelogs, relationship diagrams, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
+  "version": "0.4.0",
+  "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, dual developer+product changelogs, tag-filtered changelog viewer, relationship diagrams, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
   "author": {
     "name": "Hanny Noueilaty",
     "url": "https://github.com/h5kk"
@@ -31,6 +31,11 @@
       "name": "feature-memory-backfill",
       "path": "skills/feature-memory-backfill/SKILL.md",
       "description": "Backfills the Feature Memory changelog from git history. Maps commits to features and appends structured entries to changelog.json, then refreshes the viewer."
+    },
+    {
+      "name": "feature-memory-changelog-refresh",
+      "path": "skills/feature-memory-changelog-refresh/SKILL.md",
+      "description": "Re-infers tags for existing changelog entries that predate tag support (v0.4.0). No git re-scan — uses stored paths and commit messages. Safe to run multiple times."
     }
   ]
 }
