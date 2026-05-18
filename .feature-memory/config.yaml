@@ -5,6 +5,7 @@ mode: small
 
 features:
   plugin-core:
+    title: "Plugin Core"
     globs:
       - "plugin/.claude-plugin/**"
       - "plugin/assets/**"
@@ -14,21 +15,26 @@ features:
       - "README.md"
       - "docs/github-profile.md"
   hooks:
+    title: "Lifecycle Hooks"
     globs:
       - "plugin/hooks/**"
   skills:
+    title: "Skills"
     globs:
       - "plugin/skills/**"
   reviewer:
+    title: "Reviewer Agent"
     globs:
       - "plugin/agents/**"
   specs:
+    title: "Specifications"
     globs:
       - "docs/specs/**"
       - "docs/RepoTest_Iteration1/**"
       - "feature-memory-architecture-plan.md"
       - ".feature-memory/config.yaml"
   cli:
+    title: "CLI (planned)"
     globs:
       - "fm_init.py"
       - "src/**"
@@ -46,3 +52,6 @@ mapping:
 # The built-in defaults (*.pyc, *.lock, node_modules/**, etc.) always apply;
 # list additional project-specific patterns here.
 skip_patterns: []
+
+tagging:
+  strategy: cli   # cli | keyword | none
