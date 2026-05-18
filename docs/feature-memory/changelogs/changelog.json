@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated": "2026-05-18T19:51:14.792756+00:00",
+  "generated": "2026-05-18T19:51:42.725967+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -1222,6 +1222,464 @@
         "changelog-refresh",
         "skills"
       ]
+    },
+    {
+      "event_id": "20260518T193746Z-ff49",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T193751Z-369b",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T193758Z-5d2d",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T193810Z-829a",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T193819Z-2387",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194857Z-e1e8",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_common.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194901Z-85f7",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/claude_stop.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/claude_stop.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194908Z-86a2",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/claude_stop.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/claude_stop.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194922Z-c382",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194926Z-acbd",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194932Z-8deb",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194947Z-03c2",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194952Z-d8a4",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T194956Z-f4c5",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T195002Z-f088",
+      "date": "2026-05-18",
+      "feature_id": "specs",
+      "feature_title": "specs",
+      "audience": "developer",
+      "summary": "Modified .feature-memory/config.yaml",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "config-change"
+      ],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        ".feature-memory/config.yaml"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T195040Z-af05",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/.claude-plugin/plugin.json",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T195044Z-5224",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/.claude-plugin/plugin.json",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T195104Z-334e",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_common.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T195112Z-facf",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "topic_tags": [],
+      "topic_pending": true,
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add skip_patterns filter and --dedup merge command (v0.6.0)",
+      "git_hash": "cf84b3c070087b1e39f2cc9ffc0242d267a88656",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
     },
     {
       "event_id": "fad7fe86bd01-plugin-core",
