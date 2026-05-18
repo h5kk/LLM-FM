@@ -1,4 +1,4 @@
-<!-- fm-viewer-version: 6 -->
+<!-- fm-viewer-version: 7 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -416,6 +416,87 @@
       text-align: center;
     }
 
+    /* ── Dev Sync: catch-up block ─────────────────────────────────────── */
+    .ds-catchup {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.6;
+      opacity: 0.92;
+    }
+    .ds-catchup-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      margin-bottom: 7px;
+    }
+    .ds-catchup-body {
+      overflow: hidden;
+      max-height: 3.84em; /* ~2.4 lines at 1.6 line-height */
+      transition: max-height 0.3s ease;
+      position: relative;
+    }
+    .ds-catchup-body.expanded {
+      max-height: 20em;
+    }
+    .ds-catchup-body:not(.expanded)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1.4em;
+      background: linear-gradient(transparent, var(--surface2));
+      pointer-events: none;
+    }
+    .ds-catchup-toggle {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 11px;
+      font-family: var(--font);
+      padding: 4px 0 0;
+      display: block;
+      opacity: 0.85;
+      transition: opacity 0.15s;
+    }
+    .ds-catchup-toggle:hover { opacity: 1; }
+
+    /* ── Dev Sync: resize handle ──────────────────────────────────────── */
+    #ds-resize-handle {
+      display: none; /* shown only on desktop via media query */
+      position: absolute;
+      top: 0;
+      right: -3px;
+      width: 6px;
+      height: 100%;
+      cursor: col-resize;
+      z-index: 20;
+      background: transparent;
+      transition: background 0.15s;
+    }
+    #ds-resize-handle:hover,
+    #ds-resize-handle.dragging {
+      background: var(--accent);
+      opacity: 0.5;
+    }
+    @media (min-width: 1200px) {
+      #devsync-col {
+        position: relative; /* needed for absolute handle child */
+      }
+      #ds-resize-handle {
+        display: block;
+      }
+    }
+
     /* ── Entry card ─────────────────────────────────────────────────── */
     .empty { text-align: center; color: var(--muted); padding: 64px 0; font-size: 15px; }
     .date-group { margin-bottom: 28px; }
@@ -584,6 +665,7 @@
 
 <div id="page-body">
   <aside id="devsync-col">
+    <div id="ds-resize-handle" title="Drag to resize"></div>
     <div class="ds-header">
       <div class="ds-header-title">Dev Sync</div>
       <div class="ds-header-sub" id="ds-sub"></div>
@@ -598,7 +680,7 @@
 <script id="changelog-data" type="application/json">
 {
   "schema_version": 2,
-  "generated": "2026-05-18T18:32:10.808633+00:00",
+  "generated": "2026-05-18T19:01:21.396903+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -1842,6 +1924,198 @@
       "source": "hook"
     },
     {
+      "event_id": "20260518T185817Z-3f5a",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T185826Z-89e7",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T185831Z-67e8",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T185841Z-6204",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T185851Z-c2f5",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T185854Z-839f",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T185857Z-89d0",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_common.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190038Z-1cfc",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Redesign Dev Sync: 2-col layout, tweet-style prose, dedup bullets",
+      "git_hash": "61c8c0afc826929aae4b8721aacd04d09c815701",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
       "event_id": "fad7fe86bd01-plugin-core",
       "date": "2026-05-17",
       "feature_id": "plugin-core",
@@ -2374,6 +2648,117 @@
 
   window.toggleEntry = function (el) { el.classList.toggle('expanded'); };
 
+  // ── Dev Sync: conversational catch-up ────────────────────────────────
+  function buildCatchup(devEntries) {
+    const total = devEntries.length;
+    if (!total) return '';
+
+    // 1. Feature activity — which features have the most commits
+    const featCounts = {};
+    for (const e of devEntries) {
+      if (e.feature_id) featCounts[e.feature_id] = (featCounts[e.feature_id] || 0) + 1;
+    }
+    const sortedFeats = Object.entries(featCounts).sort((a, b) => b[1] - a[1]);
+    const topFeat = sortedFeats[0];
+    const featureCount = Object.keys(featCounts).length;
+
+    // 2. Dominant kind across all entries
+    const kindCounts = {};
+    for (const e of devEntries) for (const k of (e.kind || [])) kindCounts[k] = (kindCounts[k] || 0) + 1;
+    const dominantKind = Object.entries(kindCounts).filter(([k]) => k !== 'path_touched' && k !== 'path-touched')
+      .sort((a, b) => b[1] - a[1])[0];
+
+    // 3. Highlights (breaking/security)
+    const hlEntries = devEntries.filter(e => (e.tags || []).some(t => HIGHLIGHT_TAGS.includes(t)));
+
+    // 4. Authors
+    const authors = [...new Set(devEntries.filter(e => e.git_author).map(e => firstNameOnly(e.git_author)))];
+
+    // 5. Date range
+    const dates = devEntries.map(e => e.date).filter(Boolean).sort();
+    const dateRange = dates.length > 1
+      ? `from ${dates[0]} to ${dates[dates.length - 1]}`
+      : (dates[0] ? `on ${dates[0]}` : 'recently');
+
+    // Build 5 sentences
+    const sentences = [];
+
+    // S1: total scope
+    const authorPhrase = authors.length > 0
+      ? ` by ${authors.slice(0, 3).join(', ')}${authors.length > 3 ? ' and others' : ''}`
+      : '';
+    sentences.push(
+      `The repo saw <strong>${total} change${total !== 1 ? 's' : ''}</strong> across <strong>${featureCount} feature${featureCount !== 1 ? 's' : ''}</strong> ${dateRange}${authorPhrase}.`
+    );
+
+    // S2: most active feature
+    if (topFeat) {
+      const topTitle = (devEntries.find(e => e.feature_id === topFeat[0]) || {}).feature_title || topFeat[0];
+      const pct = Math.round((topFeat[1] / total) * 100);
+      sentences.push(
+        `The most active area was <strong>${escHtml(topTitle)}</strong> with ${topFeat[1]} commit${topFeat[1] !== 1 ? 's' : ''} (${pct}% of the batch).`
+      );
+    }
+
+    // S3: dominant kind
+    if (dominantKind) {
+      const [dk, dkCount] = dominantKind;
+      const kindLabel = dk.replace(/-/g, ' ');
+      const kindVerb = dk === 'new-feature' ? 'adding new functionality'
+        : dk === 'bug-fix' ? 'squashing bugs'
+        : dk === 'behavior-change' ? 'adjusting existing behavior'
+        : dk === 'refactor' ? 'cleaning up internals'
+        : 'making changes';
+      sentences.push(
+        `The team was primarily ${kindVerb} — <strong>${dkCount} ${kindLabel}</strong> across the batch.`
+      );
+    } else {
+      sentences.push('The batch covers a mix of kinds with no single dominant category.');
+    }
+
+    // S4: highlights or second-busiest feature
+    if (hlEntries.length) {
+      const hlTags = [...new Set(hlEntries.flatMap(e => (e.tags || []).filter(t => HIGHLIGHT_TAGS.includes(t))))];
+      sentences.push(
+        `Watch out: there ${hlEntries.length === 1 ? 'is' : 'are'} <strong>${hlEntries.length} high-priority item${hlEntries.length !== 1 ? 's' : ''}</strong> (${hlTags.join(', ')}) that need review before merging.`
+      );
+    } else if (sortedFeats.length > 1) {
+      const second = sortedFeats[1];
+      const secondTitle = (devEntries.find(e => e.feature_id === second[0]) || {}).feature_title || second[0];
+      sentences.push(
+        `Secondary activity landed in <strong>${escHtml(secondTitle)}</strong> with ${second[1]} commit${second[1] !== 1 ? 's' : ''}.`
+      );
+    } else {
+      sentences.push('No breaking or security changes were flagged in this batch.');
+    }
+
+    // S5: overall posture
+    const newCount   = kindCounts['new-feature'] || 0;
+    const fixCount   = kindCounts['bug-fix'] || 0;
+    const refCount   = kindCounts['refactor'] || 0;
+    let posture;
+    if (newCount > fixCount && newCount > refCount) posture = 'building momentum — more new features than fixes or cleanup';
+    else if (fixCount > newCount && fixCount > refCount) posture = 'in stabilisation mode — more bug fixes than new work';
+    else if (refCount > 0) posture = 'tidying the codebase alongside feature work';
+    else posture = 'making steady incremental progress';
+    sentences.push(`Overall the codebase is ${posture}.`);
+
+    const text = sentences.join(' ');
+    return `<div class="ds-catchup">
+      <div class="ds-catchup-title">Catch-up</div>
+      <div class="ds-catchup-body" id="ds-catchup-body">${text}</div>
+      <button class="ds-catchup-toggle" id="ds-catchup-btn" onclick="toggleCatchup()">Read more ▾</button>
+    </div>`;
+  }
+
+  window.toggleCatchup = function () {
+    const body = document.getElementById('ds-catchup-body');
+    const btn  = document.getElementById('ds-catchup-btn');
+    if (!body) return;
+    const expanded = body.classList.toggle('expanded');
+    btn.textContent = expanded ? 'Read less ▴' : 'Read more ▾';
+  };
+
   // ── Dev Sync: tweet-style prose ───────────────────────────────────────
   function renderDevSync(baseFiltered) {
     const body = document.getElementById('ds-body');
@@ -2408,8 +2793,18 @@
       ${authors.length ? `<span class="ds-dot">·</span><span>${escHtml(authors.slice(0, 3).join(', '))}</span>` : ''}
     </div>`;
 
-    // Highlights block
-    const highlights = devEntries.filter(e => (e.tags || []).some(t => HIGHLIGHT_TAGS.includes(t)));
+    // Catch-up block (above highlights)
+    html += buildCatchup(devEntries);
+
+    // Highlights block — dedup by git_hash so multi-feature commits appear once
+    const hlSeen = new Set();
+    const highlights = devEntries.filter(e => {
+      if (!(e.tags || []).some(t => HIGHLIGHT_TAGS.includes(t))) return false;
+      const key = e.git_hash || e.summary;
+      if (!key || hlSeen.has(key)) return false;
+      hlSeen.add(key);
+      return true;
+    });
     if (highlights.length) {
       const items = highlights.map(e => {
         const tag = (e.tags || []).find(t => HIGHLIGHT_TAGS.includes(t)) || '';
@@ -2679,6 +3074,61 @@
     themeBtn.textContent = light ? '☀︎' : '☾';
     try { localStorage.setItem('fm-theme', light ? 'dark' : 'light'); } catch (_) {}
   });
+
+  // ── Dev Sync resize handle ────────────────────────────────────────────
+  function initResizeHandle() {
+    const handle  = document.getElementById('ds-resize-handle');
+    const col     = document.getElementById('devsync-col');
+    const root    = document.documentElement;
+    const MIN_W   = 220;
+    const MAX_W   = 520;
+    const LS_KEY  = 'ds-panel-width';
+
+    // Restore persisted width on load
+    try {
+      const saved = parseInt(localStorage.getItem(LS_KEY), 10);
+      if (saved && saved >= MIN_W && saved <= MAX_W) {
+        root.style.setProperty('--ds-width', saved + 'px');
+      }
+    } catch (_) {}
+
+    if (!handle || !col) return;
+
+    let dragging  = false;
+    let startX    = 0;
+    let startW    = 0;
+
+    handle.addEventListener('mousedown', e => {
+      // Only active on desktop (col must be visible)
+      if (window.innerWidth < 1200) return;
+      dragging = true;
+      startX   = e.clientX;
+      startW   = col.getBoundingClientRect().width;
+      handle.classList.add('dragging');
+      document.body.style.cursor    = 'col-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const delta = e.clientX - startX;
+      const newW  = Math.min(MAX_W, Math.max(MIN_W, startW + delta));
+      root.style.setProperty('--ds-width', newW + 'px');
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('dragging');
+      document.body.style.cursor     = '';
+      document.body.style.userSelect = '';
+      // Persist final width
+      const finalW = col.getBoundingClientRect().width;
+      try { localStorage.setItem(LS_KEY, Math.round(finalW)); } catch (_) {}
+    });
+  }
+  initResizeHandle();
 
   // ── Init ──────────────────────────────────────────────────────────────
   updateHeaderHeight();
