@@ -1,0 +1,15 @@
+{
+  "name": "h5kk-marketplace",
+  "description": "Plugins by h5kk",
+  "plugins": [
+    {
+      "name": "feature-memory",
+      "description": "Maintains feature-level memory for software repos. Hooks into agent lifecycle to keep docs current as code changes.",
+      "source": {
+        "source": "github",
+        "repo": "h5kk/LLM-FM",
+        "path": "plugin"
+      }
+    }
+  ]
+}
