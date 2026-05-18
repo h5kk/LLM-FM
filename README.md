@@ -100,6 +100,34 @@ Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc 
 3. Say **"initialize feature memory"** — the init skill walks you through setup
 4. Say **"update feature memory"** after making code changes — the maintainer skill keeps docs current
 
+### Agent commands
+
+| Say this | What happens |
+|----------|-------------|
+| `initialize feature memory` | One-time setup: scaffolds docs, scans codebase, proposes and creates feature pages |
+| `update feature memory` | Keeps docs current: updates feature pages, changelogs, source maps after code changes |
+| `review feature memory` | Read-only audit: checks docs for stale claims, missing sources, broken relationships |
+
+### Backfill command
+
+Backfill `changelog.json` from existing git history without waiting for live hooks:
+
+```bash
+# Last 48 hours (default)
+python plugin/hooks/fm_backfill.py
+
+# Since a specific date
+python plugin/hooks/fm_backfill.py --since 2026-01-01
+
+# Since a specific commit (exclusive)
+python plugin/hooks/fm_backfill.py --since-commit abc1234
+
+# All commits in the repo
+python plugin/hooks/fm_backfill.py --all
+```
+
+If your branch follows a Jira naming convention (e.g. `feat/PROJ-123-my-feature`), the ticket identifier is extracted automatically and attached to each changelog entry.
+
 ### What the plugin includes
 
 | Component | Purpose |
@@ -109,7 +137,8 @@ Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc 
 | **Reviewer agent** | Read-only audit: checks docs for stale claims, broken links, missing sources |
 | **SessionStart hook** | Injects feature list and recent activity into agent context |
 | **PostToolUse hook** | Logs edits, reminds which feature docs to update |
-| **Stop hook** | Reports features with source changes but no doc updates |
+| **Stop hook** | Captures git author, compiles `changelog.json`, reports features with missing doc updates |
+| **Backfill script** | Populate changelog from git history on demand |
 
 ### Phase 1 (planned): `fm` CLI
 
