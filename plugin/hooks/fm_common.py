@@ -14,7 +14,11 @@ from pathlib import Path
 
 
 def load_config(project_dir):
-    """Load feature globs from config.yaml without requiring PyYAML."""
+    """Load feature metadata from config.yaml without requiring PyYAML.
+
+    Returns {feature_id: {"title": str, "globs": [str], "mode": str|None}}.
+    Falls back to title-casing the feature_id if 'title:' is absent.
+    """
     config_path = project_dir / ".feature-memory" / "config.yaml"
     if not config_path.exists():
         return {}
@@ -39,8 +43,24 @@ def load_config(project_dir):
         if in_features:
             if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":") and not stripped.startswith("-"):
                 current_feature = stripped[:-1]
-                features[current_feature] = []
+                features[current_feature] = {
+                    "title": current_feature.replace("-", " ").title(),
+                    "globs": [],
+                    "mode": None,
+                }
                 in_globs = False
+                continue
+
+            if current_feature and stripped.startswith("title:"):
+                title_val = stripped[6:].strip().strip('"').strip("'")
+                if title_val:
+                    features[current_feature]["title"] = title_val
+                continue
+
+            if current_feature and stripped.startswith("mode:"):
+                mode_val = stripped[5:].strip().strip('"').strip("'")
+                if mode_val:
+                    features[current_feature]["mode"] = mode_val
                 continue
 
             if stripped == "globs:":
@@ -50,10 +70,10 @@ def load_config(project_dir):
             if in_globs and stripped.startswith("- "):
                 glob_pattern = stripped[2:].strip().strip('"').strip("'")
                 if current_feature:
-                    features[current_feature].append(glob_pattern)
+                    features[current_feature]["globs"].append(glob_pattern)
                 continue
 
-            # Any non-glob key (mode:, owner:, etc.) exits glob parsing
+            # Any non-glob key (owner:, etc.) exits glob parsing
             if not stripped.startswith("- ") and ":" in stripped:
                 in_globs = False
 
@@ -64,12 +84,58 @@ def load_config(project_dir):
     return features
 
 
+def get_feature_globs(features):
+    """Extract flat {feature_id: [globs]} from the rich load_config() format.
+
+    Accepts both old {id: [globs]} and new {id: {"globs": [...], ...}} shapes.
+    """
+    result = {}
+    for fid, val in features.items():
+        if isinstance(val, dict):
+            result[fid] = val.get("globs", [])
+        else:
+            result[fid] = val
+    return result
+
+
+def load_tag_strategy(project_dir):
+    """Read tagging.strategy from config.yaml. Returns 'cli', 'keyword', or 'none'."""
+    config_path = project_dir / ".feature-memory" / "config.yaml"
+    if not config_path.exists():
+        return "cli"
+    try:
+        in_tagging = False
+        for line in config_path.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if stripped == "tagging:":
+                in_tagging = True
+                continue
+            if in_tagging and not line.startswith(" ") and not line.startswith("\t") and stripped:
+                in_tagging = False
+                continue
+            if in_tagging and stripped.startswith("strategy:"):
+                val = stripped[9:].strip().strip('"').strip("'").split("#")[0].strip()
+                if val in ("cli", "keyword", "none"):
+                    return val
+    except Exception:
+        pass
+    return "cli"
+
+
 def match_path_to_features(file_path, features):
-    """Match a file path against feature globs. Returns list of ALL matching feature IDs."""
+    """Match a file path against feature globs. Returns list of ALL matching feature IDs.
+
+    Accepts both old {id: [globs]} and new {id: {"globs": [...], ...}} shapes.
+    """
     normalized = file_path.replace("\\", "/")
     matched = []
 
-    for feature_id, globs in features.items():
+    for feature_id, globs_or_meta in features.items():
+        # Support both old list format and new rich dict format
+        if isinstance(globs_or_meta, dict):
+            globs = globs_or_meta.get("globs", [])
+        else:
+            globs = globs_or_meta
         for pattern in globs:
             if pattern.endswith("/**"):
                 prefix = pattern[:-3]
@@ -231,6 +297,90 @@ def _infer_tags(paths, message, kind):
     return result
 
 
+def _infer_audience(paths, message, tags):
+    """Infer entry audience from file paths, commit message, and tags.
+
+    Returns 'product', 'developer', or 'both'.
+    - 'developer': pure internal paths (tests, config, infra, docs)
+    - 'product': paths touching user-facing surfaces only
+    - 'both': mixed, or any path that could affect user behavior
+    """
+    npaths = [p.replace("\\", "/").lower() for p in (paths or [])]
+    msg = (message or "").lower()
+
+    internal_indicators = [
+        lambda p: re.search(r'(^|/)tests?/', p) or re.search(r'(_test\.|\.test\.|\.spec\.)', p),
+        lambda p: re.search(r'\.(yaml|yml|json|lock|toml|cfg|ini)$', p),
+        lambda p: p.startswith('.') or '/.github/' in p or '/ci/' in p,
+        lambda p: re.search(r'(makefile|dockerfile|\.sh$)', p),
+    ]
+    product_indicators = [
+        lambda p: re.search(r'\.(html|css|jsx?|tsx?)$', p) and 'test' not in p,
+        lambda p: re.search(r'/(views?|templates?|components?|pages?|ui)/', p),
+        lambda p: re.search(r'/(api|routes?|endpoints?)/', p),
+    ]
+
+    internal_count = sum(1 for p in npaths if any(fn(p) for fn in internal_indicators))
+    product_count  = sum(1 for p in npaths if any(fn(p) for fn in product_indicators))
+
+    if "breaking" in msg or "api" in msg or (tags and "breaking-change" in tags):
+        return "both"
+    if not npaths:
+        return "both"
+    if internal_count == len(npaths):
+        return "developer"
+    if product_count > 0 and internal_count == 0:
+        return "product"
+    return "both"
+
+
+def _infer_kind(paths, message):
+    """Infer change kind from commit message."""
+    m = (message or "").lower()
+    if any(k in m for k in ("fix", "bug", "patch", "repair", "hotfix")):
+        return ["bug-fix"]
+    if any(k in m for k in ("add ", "new ", "feat", "implement", "create", "introduce", "initial")):
+        return ["new-feature"]
+    if any(k in m for k in ("refactor", "cleanup", "clean up", "rename", "reorganize", "move", "extract")):
+        return ["refactor"]
+    return ["behavior-change"]
+
+
+def _keyword_tags_for_entry(entry):
+    """Derive 1-2 topic tags from file paths heuristically (air-gap fallback)."""
+    paths = entry.get("paths") or []
+    tags = []
+    _generic = {'src', 'lib', 'app', 'plugin', 'hooks', 'the', 'and'}
+    for path in paths[:3]:
+        parts = path.replace("\\", "/").split("/")
+        # Take the most-specific non-generic directory component
+        for part in reversed(parts[:-1]):  # skip filename
+            slug = re.sub(r'[^a-z0-9]+', '-', part.lower()).strip('-')
+            if len(slug) >= 3 and slug not in _generic:
+                if slug not in tags:
+                    tags.append(slug)
+                    break
+        if len(tags) >= 2:
+            break
+    return tags[:2]
+
+
+def rotate_events_if_oversized(events_path, max_mb=5):
+    """Rotate events.jsonl to events-overflow-{timestamp}.jsonl if it exceeds max_mb."""
+    try:
+        if not events_path.exists():
+            return
+        size_mb = events_path.stat().st_size / (1024 * 1024)
+        if size_mb < max_mb:
+            return
+        ts = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+        overflow = events_path.parent / f"events-overflow-{ts}.jsonl"
+        events_path.rename(overflow)
+        log_error(f"events.jsonl exceeded {max_mb}MB, rotated to {overflow.name}")
+    except Exception as e:
+        log_error(f"rotate_events_if_oversized error: {e}")
+
+
 _TOPIC_TAG_RE = re.compile(r'^[a-z][a-z0-9-]{0,29}$')
 
 
@@ -279,15 +429,28 @@ def _parse_topic_tags(text, count):
     return result
 
 
-def generate_topic_tags_batch(entries, batch_size=15, timeout=45):
-    """Generate semantic topic tags for a list of changelog entries via claude CLI.
+def generate_topic_tags_batch(entries, batch_size=15, timeout=45, strategy='cli', min_interval_s=0.5):
+    """Generate semantic topic tags for a list of changelog entries.
+
+    strategy:
+      'cli'     — use claude CLI (default); degrades to empty lists if unavailable.
+      'keyword' — heuristic from file path directory components (air-gap safe).
+      'none'    — skip entirely; leave topic_tags as empty lists.
 
     Returns a list of tag lists aligned with the input entries list.
-    Falls back silently to empty lists if claude is unavailable.
     Never raises.
     """
     import shutil
+    import time
     result = [[] for _ in entries]
+
+    if strategy == 'none':
+        return result
+
+    if strategy == 'keyword':
+        return [_keyword_tags_for_entry(e) for e in entries]
+
+    # strategy == 'cli'
     if not shutil.which("claude"):
         return result
 
@@ -296,7 +459,11 @@ def generate_topic_tags_batch(entries, batch_size=15, timeout=45):
             yield lst[i:i + n]
 
     offset = 0
+    first_batch = True
     for batch in _chunks(entries, batch_size):
+        if not first_batch and min_interval_s > 0:
+            time.sleep(min_interval_s)
+        first_batch = False
         prompt = _build_topic_prompt(batch)
         try:
             r = subprocess.run(
@@ -313,7 +480,7 @@ def generate_topic_tags_batch(entries, batch_size=15, timeout=45):
     return result
 
 
-_VIEWER_VERSION = 9  # increment when the viewer template gets significant UI changes
+_VIEWER_VERSION = 10  # increment when the viewer template gets significant UI changes
 
 # Paths matching these globs are never recorded as changelog entries.
 # Covers generated/compiled artifacts, caches, lock files, and IDE state.
@@ -398,6 +565,11 @@ def _check_viewer_update(docs_root):
 
     Preserves existing changelog JSON data by re-injecting it after the copy.
     Silently no-ops if the template cannot be found.
+
+    Version detection requires at least ONE of two markers:
+      - HTML comment: <!-- fm-viewer-version: N -->
+      - Meta tag:     <meta name="fm-viewer-version" content="N">
+    If neither is parseable, logs to errors.log and skips the upgrade.
     """
     import re as _re
     import shutil
@@ -407,8 +579,18 @@ def _check_viewer_update(docs_root):
 
     try:
         current = viewer_path.read_text(encoding="utf-8")
-        m = _re.search(r'<!--\s*fm-viewer-version:\s*(\d+)\s*-->', current)
-        installed_ver = int(m.group(1)) if m else 0
+
+        # Try HTML comment marker
+        m_comment = _re.search(r'<!--\s*fm-viewer-version:\s*(\d+)\s*-->', current)
+        # Try meta tag marker
+        m_meta = _re.search(r'<meta\s+name="fm-viewer-version"\s+content="(\d+)"', current)
+
+        if m_comment is None and m_meta is None:
+            log_error("_check_viewer_update: neither version comment nor meta tag found in "
+                      f"{viewer_path.name}; skipping upgrade to avoid overwriting custom viewer.")
+            return
+
+        installed_ver = int((m_comment or m_meta).group(1))
         if installed_ver >= _VIEWER_VERSION:
             return  # Already up to date
 

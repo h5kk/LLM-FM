@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update, generate_topic_tags_batch, load_skip_patterns, should_skip_path
+from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update, generate_topic_tags_batch, load_skip_patterns, should_skip_path, _infer_kind
 
 _JIRA_RE = re.compile(r'\b([A-Z][A-Z0-9]{1,9}-\d+)\b')
 
@@ -81,18 +81,6 @@ def _get_commit_files(project_dir, commit_hash):
     out = _git("diff-tree", "--no-commit-id", "-r", "--name-only", "--root", commit_hash, cwd=project_dir)
     return [f for f in out.splitlines() if f.strip()]
 
-
-def _infer_kind(paths, message):
-    m = message.lower()
-    if any(k in m for k in ("fix", "bug", "patch", "repair", "hotfix")):
-        return ["bug-fix"]
-    if any(k in m for k in ("add ", "new ", "feat", "implement", "create", "introduce", "initial")):
-        return ["new-feature"]
-    if any(k in m for k in ("refactor", "cleanup", "clean up", "rename", "reorganize", "move", "extract")):
-        return ["refactor"]
-    if any(k in m for k in ("update", "bump", "upgrade", "change", "modify", "improve")):
-        return ["behavior-change"]
-    return ["behavior-change"]
 
 
 def _infer_audience(paths, kinds):
