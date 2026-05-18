@@ -1034,7 +1034,12 @@
 
 <script>
 (function () {
-  const data = JSON.parse(document.getElementById('changelog-data').textContent || '{}');
+  let data = {};
+  try {
+    data = JSON.parse(document.getElementById('changelog-data').textContent || '{}');
+  } catch (e) {
+    document.querySelector('main').innerHTML = '<p class="empty">Changelog data could not be parsed. Regenerate with fm_backfill.py.</p>';
+  }
   const entries = Array.isArray(data.entries) ? data.entries : [];
 
   if (data.generated) {
@@ -1096,7 +1101,6 @@
 
   function renderEntry(entry) {
     const kinds = Array.isArray(entry.kind) ? entry.kind : [];
-    const primaryKind = kinds[0] || 'path_touched';
     const aud = entry.audience || 'developer';
     const conf = entry.confidence || 'auto';
 
@@ -1239,14 +1243,16 @@
   // Light/dark toggle
   const root = document.documentElement;
   const toggleBtn = document.getElementById('theme-toggle');
-  const saved = localStorage.getItem('fm-theme');
-  if (saved === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.textContent = '☾'; }
+  try {
+    const saved = localStorage.getItem('fm-theme');
+    if (saved === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.textContent = '☾'; }
+  } catch (_) {}
 
   toggleBtn.addEventListener('click', () => {
     const isLight = root.getAttribute('data-theme') === 'light';
     root.setAttribute('data-theme', isLight ? 'dark' : 'light');
     toggleBtn.textContent = isLight ? '☀︎' : '☾';
-    localStorage.setItem('fm-theme', isLight ? 'dark' : 'light');
+    try { localStorage.setItem('fm-theme', isLight ? 'dark' : 'light'); } catch (_) {}
   });
 })();
 </script>

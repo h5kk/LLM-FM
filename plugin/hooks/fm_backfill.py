@@ -76,7 +76,8 @@ def _get_commits(project_dir, hours=None, since=None, all_commits=False, since_c
 
 
 def _get_commit_files(project_dir, commit_hash):
-    out = _git("diff-tree", "--no-commit-id", "-r", "--name-only", commit_hash, cwd=project_dir)
+    # --root ensures the root commit's files are included
+    out = _git("diff-tree", "--no-commit-id", "-r", "--name-only", "--root", commit_hash, cwd=project_dir)
     return [f for f in out.splitlines() if f.strip()]
 
 
@@ -165,11 +166,14 @@ def main():
         try:
             old = json.loads(changelog_path.read_text(encoding="utf-8"))
             for entry in old.get("entries", []):
-                existing[entry["event_id"]] = entry
-                h = entry.get("git_hash", "")
-                fid = entry.get("feature_id")
-                if h:
-                    existing_pairs.add((h[:12], fid))
+                try:
+                    existing[entry["event_id"]] = entry
+                    h = entry.get("git_hash", "")
+                    fid = entry.get("feature_id")
+                    if h:
+                        existing_pairs.add((h[:12], fid))
+                except (KeyError, TypeError):
+                    pass  # skip malformed entries; don't break dedup for the rest
         except Exception as e:
             print(f"Warning: could not load existing changelog: {e}")
 

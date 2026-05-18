@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """SessionStart hook: inject Feature Memory context and archive stale events."""
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -38,7 +39,9 @@ def main():
                     pass
             if not prev_session_id:
                 prev_session_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-            archive_path = project_dir / ".feature-memory" / f"events-{prev_session_id}.jsonl"
+            # Sanitize to prevent path traversal via a crafted session_id
+            safe_id = re.sub(r'[^a-zA-Z0-9_\-]', '_', prev_session_id)[:128]
+            archive_path = project_dir / ".feature-memory" / f"events-{safe_id}.jsonl"
             archived = False
             try:
                 archive_path.write_text(content, encoding="utf-8")
