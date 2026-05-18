@@ -279,23 +279,15 @@
     .ds-header-sub {
       font-size: 11px;
       color: var(--muted);
-      margin-top: 2px;
+      margin-top: 3px;
+      line-height: 1.4;
     }
+    .ds-header-sub strong { color: var(--text); font-weight: 700; }
+    .ds-header-sub .ds-feat-count { color: var(--accent); font-weight: 700; }
+    .ds-header-sub .ds-dot { color: var(--border); }
 
     .ds-body { padding: 14px 16px 48px; }
 
-    .ds-stats {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px 6px;
-      align-items: center;
-    }
-    .ds-stats strong { color: var(--text); font-weight: 700; }
-    .ds-stats .ds-feat-count { color: var(--accent); font-weight: 700; }
-    .ds-stats .ds-dot { color: var(--border); }
 
     .ds-highlights {
       background: var(--surface2);
@@ -305,14 +297,6 @@
       padding: 10px 12px;
       margin-bottom: 16px;
     }
-    .ds-highlights-title {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #fb923c;
-      margin-bottom: 7px;
-    }
     .ds-hl-item {
       font-size: 12px;
       color: var(--text);
@@ -321,6 +305,12 @@
       border-bottom: 1px solid var(--border);
     }
     .ds-hl-item:last-child { border-bottom: none; }
+    .ds-hl-warn {
+      font-size: 10px;
+      margin-right: 4px;
+      vertical-align: middle;
+      color: #fb923c;
+    }
     .ds-hl-tag {
       display: inline-block;
       font-size: 9px;
@@ -680,7 +670,7 @@
 <script id="changelog-data" type="application/json">
 {
   "schema_version": 2,
-  "generated": "2026-05-18T19:01:21.396903+00:00",
+  "generated": "2026-05-18T19:08:50.920142+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -2116,6 +2106,198 @@
       "source": "hook"
     },
     {
+      "event_id": "20260518T190543Z-58de",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190548Z-8127",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190611Z-6caf",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190615Z-5786",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190624Z-8964",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190758Z-b6cf",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190803Z-a216",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T190810Z-2909",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_common.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Add Dev Sync catch-up block, draggable resize, fix heads-up dedup",
+      "git_hash": "3a6e335729d02dbd1626453aac10f1031c18e8b7",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
       "event_id": "fad7fe86bd01-plugin-core",
       "date": "2026-05-17",
       "feature_id": "plugin-core",
@@ -2746,8 +2928,8 @@
     const text = sentences.join(' ');
     return `<div class="ds-catchup">
       <div class="ds-catchup-title">Catch-up</div>
-      <div class="ds-catchup-body" id="ds-catchup-body">${text}</div>
-      <button class="ds-catchup-toggle" id="ds-catchup-btn" onclick="toggleCatchup()">Read more ▾</button>
+      <div class="ds-catchup-body expanded" id="ds-catchup-body">${text}</div>
+      <button class="ds-catchup-toggle" id="ds-catchup-btn" onclick="toggleCatchup()">Read less ▴</button>
     </div>`;
   }
 
@@ -2781,17 +2963,13 @@
     const authors = [...new Set(devEntries.filter(e => e.git_author).map(e => firstNameOnly(e.git_author)))];
     const dates = devEntries.map(e => e.date).filter(Boolean).sort();
 
-    sub.textContent = `${devEntries.length} change${devEntries.length !== 1 ? 's' : ''} · ${dates[dates.length - 1] || ''}`;
+    // Stats into header (replaces the standalone ds-stats div in the body)
+    sub.innerHTML =
+      `<strong>${devEntries.length}</strong> change${devEntries.length !== 1 ? 's' : ''}`
+      + ` <span class="ds-dot">·</span> <span class="ds-feat-count">${features.size}</span> feature${features.size !== 1 ? 's' : ''}`
+      + (authors.length ? ` <span class="ds-dot">·</span> ${escHtml(authors.slice(0, 3).join(', '))}` : '');
 
     let html = '';
-
-    // Stats line
-    html += `<div class="ds-stats">
-      <span><strong>${devEntries.length}</strong> change${devEntries.length !== 1 ? 's' : ''}</span>
-      <span class="ds-dot">·</span>
-      <span class="ds-feat-count">${features.size}</span><span> feature${features.size !== 1 ? 's' : ''}</span>
-      ${authors.length ? `<span class="ds-dot">·</span><span>${escHtml(authors.slice(0, 3).join(', '))}</span>` : ''}
-    </div>`;
 
     // Catch-up block (above highlights)
     html += buildCatchup(devEntries);
@@ -2808,9 +2986,9 @@
     if (highlights.length) {
       const items = highlights.map(e => {
         const tag = (e.tags || []).find(t => HIGHLIGHT_TAGS.includes(t)) || '';
-        return `<div class="ds-hl-item"><span class="ds-hl-tag">${escHtml(tag)}</span>${escHtml(e.summary)}</div>`;
+        return `<div class="ds-hl-item"><span class="ds-hl-warn">⚠</span><span class="ds-hl-tag">${escHtml(tag)}</span>${escHtml(e.summary)}</div>`;
       }).join('');
-      html += `<div class="ds-highlights"><div class="ds-highlights-title">⚠ Heads up (${highlights.length})</div>${items}</div>`;
+      html += `<div class="ds-highlights">${items}</div>`;
     }
 
     // Per-feature prose blocks
