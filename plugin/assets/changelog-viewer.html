@@ -528,6 +528,17 @@
       'Updated ' + d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+  // Hide the Developer tab when there are <= 1 developer-audience entries.
+  // "both" entries count as developer for this purpose.
+  const devCount = entries.filter(e => {
+    const a = e.audience || 'developer';
+    return a === 'developer' || a === 'both';
+  }).length;
+  if (devCount <= 1) {
+    const devTab = document.querySelector('.tab[data-audience="developer"]');
+    if (devTab) devTab.style.display = 'none';
+  }
+
   let activeAudience = 'all';
   let searchQuery = '';
 

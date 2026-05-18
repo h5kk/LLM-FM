@@ -6,6 +6,7 @@ Handles both flat (features/{id}.md) and split (features/{id}/index.md) layouts.
 """
 import json
 import re
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -93,11 +94,44 @@ def _compile_changelog(project_dir, events, features, git_info):
     _update_viewer_data(docs_root, output_data)
 
 
+def _find_viewer_template():
+    """Locate the changelog-viewer.html template.
+
+    Search order:
+      1. <hooks_dir>/../../assets/changelog-viewer.html
+         (works when running from the plugin's installed hooks/ directory)
+      2. plugin/assets/changelog-viewer.html relative to cwd
+         (works when running directly from the project root)
+    Returns a Path if found, else None.
+    """
+    hooks_dir = Path(__file__).parent
+    candidates = [
+        hooks_dir / ".." / ".." / "assets" / "changelog-viewer.html",
+        Path.cwd() / "plugin" / "assets" / "changelog-viewer.html",
+    ]
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved.exists():
+            return resolved
+    return None
+
+
 def _update_viewer_data(docs_root, data):
-    """Update the inline JSON data block in changelog-viewer.html."""
+    """Update the inline JSON data block in changelog-viewer.html.
+
+    If the viewer does not yet exist, attempt to copy it from the template
+    found via _find_viewer_template() before injecting data.  If no template
+    is found, silently skip (same behaviour as before).
+    """
     viewer_path = docs_root / "changelog-viewer.html"
     if not viewer_path.exists():
-        return
+        template = _find_viewer_template()
+        if template is None:
+            return
+        try:
+            shutil.copy2(str(template), str(viewer_path))
+        except Exception:
+            return
     try:
         content = viewer_path.read_text(encoding="utf-8")
         json_str = json.dumps(data, indent=2, ensure_ascii=False)

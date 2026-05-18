@@ -14,6 +14,7 @@ Usage:
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -107,10 +108,46 @@ def _infer_audience(paths, kinds):
     return "both"
 
 
+def _find_viewer_template():
+    """Locate the changelog-viewer.html template.
+
+    Search order:
+      1. <hooks_dir>/../../assets/changelog-viewer.html
+         (works when running from the plugin's installed hooks/ directory)
+      2. plugin/assets/changelog-viewer.html relative to cwd
+         (works when running directly from the project root)
+    Returns a Path if found, else None.
+    """
+    hooks_dir = Path(__file__).parent
+    candidates = [
+        hooks_dir / ".." / ".." / "assets" / "changelog-viewer.html",
+        Path.cwd() / "plugin" / "assets" / "changelog-viewer.html",
+    ]
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved.exists():
+            return resolved
+    return None
+
+
 def _update_viewer(docs_root, data):
+    """Update the inline JSON data block in changelog-viewer.html.
+
+    If the viewer does not yet exist, attempt to copy it from the template
+    found via _find_viewer_template() before injecting data.  If no template
+    is found, silently skip.
+    """
     viewer = docs_root / "changelog-viewer.html"
     if not viewer.exists():
-        return
+        template = _find_viewer_template()
+        if template is None:
+            return
+        try:
+            shutil.copy2(str(template), str(viewer))
+            print(f"  Created viewer from template: {viewer.relative_to(docs_root.parent.parent)}")
+        except Exception as e:
+            print(f"  Warning: could not copy viewer template: {e}")
+            return
     try:
         content = viewer.read_text(encoding="utf-8")
         json_str = json.dumps(data, indent=2, ensure_ascii=False)
