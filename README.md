@@ -10,6 +10,21 @@ Feature Memory makes it explicit: a structured layer of feature documentation th
 
 ![The Evolution — from Traditional RAG to LLM Wiki to Feature Memory](images/v2_TheEvolution.png)
 
+## Install (Claude Code Plugin)
+
+```bash
+claude plugin marketplace add h5kk/LLM-FM
+claude plugin install feature-memory@h5kk-plugins
+```
+
+Then initialize Feature Memory in your project:
+
+```bash
+python fm_init.py --project-name my-project
+```
+
+The plugin registers lifecycle hooks, a maintainer skill, and a reviewer agent. Hooks are inert until you run the initializer.
+
 ## How It Works
 
 ```
