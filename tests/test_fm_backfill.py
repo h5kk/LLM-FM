@@ -5,7 +5,8 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "plugin" / "hooks"))
-from fm_backfill import _extract_jira, _infer_kind, _infer_audience, _JIRA_RE
+from fm_backfill import _extract_jira, _infer_audience, _JIRA_RE
+from fm_common import _infer_kind
 
 
 # ---------------------------------------------------------------------------
