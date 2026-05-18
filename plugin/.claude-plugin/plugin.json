@@ -1,6 +1,6 @@
 {
   "name": "feature-memory",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, dual developer+product changelogs, relationship diagrams, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
   "author": {
     "name": "Hanny Noueilaty",
@@ -15,5 +15,22 @@
     "knowledge-base",
     "hooks",
     "developer-tools"
+  ],
+  "skills": [
+    {
+      "name": "feature-memory",
+      "path": "skills/feature-memory/SKILL.md",
+      "description": "Maintains Feature Memory docs for changed source files. Keeps product summaries, engineering summaries, source maps, relationships, and changelogs current."
+    },
+    {
+      "name": "feature-memory-init",
+      "path": "skills/feature-memory-init/SKILL.md",
+      "description": "Initializes Feature Memory in the current project. Creates the docs structure, config, changelog viewer, and event log. Scans the codebase to detect features."
+    },
+    {
+      "name": "feature-memory-backfill",
+      "path": "skills/feature-memory-backfill/SKILL.md",
+      "description": "Backfills the Feature Memory changelog from git history. Maps commits to features and appends structured entries to changelog.json, then refreshes the viewer."
+    }
   ]
 }
