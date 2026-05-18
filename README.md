@@ -37,7 +37,7 @@ Three hooks wire into Claude Code's lifecycle:
 
 A companion **skill** (`feature-memory`) gives the agent a structured workflow for reading and updating feature pages, changelogs, and the index.
 
-![Five-stage hook lifecycle from File Edit to Nightly showing deterministic and LLM-powered operations](images/hook-lifecycle.png)
+![The Pipeline — two agent roles consume and maintain compiled docs](images/v2_ThePipeline.png)
 
 ## Quick Start
 
@@ -77,7 +77,7 @@ fm report proposal "Refactor auth to OAuth2"
 
 ## Architecture
 
-![Three-layer architecture: source code, compiled docs, consumers](images/three-layer-architecture.png)
+![Who Benefits — different roles, same compiled knowledge](images/v2_whoBenefits.png)
 
 Feature Memory is designed in layers:
 
@@ -87,9 +87,9 @@ Feature Memory is designed in layers:
 4. **Skill** — structured instructions that teach the agent how to maintain FM docs
 5. **CLI** (Phase 1) — `fm` command for scanning, status checks, and reports
 
-### What a Feature Page Looks Like
+### The Evolution
 
-![Annotated Feature Memory page showing metadata, summaries, source map, and recent changes](images/feature-page-anatomy.png)
+![The Evolution — from Traditional RAG to LLM Wiki to Feature Memory](images/v2_TheEvolution.png)
 
 ## Specs
 
