@@ -7,7 +7,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import load_config, match_path_to_features, generate_event_id, hook_error_wrapper
+from fm_common import (
+    load_config, match_path_to_features, generate_event_id,
+    hook_error_wrapper, get_feature_doc_path,
+)
 
 
 def main():
@@ -54,7 +57,7 @@ def main():
     try:
         with open(events_path, "a", encoding="utf-8", newline="") as f:
             f.write(json.dumps(event) + "\n")
-    except FileNotFoundError:
+    except OSError:
         pass
 
     features = load_config(project_dir)
@@ -62,8 +65,10 @@ def main():
 
     if matched_features:
         feature_list = ", ".join(matched_features)
+        docs_root = project_dir / "docs" / "feature-memory"
         doc_paths = ", ".join(
-            f"docs/feature-memory/features/{fid}.md" for fid in matched_features
+            get_feature_doc_path(fid, docs_root).relative_to(project_dir).as_posix()
+            for fid in matched_features
         )
         output = {
             "result": "continue",

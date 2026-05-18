@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""SessionStart hook: inject Feature Memory context and clear stale events."""
+"""SessionStart hook: inject Feature Memory context and archive stale events."""
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -20,9 +21,34 @@ def main():
     if not docs_root.exists():
         return
 
+    # Archive previous session's events before clearing.
+    # Use the session_id embedded in the events themselves (not the new session's ID).
     events_path = project_dir / ".feature-memory" / "events.jsonl"
     if events_path.exists():
-        events_path.write_text("", encoding="utf-8")
+        content = events_path.read_text(encoding="utf-8")
+        if content.strip():
+            # Extract session_id from the last event that has one
+            prev_session_id = None
+            for raw_line in content.strip().splitlines():
+                try:
+                    ev = json.loads(raw_line)
+                    if ev.get("session_id") and ev["session_id"] != "unknown":
+                        prev_session_id = ev["session_id"]
+                except Exception:
+                    pass
+            if not prev_session_id:
+                prev_session_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+            archive_path = project_dir / ".feature-memory" / f"events-{prev_session_id}.jsonl"
+            archived = False
+            try:
+                archive_path.write_text(content, encoding="utf-8")
+                archived = True
+            except Exception as e:
+                print(f"[FM] Warning: could not archive events to {archive_path.name}: {e}", file=sys.stderr)
+            if archived:
+                events_path.write_text("", encoding="utf-8")
+        else:
+            events_path.write_text("", encoding="utf-8")
 
     lines = []
     lines.append("=== Feature Memory ===")

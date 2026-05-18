@@ -1,14 +1,116 @@
 #!/usr/bin/env python3
-"""Stop hook: check if touched source files have missing docs updates.
+"""Stop hook: check for missing doc updates and compile changelog.json.
 
-Filters events by current session_id and sorts output by change count.
+Filters events by current session_id. Captures git info once (15s budget).
+Handles both flat (features/{id}.md) and split (features/{id}/index.md) layouts.
 """
 import json
+import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import load_config, match_path_to_features, hook_error_wrapper
+from fm_common import (
+    load_config, match_path_to_features, hook_error_wrapper,
+    get_feature_doc_path, get_git_info,
+)
+
+
+def _compile_changelog(project_dir, events, features, git_info):
+    """Compile changelogs/changelog.json from session JSONL events.
+
+    Appends new entries, deduplicates by event_id, keeps newest-first.
+    Updates inline JSON data in changelog-viewer.html if it exists.
+    """
+    docs_root = project_dir / "docs" / "feature-memory"
+    changelogs_dir = docs_root / "changelogs"
+    changelog_path = changelogs_dir / "changelog.json"
+
+    if not docs_root.exists():
+        return
+
+    try:
+        changelogs_dir.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        return
+
+    # Load existing entries (keyed by event_id for dedup)
+    existing = {}
+    if changelog_path.exists():
+        try:
+            old = json.loads(changelog_path.read_text(encoding="utf-8"))
+            for entry in old.get("entries", []):
+                existing[entry["event_id"]] = entry
+        except Exception:
+            pass
+
+    # Build new entries from session path-touched events (developer audience)
+    added = 0
+    for event in events:
+        if event.get("event_type") != "path_touched":
+            continue
+        eid = event.get("event_id", "")
+        if not eid or eid in existing:
+            continue
+        path = event.get("path", "")
+        if path.startswith("docs/feature-memory/"):
+            continue
+        matched = match_path_to_features(path, features)
+        entry = {
+            "event_id": eid,
+            "date": event.get("created_at", "")[:10],
+            "feature_id": matched[0] if matched else None,
+            "feature_title": matched[0] if matched else "unmapped",
+            "audience": "developer",
+            "summary": f"Modified {path}",
+            "kind": ["path_touched"],
+            "paths": [path],
+            "git_author": git_info.get("git_author") if git_info else None,
+            "git_email": git_info.get("git_email") if git_info else None,
+            "git_message": git_info.get("git_message") if git_info else None,
+            "git_hash": git_info.get("git_hash") if git_info else None,
+            "confidence": "high",
+            "review_status": "auto",
+            "source": "hook",
+        }
+        existing[eid] = entry
+        added += 1
+
+    all_entries = sorted(existing.values(), key=lambda x: x.get("date", ""), reverse=True)
+    output_data = {
+        "schema_version": 2,
+        "generated": datetime.now(timezone.utc).isoformat(),
+        "entries": all_entries,
+    }
+
+    if added > 0 or not changelog_path.exists():
+        try:
+            changelog_path.write_text(json.dumps(output_data, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception:
+            pass
+
+    _update_viewer_data(docs_root, output_data)
+
+
+def _update_viewer_data(docs_root, data):
+    """Update the inline JSON data block in changelog-viewer.html."""
+    viewer_path = docs_root / "changelog-viewer.html"
+    if not viewer_path.exists():
+        return
+    try:
+        content = viewer_path.read_text(encoding="utf-8")
+        json_str = json.dumps(data, indent=2, ensure_ascii=False)
+        new_content = re.sub(
+            r'(<script id="changelog-data"[^>]*>)([\s\S]*?)(</script>)',
+            lambda m: m.group(1) + "\n" + json_str + "\n" + m.group(3),
+            content,
+            count=1,
+        )
+        if new_content != content:
+            viewer_path.write_text(new_content, encoding="utf-8")
+    except Exception:
+        pass
 
 
 def main():
@@ -42,6 +144,9 @@ def main():
         if not events:
             return
 
+    # Capture git info once — cheaper here (15s budget) than in PostToolUse (3s)
+    git_info = get_git_info(project_dir)
+
     touched_paths = set()
     doc_paths_touched = set()
 
@@ -53,10 +158,14 @@ def main():
             else:
                 touched_paths.add(path)
 
+    features = load_config(project_dir)
+
+    # Compile changelog.json from session events
+    _compile_changelog(project_dir, events, features, git_info)
+
     if not touched_paths:
         return
 
-    features = load_config(project_dir)
     features_touched = {}
     unmapped_paths = []
 
@@ -73,14 +182,27 @@ def main():
 
     messages = []
     features_needing_docs = []
+    docs_root = project_dir / "docs" / "feature-memory"
 
     for fid, paths in sorted(features_touched.items(), key=lambda x: len(x[1]), reverse=True):
-        doc_path = f"docs/feature-memory/features/{fid}.md"
-        if doc_path not in doc_paths_touched:
+        # Handle both flat and split layouts
+        expected_doc = get_feature_doc_path(fid, docs_root)
+        try:
+            expected_doc_rel = expected_doc.relative_to(project_dir).as_posix()
+        except ValueError:
+            expected_doc_rel = f"docs/feature-memory/features/{fid}.md"
+
+        feature_dir_prefix = f"docs/feature-memory/features/{fid}/"
+        doc_updated = (
+            expected_doc_rel in doc_paths_touched
+            or any(p.startswith(feature_dir_prefix) for p in doc_paths_touched)
+        )
+
+        if not doc_updated:
             features_needing_docs.append((fid, len(paths)))
             messages.append(
                 f"- Feature '{fid}': {len(paths)} source file(s) changed "
-                f"but {doc_path} was not updated"
+                f"but {expected_doc_rel} was not updated"
             )
 
     if unmapped_paths:

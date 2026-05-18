@@ -6,6 +6,7 @@ Works with Python 3.6+ stdlib only — no external dependencies.
 """
 import fnmatch
 import json
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -51,6 +52,7 @@ def load_config(project_dir):
                     features[current_feature].append(glob_pattern)
                 continue
 
+            # Any non-glob key (mode:, owner:, etc.) exits glob parsing
             if not stripped.startswith("- ") and ":" in stripped:
                 in_globs = False
 
@@ -78,6 +80,45 @@ def match_path_to_features(file_path, features):
                 break
 
     return matched
+
+
+def get_feature_doc_path(feature_id, docs_root):
+    """Return canonical feature doc path, handling flat and split layouts.
+
+    Checks for features/{id}/index.md (split mode) first, falls back to
+    features/{id}.md (small mode). Does not require the file to exist.
+    """
+    split_path = docs_root / "features" / feature_id / "index.md"
+    if split_path.exists():
+        return split_path
+    return docs_root / "features" / f"{feature_id}.md"
+
+
+def get_git_info(project_dir=None):
+    """Get current HEAD commit info. Returns dict or None on failure.
+
+    Never raises — git unavailability is silently ignored.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%H%n%an%n%ae%n%s"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+            cwd=str(project_dir) if project_dir else None,
+        )
+        if result.returncode == 0:
+            lines = result.stdout.strip().splitlines()
+            if len(lines) >= 4:
+                return {
+                    "git_hash": lines[0],
+                    "git_author": lines[1],
+                    "git_email": lines[2],
+                    "git_message": lines[3],
+                }
+    except Exception:
+        pass
+    return None
 
 
 def generate_event_id():
