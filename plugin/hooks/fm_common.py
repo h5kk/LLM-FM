@@ -85,17 +85,8 @@ def load_config(project_dir):
 
 
 def get_feature_globs(features):
-    """Extract flat {feature_id: [globs]} from the rich load_config() format.
-
-    Accepts both old {id: [globs]} and new {id: {"globs": [...], ...}} shapes.
-    """
-    result = {}
-    for fid, val in features.items():
-        if isinstance(val, dict):
-            result[fid] = val.get("globs", [])
-        else:
-            result[fid] = val
-    return result
+    """Extract flat {feature_id: [globs]} from the rich load_config() output."""
+    return {fid: val.get("globs", []) for fid, val in features.items()}
 
 
 def load_tag_strategy(project_dir):
@@ -131,11 +122,7 @@ def match_path_to_features(file_path, features):
     matched = []
 
     for feature_id, globs_or_meta in features.items():
-        # Support both old list format and new rich dict format
-        if isinstance(globs_or_meta, dict):
-            globs = globs_or_meta.get("globs", [])
-        else:
-            globs = globs_or_meta
+        globs = globs_or_meta.get("globs", []) if isinstance(globs_or_meta, dict) else globs_or_meta
         for pattern in globs:
             if pattern.endswith("/**"):
                 prefix = pattern[:-3]
@@ -149,12 +136,18 @@ def match_path_to_features(file_path, features):
     return matched
 
 
-def get_feature_doc_path(feature_id, docs_root):
+def get_feature_doc_path(feature_id, docs_root, feature_meta=None):
     """Return canonical feature doc path, handling flat and split layouts.
 
-    Checks for features/{id}/index.md (split mode) first, falls back to
-    features/{id}.md (small mode). Does not require the file to exist.
+    If feature_meta contains an explicit 'mode' key ('split'|'small'), it is
+    honoured. Otherwise falls back to existence-check heuristic.
     """
+    if isinstance(feature_meta, dict):
+        mode = feature_meta.get("mode")
+        if mode == "split":
+            return docs_root / "features" / feature_id / "index.md"
+        if mode == "small":
+            return docs_root / "features" / f"{feature_id}.md"
     split_path = docs_root / "features" / feature_id / "index.md"
     if split_path.exists():
         return split_path
@@ -323,7 +316,7 @@ def _infer_audience(paths, message, tags):
     internal_count = sum(1 for p in npaths if any(fn(p) for fn in internal_indicators))
     product_count  = sum(1 for p in npaths if any(fn(p) for fn in product_indicators))
 
-    if "breaking" in msg or "api" in msg or (tags and "breaking-change" in tags):
+    if re.search(r'\bbreaking\b|\bapi\b', msg) or (tags and "breaking-change" in tags):
         return "both"
     if not npaths:
         return "both"

@@ -60,7 +60,7 @@ def main():
                     pass
             if not prev_session_id:
                 ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-                prev_session_id = f"unknown-{ts}"
+                prev_session_id = f"unknown-{ts}-{os.getpid()}"
             # Sanitize to prevent path traversal via a crafted session_id
             safe_id = re.sub(r'[^a-zA-Z0-9_\-]', '_', prev_session_id)[:128]
             archive_path = project_dir / ".feature-memory" / f"events-{safe_id}.jsonl"

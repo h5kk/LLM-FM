@@ -16,7 +16,7 @@ from fm_common import (
     load_config, match_path_to_features, hook_error_wrapper,
     get_feature_doc_path, get_git_info, _infer_tags, _check_viewer_update,
     load_skip_patterns, should_skip_path, _infer_audience, _infer_kind,
-    rotate_events_if_oversized,
+    rotate_events_if_oversized, load_tag_strategy, _keyword_tags_for_entry,
 )
 
 
@@ -64,6 +64,12 @@ def _compile_changelog(project_dir, events, features, git_info):
     git_author = git_info.get("git_author") if git_info else None
     git_email = git_info.get("git_email") if git_info else None
 
+    # Determine tagging strategy for this project
+    tag_strategy = load_tag_strategy(project_dir)
+
+    # Extract session_id for stable WIP entry IDs
+    session_id = next((e.get("session_id", "") for e in events if e.get("session_id")), "")
+
     # Bucket paths by feature_id
     feature_paths: dict = {}
     unmapped_paths = []
@@ -107,7 +113,7 @@ def _compile_changelog(project_dir, events, features, git_info):
             summary = f"WIP: {len(paths)} file(s) touched in {fid or 'unmapped'}"
             commit_state = "uncommitted"
             review_status = "wip"
-        return {
+        entry = {
             "event_id": eid,
             "date": date,
             "feature_id": fid,
@@ -128,6 +134,14 @@ def _compile_changelog(project_dir, events, features, git_info):
             "review_status": review_status,
             "source": "hook",
         }
+        # Honor tagging strategy: keyword = immediate heuristic tags; none = skip tagging
+        if tag_strategy == "keyword":
+            entry["topic_tags"] = _keyword_tags_for_entry(entry)
+            entry["topic_pending"] = False
+        elif tag_strategy == "none":
+            entry["topic_pending"] = False
+        # "cli" keeps topic_pending: True — tags are applied later via --drain-pending
+        return entry
 
     if feature_paths or unmapped_paths:
         committed = bool(git_hash and git_message)
@@ -141,10 +155,9 @@ def _compile_changelog(project_dir, events, features, git_info):
                     continue
                 eid = f"{git_hash[:12]}-{fid}"
             else:
-                # For WIP, create a stable eid based on feature + session paths hash
-                import hashlib
-                path_sig = hashlib.md5("|".join(sorted(paths)).encode()).hexdigest()[:8]
-                eid = f"wip-{fid}-{path_sig}"
+                # For WIP, use session_id for a stable per-(feature, session) eid
+                sid_short = (session_id or "unknown")[:12].replace("-", "")
+                eid = f"wip-{fid}-{sid_short}"
 
             if eid in existing:
                 continue
@@ -166,9 +179,8 @@ def _compile_changelog(project_dir, events, features, git_info):
                         existing_pairs.add(pair_key)
                         added += 1
             else:
-                import hashlib
-                path_sig = hashlib.md5("|".join(sorted(unmapped_paths)).encode()).hexdigest()[:8]
-                eid = f"wip-unmapped-{path_sig}"
+                sid_short = (session_id or "unknown")[:12].replace("-", "")
+                eid = f"wip-unmapped-{sid_short}"
                 if eid not in existing:
                     entry = _make_entry(eid, None, unmapped_paths, date, committed)
                     existing[eid] = entry
@@ -233,6 +245,12 @@ def _update_viewer_data(docs_root, data):
     try:
         content = viewer_path.read_text(encoding="utf-8")
         json_str = json.dumps(data, indent=2, ensure_ascii=False)
+        if len(json_str) > 500_000:
+            from fm_common import log_error
+            log_error(
+                f"changelog-viewer.html inline JSON is {len(json_str)//1024}KB "
+                "(>500KB). Consider switching to an external changelog.json fetch in v0.8.0."
+            )
         new_content = re.sub(
             r'(<script id="changelog-data"[^>]*>)([\s\S]*?)(</script>)',
             lambda m: m.group(1) + "\n" + json_str + "\n" + m.group(3),
@@ -318,8 +336,8 @@ def main():
     docs_root = project_dir / "docs" / "feature-memory"
 
     for fid, paths in sorted(features_touched.items(), key=lambda x: len(x[1]), reverse=True):
-        # Handle both flat and split layouts
-        expected_doc = get_feature_doc_path(fid, docs_root)
+        # Handle both flat and split layouts; pass feature meta for explicit mode override
+        expected_doc = get_feature_doc_path(fid, docs_root, features.get(fid))
         try:
             expected_doc_rel = expected_doc.relative_to(project_dir).as_posix()
         except ValueError:
