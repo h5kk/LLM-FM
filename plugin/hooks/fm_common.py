@@ -315,6 +315,83 @@ def generate_topic_tags_batch(entries, batch_size=15, timeout=45):
 
 _VIEWER_VERSION = 9  # increment when the viewer template gets significant UI changes
 
+# Paths matching these globs are never recorded as changelog entries.
+# Covers generated/compiled artifacts, caches, lock files, and IDE state.
+DEFAULT_SKIP_PATTERNS = [
+    "*.pyc", "*.pyo", "*.pyd", "*.pdb",
+    "__pycache__/**",
+    "*.min.js", "*.min.css",
+    "node_modules/**",
+    "dist/**", "build/**",
+    ".mypy_cache/**", ".pytest_cache/**", ".ruff_cache/**", ".cache/**",
+    "*.lock", "package-lock.json",
+    ".DS_Store", "Thumbs.db",
+    "*.egg-info/**",
+    ".venv/**", "venv/**", "env/**",
+    ".coverage", "coverage/**", "htmlcov/**",
+    ".git/**",
+]
+
+
+def load_skip_patterns(project_dir):
+    """Return the effective skip-pattern list for a project.
+
+    Reads the optional ``skip_patterns:`` section from .feature-memory/config.yaml
+    and merges it with DEFAULT_SKIP_PATTERNS (user additions extend, not replace).
+    Never raises.
+    """
+    config_path = project_dir / ".feature-memory" / "config.yaml"
+    user_patterns = []
+
+    if config_path.exists():
+        try:
+            in_skip = False
+            for line in config_path.read_text(encoding="utf-8").splitlines():
+                stripped = line.strip()
+                if stripped == "skip_patterns:":
+                    in_skip = True
+                    continue
+                if in_skip and not line.startswith((" ", "\t")) and stripped:
+                    in_skip = False
+                    continue
+                if in_skip and stripped.startswith("- "):
+                    pat = stripped[2:].strip().strip('"').strip("'")
+                    if pat:
+                        user_patterns.append(pat)
+        except Exception:
+            pass
+
+    seen = set()
+    combined = []
+    for p in DEFAULT_SKIP_PATTERNS + user_patterns:
+        if p not in seen:
+            combined.append(p)
+            seen.add(p)
+    return combined
+
+
+def should_skip_path(file_path, skip_patterns):
+    """Return True if file_path matches any skip pattern.
+
+    Patterns without a slash are matched against the basename only;
+    patterns with a trailing ``/**`` match directory prefixes;
+    all others use standard fnmatch glob matching on the full path.
+    """
+    normalized = file_path.replace("\\", "/")
+    basename = normalized.rsplit("/", 1)[-1]
+    for pattern in skip_patterns:
+        if pattern.endswith("/**"):
+            prefix = pattern[:-3]
+            if normalized.startswith(prefix + "/") or normalized == prefix:
+                return True
+        elif "/" not in pattern:
+            if fnmatch.fnmatch(basename, pattern):
+                return True
+        else:
+            if fnmatch.fnmatch(normalized, pattern):
+                return True
+    return False
+
 
 def _check_viewer_update(docs_root):
     """Copy updated viewer template to docs_root if the installed version is outdated.

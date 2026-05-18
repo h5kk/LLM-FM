@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update, generate_topic_tags_batch
+from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update, generate_topic_tags_batch, load_skip_patterns, should_skip_path
 
 _JIRA_RE = re.compile(r'\b([A-Z][A-Z0-9]{1,9}-\d+)\b')
 
@@ -278,6 +278,79 @@ def _drain_pending(changelog_path, docs_root):
     _update_viewer(docs_root, data)
 
 
+def _dedup_entries(project_dir, changelog_path, docs_root):
+    """Merge entries that share the same (git_hash, feature_id) into one.
+
+    The most common source of duplicates is the Stop hook creating one entry
+    per file touched while backfill creates one entry per feature per commit.
+    Both end up with the same git_hash + feature_id pair.
+
+    Strategy:
+    - Group by (git_hash, feature_id).
+    - In each group, prefer the git-backfill entry (better summary) as the base.
+    - Union paths, tags, and topic_tags across all group members.
+    - Entries with no git_hash are left untouched.
+    """
+    if not changelog_path.exists():
+        print("No changelog.json found. Run backfill first.")
+        return
+    try:
+        data = json.loads(changelog_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"Error reading changelog: {e}")
+        return
+
+    entries = data.get("entries", [])
+    before = len(entries)
+
+    hashed: dict = {}
+    no_hash = []
+    for entry in entries:
+        gh = entry.get("git_hash")
+        if not gh:
+            no_hash.append(entry)
+            continue
+        key = (gh, entry.get("feature_id"))
+        hashed.setdefault(key, []).append(entry)
+
+    merged = []
+    merge_count = 0
+    for (gh, fid), group in hashed.items():
+        if len(group) == 1:
+            merged.append(group[0])
+            continue
+        merge_count += len(group) - 1
+        backfill = [e for e in group if e.get("source") == "git-backfill"]
+        base = dict(backfill[0] if backfill else group[0])
+
+        seen_p: set = set()
+        all_paths = [p for e in group for p in (e.get("paths") or []) if not (p in seen_p or seen_p.add(p))]  # type: ignore[func-returns-value]
+        seen_t: set = set()
+        all_tags = [t for e in group for t in (e.get("tags") or []) if not (t in seen_t or seen_t.add(t))]  # type: ignore[func-returns-value]
+        seen_tp: set = set()
+        all_topic = [t for e in group for t in (e.get("topic_tags") or []) if not (t in seen_tp or seen_tp.add(t))]  # type: ignore[func-returns-value]
+
+        base["paths"] = all_paths
+        base["tags"] = all_tags[:5]
+        base["topic_tags"] = all_topic[:5]
+        merged.append(base)
+
+    merged.extend(no_hash)
+    merged.sort(key=lambda x: (x.get("date", ""), x.get("git_hash", "")), reverse=True)
+
+    after = len(merged)
+    removed = before - after
+    print(f"Dedup: {before} entries -> {after} entries ({merge_count} duplicate(s) absorbed).")
+    if removed > 0:
+        data["entries"] = merged
+        data["generated"] = datetime.now(timezone.utc).isoformat()
+        changelog_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        _update_viewer(docs_root, data)
+        print("Done.")
+    else:
+        print("No duplicates found — nothing to merge.")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Backfill FM changelog.json from git history",
@@ -301,10 +374,12 @@ def main():
                        help="Remove entries whose every path is a .md file")
     group.add_argument("--clear", action="store_true",
                        help="Clear ALL entries from changelog.json (feature .md docs untouched)")
+    group.add_argument("--dedup", action="store_true",
+                       help="Merge duplicate entries sharing the same git commit + feature into one")
     args = parser.parse_args()
 
     if not any([args.hours, args.since, args.since_commit, args.all_commits,
-                args.retag, args.drain_pending, args.purge_md_only, args.clear]):
+                args.retag, args.drain_pending, args.purge_md_only, args.clear, args.dedup]):
         args.hours = 48
 
     project_dir = Path.cwd()
@@ -334,6 +409,10 @@ def main():
         _clear_changelog(project_dir, changelog_path, docs_root)
         return
 
+    if args.dedup:
+        _dedup_entries(project_dir, changelog_path, docs_root)
+        return
+
     # Primary dedup: event_id. Secondary: (hash12, feature_id) to catch Stop-hook entries
     # which use UUID event_ids but cover the same commit+feature pair.
     existing = {}
@@ -356,6 +435,7 @@ def main():
     features = load_config(project_dir)
     if not features:
         print("Warning: no features found in config. Files will appear as 'unmapped'.")
+    skip_patterns = load_skip_patterns(project_dir)
 
     branch = _get_branch(project_dir)
     branch_ticket = _extract_jira(branch)
@@ -388,9 +468,10 @@ def main():
         if not files:
             continue
 
-        # Exclude FM doc files and .md files — meta-updates, not feature changes
+        # Exclude FM doc files, .md files, and skip-listed paths (generated/cached/lock files etc.)
         source_files = [f for f in files if not f.startswith("docs/feature-memory/")]
         source_files = [f for f in source_files if not f.endswith(".md")]
+        source_files = [f for f in source_files if not should_skip_path(f, skip_patterns)]
         if not source_files:
             continue
 

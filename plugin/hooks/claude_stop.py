@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from fm_common import (
     load_config, match_path_to_features, hook_error_wrapper,
     get_feature_doc_path, get_git_info, _infer_tags, _check_viewer_update,
+    load_skip_patterns, should_skip_path,
 )
 
 
@@ -188,6 +189,9 @@ def main():
     # Capture git info once — cheaper here (15s budget) than in PostToolUse (3s)
     git_info = get_git_info(project_dir)
 
+    features = load_config(project_dir)
+    skip_patterns = load_skip_patterns(project_dir)
+
     touched_paths = set()
     doc_paths_touched = set()
 
@@ -196,10 +200,8 @@ def main():
             path = event.get("path", "")
             if path.startswith("docs/feature-memory/"):
                 doc_paths_touched.add(path)
-            elif not path.endswith(".md"):
+            elif not path.endswith(".md") and not should_skip_path(path, skip_patterns):
                 touched_paths.add(path)
-
-    features = load_config(project_dir)
 
     # Compile changelog.json from session events
     _compile_changelog(project_dir, events, features, git_info)

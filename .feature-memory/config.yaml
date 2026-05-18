@@ -41,3 +41,8 @@ mapping:
     - "tests/**"
     - "**/*_test.*"
     - "**/*.test.*"
+
+# Paths matching these globs are never recorded as changelog entries.
+# The built-in defaults (*.pyc, *.lock, node_modules/**, etc.) always apply;
+# list additional project-specific patterns here.
+skip_patterns: []
