@@ -1,5 +1,8 @@
 {
   "name": "h5kk-marketplace",
+  "owner": {
+    "name": "h5kk"
+  },
   "description": "Plugins by h5kk",
   "plugins": [
     {
