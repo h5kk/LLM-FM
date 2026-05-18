@@ -104,6 +104,18 @@ Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc 
 3. Say **"initialize feature memory"** — the init skill walks you through setup
 4. Say **"update feature memory"** after making code changes — the maintainer skill keeps docs current
 
+### Skill reference
+
+| Skill name | Trigger phrase | What it does |
+|------------|---------------|--------------|
+| `feature-memory` | `update feature memory` | Keeps docs current: updates feature pages, changelogs, source maps after code changes |
+| `feature-memory-init` | `initialize feature memory` | One-time setup: scaffolds docs, scans codebase, proposes and creates feature pages |
+| `feature-memory-backfill` | `backfill changelog` | Populates changelog from git history; maps commits to features |
+| `feature-memory-changelog-refresh` | `refresh changelog` | Re-infers and replaces tags for all existing changelog entries (no git scan) |
+| `feature-memory-changelog-clear` | `clear changelog` | Clears all entries from changelog.json without touching feature .md docs |
+| `feature-memory-changelog-purge-md` | `purge md-only entries` | Removes entries whose every path is a .md file |
+| `feature-memory-changelog-dedup` | `dedup changelog` | Merges duplicate entries sharing the same git commit and feature |
+
 ### Agent commands
 
 | Say this | What happens |
@@ -111,7 +123,7 @@ Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc 
 | `initialize feature memory` | One-time setup: scaffolds docs, scans codebase, proposes and creates feature pages |
 | `update feature memory` | Keeps docs current: updates feature pages, changelogs, source maps after code changes |
 | `review feature memory` | Read-only audit: checks docs for stale claims, missing sources, broken relationships |
-| `refresh changelog` / `/changelog-refresh` | Re-infers and replaces tags for all existing changelog entries (no git scan) |
+| `refresh changelog` | Re-infers and replaces tags for all existing changelog entries (skill: `feature-memory-changelog-refresh`) |
 
 ### Backfill command
 
@@ -145,7 +157,7 @@ If your branch follows a Jira naming convention (e.g. `feat/PROJ-123-my-feature`
 | **Init skill** | One-time setup: scaffolds docs, scans codebase, creates feature pages |
 | **Maintainer skill** | Ongoing: updates feature pages, changelogs, source maps after code changes |
 | **Reviewer agent** | Read-only audit: checks docs for stale claims, broken links, missing sources |
-| **Changelog Refresh skill** | Re-infers and replaces tags for all existing entries (`/changelog-refresh`) |
+| **Changelog Refresh skill** | Re-infers and replaces tags for all existing entries (`feature-memory-changelog-refresh`) |
 | **SessionStart hook** | Injects feature list and recent activity; auto-upgrades viewer if template is newer |
 | **PostToolUse hook** | Logs edits, reminds which feature docs to update |
 | **Stop hook** | Captures git author, compiles `changelog.json` with tags, reports missing doc updates |

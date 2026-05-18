@@ -1,5 +1,9 @@
 # Spec 01 — CLI Foundation
 
+> **Status:** Draft / not implemented in v0.6.0.  
+> The plugin uses skills (see [Spec 05](05-skills.md)) as its primary surface.  
+> This spec describes a planned `fm` CLI that does not yet ship with the plugin.
+
 > Arch plan refs: sections 6 (CLI design), 7 (configuration)
 
 ## Objective
