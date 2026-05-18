@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from fm_common import (
     load_config, match_path_to_features, generate_event_id,
-    hook_error_wrapper, get_feature_doc_path,
+    hook_error_wrapper, get_feature_doc_path, rotate_events_if_oversized,
 )
 
 
@@ -54,6 +54,7 @@ def main():
     }
 
     events_path = project_dir / ".feature-memory" / "events.jsonl"
+    rotate_events_if_oversized(events_path)
     try:
         with open(events_path, "a", encoding="utf-8", newline="") as f:
             f.write(json.dumps(event) + "\n")

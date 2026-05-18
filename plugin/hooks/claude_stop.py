@@ -15,15 +15,20 @@ sys.path.insert(0, str(Path(__file__).parent))
 from fm_common import (
     load_config, match_path_to_features, hook_error_wrapper,
     get_feature_doc_path, get_git_info, _infer_tags, _check_viewer_update,
-    load_skip_patterns, should_skip_path,
+    load_skip_patterns, should_skip_path, _infer_audience, _infer_kind,
+    rotate_events_if_oversized,
 )
 
 
 def _compile_changelog(project_dir, events, features, git_info):
     """Compile changelogs/changelog.json from session JSONL events.
 
-    Appends new entries, deduplicates by event_id, keeps newest-first.
-    Updates inline JSON data in changelog-viewer.html if it exists.
+    Groups events by (git_hash, feature_id) when a commit hash is available,
+    creating one entry per (commit, feature) pair with the real commit message
+    as summary. Falls back to one WIP entry per feature for uncommitted work.
+
+    Deduplicates by event_id (for WIP) and by (git_hash[:12], feature_id)
+    for committed work. Updates inline JSON in changelog-viewer.html.
     """
     docs_root = project_dir / "docs" / "feature-memory"
     changelogs_dir = docs_root / "changelogs"
@@ -37,52 +42,137 @@ def _compile_changelog(project_dir, events, features, git_info):
     except Exception:
         return
 
-    # Load existing entries (keyed by event_id for dedup)
+    # Load existing entries — primary key is event_id; secondary is (hash12, feature_id)
     existing = {}
+    existing_pairs: set = set()
     if changelog_path.exists():
         try:
             old = json.loads(changelog_path.read_text(encoding="utf-8"))
             for entry in old.get("entries", []):
-                existing[entry["event_id"]] = entry
+                eid = entry.get("event_id", "")
+                if eid:
+                    existing[eid] = entry
+                h = entry.get("git_hash", "")
+                if h:
+                    existing_pairs.add((h[:12], entry.get("feature_id")))
         except Exception:
             pass
 
-    # Build new entries from session path-touched events (developer audience)
-    added = 0
+    # Collect all relevant path_touched events for this session
+    git_hash = git_info.get("git_hash") if git_info else None
+    git_message = git_info.get("git_message") if git_info else None
+    git_author = git_info.get("git_author") if git_info else None
+    git_email = git_info.get("git_email") if git_info else None
+
+    # Bucket paths by feature_id
+    feature_paths: dict = {}
+    unmapped_paths = []
+    session_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
     for event in events:
         if event.get("event_type") != "path_touched":
             continue
-        eid = event.get("event_id", "")
-        if not eid or eid in existing:
-            continue
         path = event.get("path", "")
+        if not path:
+            continue
         if path.startswith("docs/feature-memory/"):
             continue
         if path.endswith(".md"):
             continue
+        date_str = event.get("created_at", "")[:10] or session_date
         matched = match_path_to_features(path, features)
-        entry = {
+        if matched:
+            for fid in matched:
+                feature_paths.setdefault(fid, {"paths": [], "date": date_str})
+                if path not in feature_paths[fid]["paths"]:
+                    feature_paths[fid]["paths"].append(path)
+        else:
+            if path not in unmapped_paths:
+                unmapped_paths.append(path)
+
+    added = 0
+
+    def _make_entry(eid, fid, paths, date, committed):
+        if isinstance(features.get(fid), dict):
+            f_title = features[fid].get("title") or fid
+        else:
+            f_title = fid
+        kinds = _infer_kind(paths, git_message or "")
+        audience = _infer_audience(paths, git_message or "", kinds)
+        if committed and git_message:
+            summary = git_message
+            commit_state = "committed"
+            review_status = "auto"
+        else:
+            summary = f"WIP: {len(paths)} file(s) touched in {fid or 'unmapped'}"
+            commit_state = "uncommitted"
+            review_status = "wip"
+        return {
             "event_id": eid,
-            "date": event.get("created_at", "")[:10],
-            "feature_id": matched[0] if matched else None,
-            "feature_title": matched[0] if matched else "unmapped",
-            "audience": "developer",
-            "summary": f"Modified {path}",
-            "kind": ["path_touched"],
-            "tags": _infer_tags([path], "", ["path_touched"]),
+            "date": date,
+            "feature_id": fid,
+            "feature_title": f_title,
+            "audience": audience,
+            "summary": summary,
+            "kind": kinds,
+            "tags": _infer_tags(paths, git_message or "", kinds),
             "topic_tags": [],
             "topic_pending": True,
-            "paths": [path],
-            "git_author": git_info.get("git_author") if git_info else None,
-            "git_email": git_info.get("git_email") if git_info else None,
-            "git_message": git_info.get("git_message") if git_info else None,
-            "git_hash": git_info.get("git_hash") if git_info else None,
+            "paths": paths,
+            "git_author": git_author,
+            "git_email": git_email,
+            "git_message": git_message,
+            "git_hash": git_hash,
+            "commit_state": commit_state,
             "confidence": "high",
-            "review_status": "auto",
+            "review_status": review_status,
             "source": "hook",
         }
-        existing[eid] = entry
-        added += 1
+
+    if feature_paths or unmapped_paths:
+        committed = bool(git_hash and git_message)
+
+        for fid, meta in feature_paths.items():
+            paths = meta["paths"]
+            date = meta["date"]
+            if committed:
+                pair_key = (git_hash[:12], fid)
+                if pair_key in existing_pairs:
+                    continue
+                eid = f"{git_hash[:12]}-{fid}"
+            else:
+                # For WIP, create a stable eid based on feature + session paths hash
+                import hashlib
+                path_sig = hashlib.md5("|".join(sorted(paths)).encode()).hexdigest()[:8]
+                eid = f"wip-{fid}-{path_sig}"
+
+            if eid in existing:
+                continue
+            entry = _make_entry(eid, fid, paths, date, committed)
+            existing[eid] = entry
+            if committed:
+                existing_pairs.add((git_hash[:12], fid))
+            added += 1
+
+        if unmapped_paths:
+            date = session_date
+            if committed:
+                pair_key = (git_hash[:12], None)
+                if pair_key not in existing_pairs:
+                    eid = f"{git_hash[:12]}-unmapped"
+                    if eid not in existing:
+                        entry = _make_entry(eid, None, unmapped_paths, date, committed)
+                        existing[eid] = entry
+                        existing_pairs.add(pair_key)
+                        added += 1
+            else:
+                import hashlib
+                path_sig = hashlib.md5("|".join(sorted(unmapped_paths)).encode()).hexdigest()[:8]
+                eid = f"wip-unmapped-{path_sig}"
+                if eid not in existing:
+                    entry = _make_entry(eid, None, unmapped_paths, date, committed)
+                    existing[eid] = entry
+                    added += 1
 
     all_entries = sorted(existing.values(), key=lambda x: x.get("date", ""), reverse=True)
     output_data = {

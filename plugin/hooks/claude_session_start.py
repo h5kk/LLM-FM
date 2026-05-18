@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """SessionStart hook: inject Feature Memory context and archive stale events."""
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -8,6 +9,23 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from fm_common import hook_error_wrapper, _check_viewer_update
+
+
+def _safe_archive(events_path, archive_path):
+    """Write events to archive atomically, then truncate original."""
+    content = events_path.read_bytes()
+    tmp = events_path.parent / f".events_archive_tmp_{os.getpid()}"
+    try:
+        tmp.write_bytes(content)
+        tmp.replace(archive_path)
+        # Truncate original only after successful archive
+        events_path.write_text("", encoding="utf-8")
+    except Exception:
+        try:
+            tmp.unlink(missing_ok=True)
+        except Exception:
+            pass
+        raise
 
 
 def main():
@@ -28,28 +46,28 @@ def main():
     if events_path.exists():
         content = events_path.read_text(encoding="utf-8")
         if content.strip():
-            # Extract session_id from the last event that has one
+            # Extract session_id from the FIRST event that has a valid one
+            # (sessions don't span events.jsonl files in normal flow)
             prev_session_id = None
             for raw_line in content.strip().splitlines():
                 try:
                     ev = json.loads(raw_line)
-                    if ev.get("session_id") and ev["session_id"] != "unknown":
-                        prev_session_id = ev["session_id"]
+                    sid = ev.get("session_id", "")
+                    if sid and sid != "unknown":
+                        prev_session_id = sid
+                        break  # Use the first valid session_id
                 except Exception:
                     pass
             if not prev_session_id:
-                prev_session_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+                ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+                prev_session_id = f"unknown-{ts}"
             # Sanitize to prevent path traversal via a crafted session_id
             safe_id = re.sub(r'[^a-zA-Z0-9_\-]', '_', prev_session_id)[:128]
             archive_path = project_dir / ".feature-memory" / f"events-{safe_id}.jsonl"
-            archived = False
             try:
-                archive_path.write_text(content, encoding="utf-8")
-                archived = True
+                _safe_archive(events_path, archive_path)
             except Exception as e:
                 print(f"[FM] Warning: could not archive events to {archive_path.name}: {e}", file=sys.stderr)
-            if archived:
-                events_path.write_text("", encoding="utf-8")
         else:
             events_path.write_text("", encoding="utf-8")
 
