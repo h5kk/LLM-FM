@@ -1,0 +1,37 @@
+schema_version: 1
+project_name: LLM-FM
+docs_root: docs/feature-memory
+mode: small
+
+features:
+  plugin-core:
+    globs:
+      - "plugin/.claude-plugin/**"
+      - "plugin/assets/**"
+      - "README.md"
+  hooks:
+    globs:
+      - "plugin/hooks/**"
+  skills:
+    globs:
+      - "plugin/skills/**"
+  reviewer:
+    globs:
+      - "plugin/agents/**"
+  specs:
+    globs:
+      - "docs/specs/**"
+      - "feature-memory-architecture-plan.md"
+  cli:
+    globs:
+      - "fm_init.py"
+      - "src/**"
+
+mapping:
+  default_confidence: medium
+  unmapped_policy: report
+  route_patterns: []
+  test_patterns:
+    - "tests/**"
+    - "**/*_test.*"
+    - "**/*.test.*"
