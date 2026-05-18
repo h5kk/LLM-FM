@@ -1,4 +1,4 @@
-<!-- fm-viewer-version: 5 -->
+<!-- fm-viewer-version: 6 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +22,8 @@
       --tag-bg: #1e2235;
       --radius: 8px;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --header-h: 96px;
+      --header-h: 100px;
+      --ds-width: 368px;
     }
 
     :root[data-theme="light"] {
@@ -48,44 +49,37 @@
       line-height: 1.5;
     }
 
+    /* ── Header ─────────────────────────────────────────────────────── */
     header {
       position: sticky;
       top: 0;
       z-index: 100;
       background: var(--bg);
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px 0;
+      padding: 14px 24px 0;
     }
 
     .header-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
     }
 
-    h1 {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text);
-      flex-shrink: 0;
-    }
+    h1 { font-size: 17px; font-weight: 600; flex-shrink: 0; }
 
-    .subtitle {
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .subtitle { font-size: 12px; color: var(--muted); }
 
     #search {
       flex: 1;
-      min-width: 180px;
-      max-width: 360px;
+      min-width: 160px;
+      max-width: 340px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       color: var(--text);
-      padding: 7px 12px;
+      padding: 6px 12px;
       font-size: 13px;
       outline: none;
       transition: border-color 0.15s;
@@ -93,121 +87,371 @@
     #search:focus { border-color: var(--accent); }
     #search::placeholder { color: var(--muted); }
 
-    .tabs {
-      display: flex;
-      gap: 2px;
-      padding-bottom: 0;
-    }
-
-    .tab {
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
+    .hdr-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       color: var(--muted);
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12px;
+      font-family: var(--font);
+      line-height: 1;
+      padding: 5px 9px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .hdr-btn:hover { color: var(--text); border-color: var(--accent); }
+    .hdr-btn.panel-open { color: var(--text); border-color: var(--accent); }
+    #theme-toggle { font-size: 14px; }
+
+    #count { font-size: 12px; color: var(--muted); margin-left: auto; align-self: center; padding-bottom: 10px; }
+
+    .tabs { display: flex; gap: 2px; }
+    .tab {
+      background: none; border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted); cursor: pointer;
+      font-size: 13px; font-weight: 500;
       padding: 8px 14px;
       transition: color 0.15s, border-color 0.15s;
     }
     .tab:hover { color: var(--text); }
     .tab.active { color: var(--text); border-bottom-color: var(--accent); }
-    .tab[data-audience="product"].active { border-bottom-color: var(--prod-color); }
+    .tab[data-audience="product"].active  { border-bottom-color: var(--prod-color); }
     .tab[data-audience="developer"].active { border-bottom-color: var(--dev-color); }
 
-    #count {
-      margin-left: auto;
-      font-size: 12px;
-      color: var(--muted);
-      align-self: center;
-      padding-bottom: 10px;
-    }
+    /* ── Tag filter ──────────────────────────────────────────────────── */
+    #active-tag-summary { font-size: 11px; color: var(--accent); flex-shrink: 0; }
 
-    /* ── Mobile / single-column main ───────────────────────────────── */
+    #tag-filter { border-top: 1px solid var(--border); padding: 10px 0 12px; }
+
+    .tag-filter-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px; font-size: 11px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    #clear-tags {
+      background: none; border: 1px solid var(--border); border-radius: 4px;
+      color: var(--muted); cursor: pointer; font-size: 11px; padding: 2px 8px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    #clear-tags:hover { color: var(--text); border-color: var(--accent); }
+
+    .tag-filter-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+    .cat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; min-width: 52px; padding-top: 3px; flex-shrink: 0; }
+    .cat-label.impact  { color: #f97316; }
+    .cat-label.quality { color: #a855f7; }
+    .cat-label.process { color: #14b8a6; }
+    .cat-label.tech    { color: #3b82f6; }
+    .tag-chips-row { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .filter-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 10px; font-weight: 600; border-radius: 10px; padding: 2px 8px;
+      cursor: pointer; border: 1px solid transparent;
+      transition: opacity 0.15s, border-color 0.15s; opacity: 0.65;
+    }
+    .filter-chip:hover { opacity: 1; }
+    .filter-chip.impact  { background: #431407; color: #fb923c; }
+    .filter-chip.quality { background: #2e1065; color: #c084fc; }
+    .filter-chip.process { background: #042f2e; color: #2dd4bf; }
+    .filter-chip.tech    { background: #1e3a5f; color: #60a5fa; }
+    .filter-chip.active         { opacity: 1; }
+    .filter-chip.impact.active  { border-color: #f97316; }
+    .filter-chip.quality.active { border-color: #a855f7; }
+    .filter-chip.process.active { border-color: #14b8a6; }
+    .filter-chip.tech.active    { border-color: #3b82f6; }
+    :root[data-theme="light"] .filter-chip.impact  { background: #fff7ed; color: #c2410c; }
+    :root[data-theme="light"] .filter-chip.quality { background: #faf5ff; color: #7e22ce; }
+    :root[data-theme="light"] .filter-chip.process { background: #f0fdfa; color: #0f766e; }
+    :root[data-theme="light"] .filter-chip.tech    { background: #eff6ff; color: #1d4ed8; }
+    .chip-count { opacity: 0.65; font-size: 9px; }
+
+    /* ── Toolbar ──────────────────────────────────────────────────────── */
+    .toolbar { display: flex; gap: 8px; align-items: center; padding: 8px 0 10px; flex-wrap: wrap; }
+    .toolbar-btn {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--muted); cursor: pointer;
+      font-size: 12px; font-family: var(--font); line-height: 1;
+      padding: 5px 10px; white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .toolbar-btn:hover { color: var(--text); border-color: var(--accent); }
+    .toolbar-btn.danger:hover { color: #f87171; border-color: #f87171; }
+    .toolbar-btn.flash { color: var(--prod-color); border-color: var(--prod-color); }
+
+    .copy-json-group {
+      display: flex; align-items: stretch;
+      border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .copy-json-group:focus-within, .copy-json-group:hover { border-color: var(--accent); }
+    .copy-json-select {
+      background: var(--surface); border: none; border-right: 1px solid var(--border);
+      color: var(--muted); font-size: 12px; font-family: var(--font); padding: 5px 8px;
+      cursor: pointer; outline: none;
+    }
+    .copy-json-select:hover { color: var(--text); }
+    .copy-json-btn {
+      background: var(--surface); border: none; color: var(--muted); cursor: pointer;
+      font-size: 12px; font-family: var(--font); padding: 5px 10px; white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .copy-json-btn:hover { color: var(--text); }
+    .copy-json-btn.flash { color: var(--prod-color); }
+
+    /* ── Clear banner ─────────────────────────────────────────────────── */
+    #clear-banner {
+      background: #2d1a00; border-bottom: 1px solid #854d0e;
+      padding: 10px 24px; font-size: 12px; color: #fbbf24;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    :root[data-theme="light"] #clear-banner { background: #fef3c7; border-color: #d97706; color: #92400e; }
+    #clear-banner code { font-family: "SF Mono", Consolas, monospace; font-size: 11px; background: rgba(0,0,0,0.3); border-radius: 3px; padding: 1px 6px; }
+    :root[data-theme="light"] #clear-banner code { background: rgba(0,0,0,0.08); }
+    #restore-btn { background: none; border: 1px solid currentColor; border-radius: 4px; color: inherit; cursor: pointer; font-size: 11px; padding: 2px 8px; opacity: 0.8; }
+    #restore-btn:hover { opacity: 1; }
+
+    /* ── About panel host ─────────────────────────────────────────────── */
+    #about-panel-host { padding: 16px 24px 0; }
+    @media (min-width: 1200px) { #about-panel-host { display: none; } }
+
+    /* ── Page body: single col mobile, 2-col desktop ─────────────────── */
+    #page-body { display: block; }
+
+    #devsync-col { display: none; } /* hidden on mobile */
+
+    #main-col { }
+
     main#timeline {
       max-width: 900px;
       margin: 0 auto;
-      padding: 24px 24px 64px;
+      padding: 20px 24px 64px;
     }
 
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 64px 0;
-      font-size: 15px;
+    @media (min-width: 1200px) {
+      #page-body {
+        display: grid;
+        grid-template-columns: var(--ds-width) 1fr;
+        height: calc(100vh - var(--header-h));
+        background: var(--border); /* acts as column divider */
+        gap: 1px;
+      }
+
+      #devsync-col {
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        overflow-y: auto;
+        height: 100%;
+      }
+
+      #main-col {
+        background: var(--bg);
+        overflow-y: auto;
+        height: 100%;
+      }
+
+      main#timeline {
+        max-width: none;
+        margin: 0;
+        padding: 20px 24px 64px;
+      }
     }
 
-    .date-group { margin-bottom: 32px; }
-
-    .date-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
+    /* ── Dev Sync panel ───────────────────────────────────────────────── */
+    .ds-header {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 5;
+      padding: 14px 16px 10px;
+      border-bottom: 2px solid var(--accent);
+    }
+    .ds-header-title {
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      letter-spacing: 0.09em;
+      color: var(--accent);
     }
-    .date-label::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+    .ds-header-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .ds-body { padding: 14px 16px 48px; }
+
+    .ds-stats {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+      align-items: center;
+    }
+    .ds-stats strong { color: var(--text); font-weight: 700; }
+    .ds-stats .ds-feat-count { color: var(--accent); font-weight: 700; }
+    .ds-stats .ds-dot { color: var(--border); }
+
+    .ds-highlights {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid #fb923c;
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 16px;
+    }
+    .ds-highlights-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #fb923c;
+      margin-bottom: 7px;
+    }
+    .ds-hl-item {
+      font-size: 12px;
+      color: var(--text);
+      padding: 3px 0;
+      line-height: 1.4;
+      border-bottom: 1px solid var(--border);
+    }
+    .ds-hl-item:last-child { border-bottom: none; }
+    .ds-hl-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      border-radius: 3px;
+      padding: 1px 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-right: 5px;
+      vertical-align: middle;
+      background: #431407;
+      color: #fb923c;
+    }
+
+    .ds-feature {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ds-feature:last-child { border-bottom: none; margin-bottom: 0; }
+
+    .ds-feature-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .ds-feature-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.01em;
+    }
+    .ds-feature-meta {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .ds-prose {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      opacity: 0.88;
+    }
+    .ds-prose strong { color: var(--text); font-weight: 600; opacity: 1; }
+
+    .ds-bullet-list {
+      list-style: none;
+      margin: 5px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ds-bullet-item {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.45;
+      padding-left: 13px;
+      position: relative;
+      opacity: 0.87;
+    }
+    .ds-bullet-item::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 11px;
+      top: 1px;
+    }
+    .ds-kind-chip {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      border-radius: 3px;
+      padding: 1px 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-right: 3px;
+      vertical-align: middle;
+    }
+    .ds-kind-chip.new-feature     { background: #0d3321; color: #34d399; }
+    .ds-kind-chip.bug-fix         { background: #3b0f0f; color: #f87171; }
+    .ds-kind-chip.behavior-change { background: #1e1b3a; color: #a78bfa; }
+    .ds-kind-chip.refactor        { background: #1a2030; color: #94a3b8; }
+
+    .ds-empty {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 32px 0;
+      text-align: center;
     }
 
     /* ── Entry card ─────────────────────────────────────────────────── */
+    .empty { text-align: center; color: var(--muted); padding: 64px 0; font-size: 15px; }
+    .date-group { margin-bottom: 28px; }
+    .date-label {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+    }
+    .date-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
     .entry {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 8px;
-      overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 8px; overflow: hidden;
       transition: border-color 0.15s;
     }
     .entry:hover { border-color: var(--accent); }
 
     .entry-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      cursor: pointer;
-      user-select: none;
-      min-width: 0;
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; cursor: pointer; user-select: none; min-width: 0;
     }
 
-    .audience-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .audience-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .audience-dot.developer { background: var(--dev-color); }
     .audience-dot.product   { background: var(--prod-color); }
     .audience-dot.both      { background: var(--both-color); }
 
     .feature-badge {
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--tag-bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1px 7px;
-      color: var(--muted);
-      white-space: nowrap;
-      flex-shrink: 0;
+      font-size: 11px; font-weight: 600; background: var(--tag-bg);
+      border: 1px solid var(--border); border-radius: 4px; padding: 1px 7px;
+      color: var(--muted); white-space: nowrap; flex-shrink: 0;
     }
 
     .kind-tag {
-      font-size: 10px;
-      font-weight: 600;
-      border-radius: 4px;
-      padding: 1px 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      flex-shrink: 0;
+      font-size: 10px; font-weight: 600; border-radius: 4px; padding: 1px 6px;
+      text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0;
     }
     .kind-tag.new-feature    { background: #0d3321; color: #34d399; }
     .kind-tag.bug-fix        { background: #3b0f0f; color: #f87171; }
@@ -222,494 +466,61 @@
     :root[data-theme="light"] .kind-tag.refactor        { background: #e2e8f0; color: #475569; }
     :root[data-theme="light"] .kind-tag.path-touched    { background: #f1f5f9; color: #64748b; }
 
-    .summary {
-      flex: 1;
-      font-size: 13px;
-      color: var(--text);
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    .summary { flex: 1; font-size: 13px; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    /* ── Inline tags in collapsed row ──────────────────────────────── */
-    .entry-header-tags {
-      display: flex;
-      gap: 3px;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
+    .entry-header-tags { display: flex; gap: 3px; flex-shrink: 0; overflow: hidden; }
     .entry-header-tags .tag-chip { font-size: 10px; padding: 1px 5px; white-space: nowrap; }
     @media (max-width: 700px) { .entry-header-tags { display: none; } }
 
-    .author-chip {
-      font-size: 11px;
-      background: var(--tag-bg);
-      border-radius: 12px;
-      padding: 2px 8px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      font-weight: 500;
-    }
+    .author-chip { font-size: 11px; background: var(--tag-bg); border-radius: 12px; padding: 2px 8px; white-space: nowrap; flex-shrink: 0; font-weight: 500; }
 
-    .jira-chip {
-      font-size: 10px;
-      font-family: "SF Mono", "Fira Code", Consolas, monospace;
-      background: #1e2a3a;
-      border: 1px solid #2d4a6a;
-      border-radius: 3px;
-      padding: 1px 6px;
-      color: #60a5fa;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    :root[data-theme="light"] .jira-chip {
-      background: #dbeafe;
-      border-color: #93c5fd;
-      color: #1d4ed8;
-    }
+    .jira-chip { font-size: 10px; font-family: "SF Mono", Consolas, monospace; background: #1e2a3a; border: 1px solid #2d4a6a; border-radius: 3px; padding: 1px 6px; color: #60a5fa; white-space: nowrap; flex-shrink: 0; }
+    :root[data-theme="light"] .jira-chip { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
 
-    .expand-btn {
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 11px;
-      padding: 2px 4px;
-      flex-shrink: 0;
-      transition: transform 0.2s;
-    }
+    .expand-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 11px; padding: 2px 4px; flex-shrink: 0; transition: transform 0.2s; }
     .entry.expanded .expand-btn { transform: rotate(180deg); }
 
-    /* ── Entry detail (expanded) ─────────────────────────────────────── */
     .entry-detail {
-      border-top: 1px solid var(--border);
-      padding: 12px 14px;
-      background: var(--surface2);
-      display: none;
-      flex-direction: column;
-      gap: 8px;
+      border-top: 1px solid var(--border); padding: 12px 14px;
+      background: var(--surface2); display: none; flex-direction: column; gap: 8px;
     }
     .entry.expanded .entry-detail { display: flex; }
 
-    .detail-row {
-      display: flex;
-      gap: 8px;
-      font-size: 12px;
-    }
-    .detail-label {
-      color: var(--muted);
-      min-width: 90px;
-      flex-shrink: 0;
-    }
-    .detail-value {
-      color: var(--text);
-      word-break: break-all;
-    }
-    .detail-value.mono {
-      font-family: "SF Mono", "Fira Code", Consolas, monospace;
-      font-size: 11px;
-      color: #94a3b8;
-    }
-    .detail-value.paths {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .path-chip {
-      background: var(--tag-bg);
-      border-radius: 3px;
-      padding: 1px 6px;
-      font-family: monospace;
-      font-size: 11px;
-      color: #94a3b8;
-    }
+    .detail-row { display: flex; gap: 8px; font-size: 12px; }
+    .detail-label { color: var(--muted); min-width: 90px; flex-shrink: 0; }
+    .detail-value { color: var(--text); word-break: break-all; }
+    .detail-value.mono { font-family: "SF Mono", Consolas, monospace; font-size: 11px; color: #94a3b8; }
+    .detail-value.paths { display: flex; flex-wrap: wrap; gap: 4px; }
+    .path-chip { background: var(--tag-bg); border-radius: 3px; padding: 1px 6px; font-family: monospace; font-size: 11px; color: #94a3b8; }
 
-    .confidence-badge {
-      font-size: 10px;
-      border-radius: 3px;
-      padding: 1px 5px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
+    .confidence-badge { font-size: 10px; border-radius: 3px; padding: 1px 5px; font-weight: 600; text-transform: uppercase; }
     .confidence-badge.high   { background: #0d3321; color: #34d399; }
     .confidence-badge.medium { background: #2d2000; color: #fbbf24; }
     .confidence-badge.low    { background: #3b0f0f; color: #f87171; }
     .confidence-badge.auto   { background: var(--tag-bg); color: var(--muted); }
-
     :root[data-theme="light"] .confidence-badge.high   { background: #d1fae5; color: #065f46; }
     :root[data-theme="light"] .confidence-badge.medium { background: #fef9c3; color: #854d0e; }
     :root[data-theme="light"] .confidence-badge.low    { background: #fee2e2; color: #991b1b; }
     :root[data-theme="light"] .confidence-badge.auto   { background: var(--tag-bg); color: var(--muted); }
 
-    /* cross-channel note for 'both' entries */
-    .cross-channel-note {
-      font-size: 11px;
-      color: var(--muted);
-      font-style: italic;
-      border-left: 2px solid var(--border);
-      padding-left: 8px;
-    }
+    .cross-channel-note { font-size: 11px; color: var(--muted); font-style: italic; border-left: 2px solid var(--border); padding-left: 8px; }
 
     /* ── Tag chips ───────────────────────────────────────────────────── */
-    .tag-chip {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 600;
-      border-radius: 10px;
-      padding: 1px 7px;
-    }
-    .tag-chip.impact   { background: #431407; color: #fb923c; }
-    .tag-chip.quality  { background: #2e1065; color: #c084fc; }
-    .tag-chip.process  { background: #042f2e; color: #2dd4bf; }
-    .tag-chip.tech     { background: #1e3a5f; color: #60a5fa; }
-
+    .tag-chip { display: inline-block; font-size: 10px; font-weight: 600; border-radius: 10px; padding: 1px 7px; }
+    .tag-chip.impact  { background: #431407; color: #fb923c; }
+    .tag-chip.quality { background: #2e1065; color: #c084fc; }
+    .tag-chip.process { background: #042f2e; color: #2dd4bf; }
+    .tag-chip.tech    { background: #1e3a5f; color: #60a5fa; }
     :root[data-theme="light"] .tag-chip.impact  { background: #fff7ed; color: #c2410c; }
     :root[data-theme="light"] .tag-chip.quality { background: #faf5ff; color: #7e22ce; }
     :root[data-theme="light"] .tag-chip.process { background: #f0fdfa; color: #0f766e; }
     :root[data-theme="light"] .tag-chip.tech    { background: #eff6ff; color: #1d4ed8; }
 
-    .entry-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 6px;
-    }
-
-    /* ── Tag filter panel ─────────────────────────────────────────────── */
-    #tag-filter-toggle {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--font);
-      line-height: 1;
-      padding: 5px 9px;
-      flex-shrink: 0;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    #tag-filter-toggle:hover { color: var(--text); border-color: var(--accent); }
-    #tag-filter-toggle.panel-open { color: var(--text); border-color: var(--accent); }
-
-    #active-tag-summary {
-      font-size: 11px;
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    #tag-filter {
-      border-top: 1px solid var(--border);
-      padding: 10px 0 12px;
-    }
-
-    .tag-filter-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    #clear-tags {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 11px;
-      padding: 2px 8px;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    #clear-tags:hover { color: var(--text); border-color: var(--accent); }
-
-    .tag-filter-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-
-    .cat-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      min-width: 52px;
-      padding-top: 3px;
-      flex-shrink: 0;
-    }
-    .cat-label.impact  { color: #f97316; }
-    .cat-label.quality { color: #a855f7; }
-    .cat-label.process { color: #14b8a6; }
-    .cat-label.tech    { color: #3b82f6; }
-
-    .tag-chips-row { display: flex; flex-wrap: wrap; gap: 4px; }
-
-    .filter-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 10px;
-      font-weight: 600;
-      border-radius: 10px;
-      padding: 2px 8px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: opacity 0.15s, border-color 0.15s;
-      opacity: 0.65;
-    }
-    .filter-chip:hover { opacity: 1; }
-    .filter-chip.impact  { background: #431407; color: #fb923c; }
-    .filter-chip.quality { background: #2e1065; color: #c084fc; }
-    .filter-chip.process { background: #042f2e; color: #2dd4bf; }
-    .filter-chip.tech    { background: #1e3a5f; color: #60a5fa; }
-    .filter-chip.active        { opacity: 1; }
-    .filter-chip.impact.active  { border-color: #f97316; }
-    .filter-chip.quality.active { border-color: #a855f7; }
-    .filter-chip.process.active { border-color: #14b8a6; }
-    .filter-chip.tech.active    { border-color: #3b82f6; }
-    :root[data-theme="light"] .filter-chip.impact  { background: #fff7ed; color: #c2410c; }
-    :root[data-theme="light"] .filter-chip.quality { background: #faf5ff; color: #7e22ce; }
-    :root[data-theme="light"] .filter-chip.process { background: #f0fdfa; color: #0f766e; }
-    :root[data-theme="light"] .filter-chip.tech    { background: #eff6ff; color: #1d4ed8; }
-
-    .chip-count { opacity: 0.65; font-size: 9px; }
-
-    /* ── Toolbar ──────────────────────────────────────────────────────── */
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      padding: 8px 0 10px;
-      flex-wrap: wrap;
-    }
-
-    .toolbar-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--font);
-      line-height: 1;
-      padding: 5px 10px;
-      white-space: nowrap;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    .toolbar-btn:hover { color: var(--text); border-color: var(--accent); }
-    .toolbar-btn.danger:hover { color: #f87171; border-color: #f87171; }
-
-    .copy-json-group {
-      display: flex;
-      align-items: stretch;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: border-color 0.15s;
-    }
-    .copy-json-group:focus-within, .copy-json-group:hover { border-color: var(--accent); }
-
-    .copy-json-select {
-      background: var(--surface);
-      border: none;
-      border-right: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
-      font-family: var(--font);
-      padding: 5px 8px;
-      cursor: pointer;
-      outline: none;
-    }
-    .copy-json-select:hover { color: var(--text); }
-
-    .copy-json-btn {
-      background: var(--surface);
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--font);
-      padding: 5px 10px;
-      white-space: nowrap;
-      transition: color 0.15s;
-    }
-    .copy-json-btn:hover { color: var(--text); }
-
-    .toolbar-btn.flash, .copy-json-btn.flash { color: var(--prod-color); border-color: var(--prod-color); }
-
-    /* ── Theme / misc header buttons ─────────────────────────────────── */
-    #theme-toggle, #focus-toggle {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 13px;
-      font-family: var(--font);
-      line-height: 1;
-      padding: 5px 9px;
-      flex-shrink: 0;
-      white-space: nowrap;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    #theme-toggle:hover, #focus-toggle:hover { color: var(--text); border-color: var(--accent); }
-
-    #focus-toggle { display: none; }
-
-    /* ── Clear banner ─────────────────────────────────────────────────── */
-    #clear-banner {
-      background: #2d1a00;
-      border-bottom: 1px solid #854d0e;
-      padding: 10px 24px;
-      font-size: 12px;
-      color: #fbbf24;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    :root[data-theme="light"] #clear-banner {
-      background: #fef3c7;
-      border-color: #d97706;
-      color: #92400e;
-    }
-    #clear-banner code {
-      font-family: "SF Mono", Consolas, monospace;
-      font-size: 11px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 3px;
-      padding: 1px 6px;
-    }
-    :root[data-theme="light"] #clear-banner code { background: rgba(0,0,0,0.08); }
-    #restore-btn {
-      background: none;
-      border: 1px solid currentColor;
-      border-radius: 4px;
-      color: inherit;
-      cursor: pointer;
-      font-size: 11px;
-      padding: 2px 8px;
-      opacity: 0.8;
-    }
-    #restore-btn:hover { opacity: 1; }
-
-    /* ── Three-column desktop layout ─────────────────────────────────── */
-    #about-panel-host {
-      max-width: 1600px;
-      margin: 0 auto;
-      padding: 16px 24px 0;
-    }
-
-    #columns { display: none; }
-
-    @media (min-width: 1200px) {
-      main#timeline { display: none; }
-
-      #columns {
-        display: grid;
-        grid-template-columns: 35fr 35fr 30fr;
-        gap: 1px;
-        background: var(--border);
-        max-width: 1600px;
-        margin: 0 auto;
-      }
-
-      .col {
-        background: var(--bg);
-        height: calc(100vh - var(--header-h));
-        overflow-y: auto;
-        padding: 16px 16px 64px;
-        min-width: 0;
-      }
-
-      .col-header {
-        position: sticky;
-        top: 0;
-        background: var(--bg);
-        z-index: 5;
-        padding: 4px 0 10px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--muted);
-        border-bottom: 2px solid var(--border);
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .col[data-col="product"]   .col-header { border-bottom-color: var(--prod-color); color: var(--prod-color); }
-      .col[data-col="developer"] .col-header { border-bottom-color: var(--dev-color);  color: var(--dev-color);  }
-      .col[data-col="devsync"]   .col-header { border-bottom-color: var(--accent);     color: var(--accent);     }
-
-      .col-count { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; }
-
-      body.three-col .tabs { display: none; }
-
-      #focus-toggle { display: inline-flex; align-items: center; }
-
-      /* Focus mode */
-      body.focus-product   #columns { grid-template-columns: 1fr 0fr 0fr; }
-      body.focus-developer #columns { grid-template-columns: 0fr 1fr 0fr; }
-      body.focus-devsync   #columns { grid-template-columns: 0fr 0fr 1fr; }
-      body.focus-product   .col[data-col="developer"],
-      body.focus-product   .col[data-col="devsync"],
-      body.focus-developer .col[data-col="product"],
-      body.focus-developer .col[data-col="devsync"],
-      body.focus-devsync   .col[data-col="product"],
-      body.focus-devsync   .col[data-col="developer"] { display: none; }
-    }
-
-    /* ── Dev Sync column styles ──────────────────────────────────────── */
-    .ds-summary {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 14px;
-      padding: 8px 10px;
-      background: var(--surface);
-      border-radius: var(--radius);
-      border-left: 3px solid var(--accent);
-    }
-    .ds-section { margin-bottom: 16px; }
-    .ds-section-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #fb923c;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
-    }
-    .ds-feature-group { margin-bottom: 16px; }
-    .ds-feature-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 6px;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .ds-feature-count {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 400;
-      background: var(--tag-bg);
-      border-radius: 8px;
-      padding: 0 6px;
-    }
+    .entry-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 
     @media (max-width: 600px) {
-      header { padding: 12px 16px 0; }
-      main#timeline { padding: 16px 16px 48px; }
+      header { padding: 10px 16px 0; }
+      main#timeline { padding: 14px 16px 48px; }
       .kind-tag, .feature-badge { display: none; }
       .toolbar { gap: 6px; }
     }
@@ -722,10 +533,9 @@
     <h1>Feature Memory Changelog</h1>
     <span class="subtitle" id="generated-label"></span>
     <input type="search" id="search" placeholder="Search features, authors, tags…" autocomplete="off">
-    <button id="tag-filter-toggle" title="Filter by tags">🏷 Tags</button>
+    <button class="hdr-btn" id="tag-filter-toggle">🏷 Tags</button>
     <span id="active-tag-summary" style="display:none"></span>
-    <button id="theme-toggle" title="Toggle light/dark mode">☀︎</button>
-    <button id="focus-toggle" title="Focus a column">⛶ Focus: All</button>
+    <button class="hdr-btn" id="theme-toggle" title="Toggle light/dark">☀︎</button>
     <span id="count"></span>
   </div>
   <div class="tabs">
@@ -740,10 +550,10 @@
     </div>
     <div id="tag-filter-body"></div>
   </div>
-  <div class="toolbar" id="toolbar">
+  <div class="toolbar">
     <button class="toolbar-btn" id="expand-all-btn">Expand All</button>
-    <div class="copy-json-group" title="Copy entries as JSON">
-      <select class="copy-json-select" id="copy-json-mode" aria-label="JSON copy scope">
+    <div class="copy-json-group">
+      <select class="copy-json-select" id="copy-json-mode">
         <option value="filtered">Copy filtered JSON</option>
         <option value="all">Copy all JSON</option>
       </select>
@@ -751,50 +561,44 @@
     </div>
     <button class="toolbar-btn" id="copy-md-btn">Copy Markdown</button>
     <button class="toolbar-btn" id="export-csv-btn">Export CSV</button>
-    <button class="toolbar-btn danger" id="clear-view-btn" title="Clear all entries from view (does not delete .md docs)">⊗ Clear entries</button>
+    <button class="toolbar-btn danger" id="clear-view-btn">⊗ Clear entries</button>
   </div>
 </header>
 
 <div id="clear-banner" style="display:none">
-  <span>Entries cleared from view for this session.</span>
+  <span>Entries cleared for this session.</span>
   <span>To permanently clear: <code>python plugin/hooks/fm_backfill.py --clear</code></span>
-  <button id="restore-btn">Restore entries</button>
+  <button id="restore-btn">Restore</button>
 </div>
 
-<div id="about-panel-host"></div>
-
-<main id="timeline">
-  <details id="about-panel" style="margin-bottom:16px">
-    <summary style="cursor:pointer; font-size:12px; color:var(--muted); padding:8px 0">About this changelog ▸</summary>
+<div id="about-panel-host">
+  <details id="about-panel" style="margin-bottom:12px">
+    <summary style="cursor:pointer; font-size:12px; color:var(--muted); padding:6px 0">About this changelog ▸</summary>
     <div style="font-size:12px; color:var(--muted); padding:8px 0 0; line-height:1.7">
-      <p><strong style="color:var(--text)">Product</strong> — business-facing changes visible to users or stakeholders.</p>
-      <p><strong style="color:var(--text)">Developer</strong> — technical details: file changes, refactors, test additions.</p>
-      <p><strong style="color:var(--text)">Dev Sync</strong> — engineer-focused digest grouped by feature, with highlights for breaking/security changes.</p>
-      <p><strong style="color:var(--text)">Confidence</strong> — <em>high</em>: verified; <em>medium</em>: inferred; <em>low</em>: needs review.</p>
-      <p style="margin-top:6px">Tags inferred automatically from file paths and commit messages.</p>
+      <p><strong style="color:var(--text)">Dev Sync</strong> — engineer-facing digest: feature summaries, highlights for breaking/security changes.</p>
+      <p><strong style="color:var(--text)">Product</strong> — user/stakeholder-facing changes. <strong style="color:var(--text)">Developer</strong> — technical implementation details.</p>
+      <p><strong style="color:var(--text)">All</strong> — every entry regardless of audience. Tags inferred from paths and commit messages.</p>
     </div>
   </details>
-</main>
+</div>
 
-<div id="columns">
-  <section class="col" data-col="product">
-    <div class="col-header">Product <span class="col-count" id="count-product"></span></div>
-    <div class="col-body" id="col-product-body"></div>
-  </section>
-  <section class="col" data-col="developer">
-    <div class="col-header">Developer <span class="col-count" id="count-developer"></span></div>
-    <div class="col-body" id="col-developer-body"></div>
-  </section>
-  <section class="col" data-col="devsync">
-    <div class="col-header">Dev Sync <span class="col-count" id="count-devsync"></span></div>
-    <div class="col-body" id="col-devsync-body"></div>
-  </section>
+<div id="page-body">
+  <aside id="devsync-col">
+    <div class="ds-header">
+      <div class="ds-header-title">Dev Sync</div>
+      <div class="ds-header-sub" id="ds-sub"></div>
+    </div>
+    <div class="ds-body" id="ds-body"></div>
+  </aside>
+  <div id="main-col">
+    <main id="timeline"></main>
+  </div>
 </div>
 
 <script id="changelog-data" type="application/json">
 {
   "schema_version": 2,
-  "generated": "2026-05-18T18:31:38.170873+00:00",
+  "generated": "2026-05-18T18:32:10.808633+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -1778,6 +1582,266 @@
       "source": "git-backfill"
     },
     {
+      "event_id": "20260518T182551Z-6d73",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/claude_stop.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182600Z-89a1",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/claude_stop.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182605Z-ecc2",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182615Z-45bf",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182620Z-0e98",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182629Z-f90d",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182633Z-a26a",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182717Z-1983",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/.claude-plugin/plugin.json",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182722Z-9326",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/.claude-plugin/plugin.json",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182726Z-fc73",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_common.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T183026Z-045c",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
       "event_id": "fad7fe86bd01-plugin-core",
       "date": "2026-05-17",
       "feature_id": "plugin-core",
@@ -2153,12 +2217,12 @@
 
 <script>
 (function () {
-  // ── Data loading ────────────────────────────────────────────────────
+  // ── Data ────────────────────────────────────────────────────────────
   let data = {};
   try {
     data = JSON.parse(document.getElementById('changelog-data').textContent || '{}');
   } catch (e) {
-    document.querySelector('main').innerHTML = '<p class="empty">Changelog data could not be parsed. Regenerate with fm_backfill.py.</p>';
+    document.getElementById('timeline').innerHTML = '<p class="empty">Changelog data could not be parsed.</p>';
   }
   const allEntries = Array.isArray(data.entries) ? data.entries : [];
 
@@ -2173,17 +2237,10 @@
   let activeAudience = 'all';
   let searchQuery = '';
   let allExpanded = false;
-  let focusMode = null;        // null | 'product' | 'developer' | 'devsync'
   let viewCleared = false;
-
-  const THREE_COL_MIN = 1200;
   const HIGHLIGHT_TAGS = ['breaking-change', 'api-change', 'security', 'schema-change', 'data-migration'];
 
-  // Restore tag filter state from localStorage
-  try {
-    const saved = JSON.parse(localStorage.getItem('fm-tags') || '[]');
-    saved.forEach(t => activeTags.add(t));
-  } catch (_) {}
+  try { JSON.parse(localStorage.getItem('fm-tags') || '[]').forEach(t => activeTags.add(t)); } catch (_) {}
 
   // ── Constants ────────────────────────────────────────────────────────
   const TAG_CATEGORIES = {
@@ -2195,14 +2252,13 @@
     'typescript': 'tech', 'python': 'tech', 'javascript': 'tech', 'html-css': 'tech',
     'shell': 'tech', 'yaml': 'tech', 'sql': 'tech', 'markdown': 'tech',
   };
-
   const kindClass = {
     'new-feature': 'new-feature', 'bug-fix': 'bug-fix',
     'behavior-change': 'behavior-change', 'refactor': 'refactor',
     'path_touched': 'path-touched', 'path-touched': 'path-touched',
   };
 
-  // ── Pure helpers ─────────────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────────────
   function tagCat(t) { return TAG_CATEGORIES[t] || 'tech'; }
 
   function firstNameOnly(str) {
@@ -2214,58 +2270,37 @@
 
   function authorColor(name) {
     let h = 0;
-    for (let i = 0; i < (name || '').length; i++) {
-      h = (h * 31 + name.charCodeAt(i)) & 0xFFFFFF;
-    }
+    for (let i = 0; i < (name || '').length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xFFFFFF;
     return `hsl(${h % 360}, 65%, 62%)`;
   }
 
   function escHtml(s) {
-    return String(s || '')
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  function getKindClass(kind) { return kindClass[kind] || 'default'; }
-
-  function audienceClass(a) {
-    if (a === 'both') return 'both';
-    return a === 'product' ? 'product' : 'developer';
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   function formatDate(iso) {
-    try {
-      const d = new Date(iso + 'T12:00:00Z');
-      return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-    } catch (e) { return iso; }
+    try { return new Date(iso + 'T12:00:00Z').toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }); }
+    catch (e) { return iso; }
   }
 
-  function saveTagFilter() {
-    try { localStorage.setItem('fm-tags', JSON.stringify([...activeTags])); } catch (_) {}
-  }
+  function saveTagFilter() { try { localStorage.setItem('fm-tags', JSON.stringify([...activeTags])); } catch (_) {} }
 
-  // ── Filter logic ─────────────────────────────────────────────────────
-  // matchesFilter: search + tag only (no audience — audience handled per-column)
+  // ── Filter ───────────────────────────────────────────────────────────
   function matchesFilter(entry) {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      const haystack = [
+      const hay = [
         entry.summary || '', entry.feature_id || '', entry.feature_title || '',
         entry.git_author || '', entry.git_message || '', entry.jira_ticket || '',
         (entry.kind || []).join(' '), (entry.paths || []).join(' '), (entry.tags || []).join(' '),
       ].join(' ').toLowerCase();
-      if (!haystack.includes(q)) return false;
+      if (!hay.includes(q)) return false;
     }
     if (activeTags.size > 0) {
-      const entryTags = new Set(entry.tags || []);
+      const et = new Set(entry.tags || []);
       const byCat = {};
-      for (const t of activeTags) {
-        const c = tagCat(t);
-        (byCat[c] = byCat[c] || []).push(t);
-      }
-      for (const catTags of Object.values(byCat)) {
-        if (!catTags.some(t => entryTags.has(t))) return false;
-      }
+      for (const t of activeTags) { const c = tagCat(t); (byCat[c] = byCat[c] || []).push(t); }
+      for (const cats of Object.values(byCat)) { if (!cats.some(t => et.has(t))) return false; }
     }
     return true;
   }
@@ -2277,277 +2312,224 @@
   }
 
   // ── Entry rendering ───────────────────────────────────────────────────
-  // ctx: null (single column) | 'product' | 'developer'
   function renderEntry(entry, ctx) {
     const kinds = Array.isArray(entry.kind) ? entry.kind : [];
     const aud = entry.audience || 'developer';
     const isBoth = aud === 'both';
     const conf = entry.confidence || 'auto';
 
-    // Audience dot: in columns, 'both' adopts the column's color
-    let dotClass = audienceClass(aud);
+    let dotClass = isBoth ? 'both' : aud;
     if (isBoth && ctx === 'product')   dotClass = 'product';
     if (isBoth && ctx === 'developer') dotClass = 'developer';
 
-    // Summary text: use product_summary in product context if available
-    const summaryText = (ctx === 'product' && entry.product_summary)
-      ? entry.product_summary
-      : (entry.summary || '');
+    const summaryText = (ctx === 'product' && entry.product_summary) ? entry.product_summary : (entry.summary || '');
 
-    // Kind tags: hide 'path-touched' and 'refactor' in product context
     const showKinds = ctx === 'product'
       ? kinds.filter(k => k !== 'path_touched' && k !== 'path-touched' && k !== 'refactor')
       : kinds;
 
     const kindTagsHtml = showKinds.slice(0, 2).map(k =>
-      `<span class="kind-tag ${getKindClass(k)}">${escHtml(k.replace(/-/g, ' '))}</span>`
+      `<span class="kind-tag ${kindClass[k] || 'default'}">${escHtml(k.replace(/-/g, ' '))}</span>`
     ).join('');
 
     const authorHtml = entry.git_author
       ? `<span class="author-chip" title="${escHtml(entry.git_author)}" style="color:${authorColor(entry.git_author)}">@${escHtml(firstNameOnly(entry.git_author))}</span>`
       : '';
 
-    // Inline tag chips (collapsed row, max 3)
     const headerTagsHtml = (entry.tags || []).length > 0
       ? `<span class="entry-header-tags">${(entry.tags || []).slice(0, 3).map(t =>
-          `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`
-        ).join('')}</span>`
+          `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span>`
       : '';
 
-    // Expanded detail: hide technical rows in product context
     const pathsHtml = (entry.paths || []).map(p => `<span class="path-chip">${escHtml(p)}</span>`).join('');
-
-    const gitMsgHtml = entry.git_message
-      ? `<div class="detail-row"><span class="detail-label">Git message</span><span class="detail-value">${escHtml(entry.git_message)}</span></div>`
-      : '';
-
-    const gitHashHtml = (entry.git_hash && ctx !== 'product')
-      ? `<div class="detail-row"><span class="detail-label">Commit</span><span class="detail-value mono">${escHtml(entry.git_hash.slice(0, 12))}</span></div>`
-      : '';
-
-    const pathsRowHtml = (pathsHtml && ctx !== 'product')
-      ? `<div class="detail-row"><span class="detail-label">Files</span><span class="detail-value paths">${pathsHtml}</span></div>`
-      : '';
-
-    const jiraHtml = entry.jira_ticket
-      ? `<div class="detail-row"><span class="detail-label">Jira</span><span class="detail-value mono">${escHtml(entry.jira_ticket)}</span></div>`
-      : '';
-
+    const gitMsgHtml = entry.git_message ? `<div class="detail-row"><span class="detail-label">Git message</span><span class="detail-value">${escHtml(entry.git_message)}</span></div>` : '';
+    const gitHashHtml = (entry.git_hash && ctx !== 'product') ? `<div class="detail-row"><span class="detail-label">Commit</span><span class="detail-value mono">${escHtml(entry.git_hash.slice(0, 12))}</span></div>` : '';
+    const pathsRowHtml = (pathsHtml && ctx !== 'product') ? `<div class="detail-row"><span class="detail-label">Files</span><span class="detail-value paths">${pathsHtml}</span></div>` : '';
+    const jiraHtml = entry.jira_ticket ? `<div class="detail-row"><span class="detail-label">Jira</span><span class="detail-value mono">${escHtml(entry.jira_ticket)}</span></div>` : '';
     const tagsHtml = (entry.tags || []).length > 0
-      ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="entry-tags">${(entry.tags || []).map(t =>
-          `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`
-        ).join('')}</span></div>`
+      ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="entry-tags">${(entry.tags || []).map(t => `<span class="tag-chip ${tagCat(t)}">${escHtml(t)}</span>`).join('')}</span></div>`
       : '';
+    const crossNote = (isBoth && ctx === 'product') ? '<p class="cross-channel-note">Also in Developer channel</p>'
+      : (isBoth && ctx === 'developer') ? '<p class="cross-channel-note">Also in Product channel</p>' : '';
+    const confHtml = ctx !== 'product' ? `<div class="detail-row"><span class="detail-label">Confidence</span><span class="confidence-badge ${escHtml(conf)}">${escHtml(conf)}</span></div>` : '';
 
-    // Cross-channel note for 'both' entries
-    let crossNote = '';
-    if (isBoth && ctx === 'product')
-      crossNote = '<p class="cross-channel-note">Also visible in Developer channel</p>';
-    else if (isBoth && ctx === 'developer')
-      crossNote = '<p class="cross-channel-note">Also visible in Product channel</p>';
-
-    const confidenceHtml = ctx !== 'product'
-      ? `<div class="detail-row"><span class="detail-label">Confidence</span><span class="confidence-badge ${escHtml(conf)}">${escHtml(conf)}</span></div>`
-      : '';
-
-    return `
-      <article class="entry" data-audience="${escHtml(aud)}" data-id="${escHtml(entry.event_id || '')}">
-        <div class="entry-header" onclick="toggleEntry(this.parentElement)">
-          <span class="audience-dot ${dotClass}"></span>
-          ${entry.feature_id ? `<span class="feature-badge" title="${escHtml(entry.feature_id)}">${escHtml(entry.feature_title || entry.feature_id)}</span>` : ''}
-          ${kindTagsHtml}
-          <span class="summary" title="${escHtml(summaryText)}">${escHtml(summaryText)}</span>
-          ${headerTagsHtml}
-          ${entry.jira_ticket ? `<span class="jira-chip">${escHtml(entry.jira_ticket)}</span>` : ''}
-          ${authorHtml}
-          <button class="expand-btn" title="Expand">▼</button>
-        </div>
-        <div class="entry-detail">
-          ${gitMsgHtml}
-          ${jiraHtml}
-          ${tagsHtml}
-          ${pathsRowHtml}
-          ${gitHashHtml}
-          ${ctx ? '' : `<div class="detail-row"><span class="detail-label">Audience</span><span class="detail-value">${escHtml(aud)}</span></div>`}
-          ${confidenceHtml}
-          ${crossNote}
-        </div>
-      </article>`;
+    return `<article class="entry" data-audience="${escHtml(aud)}">
+      <div class="entry-header" onclick="toggleEntry(this.parentElement)">
+        <span class="audience-dot ${dotClass}"></span>
+        ${entry.feature_id ? `<span class="feature-badge" title="${escHtml(entry.feature_id)}">${escHtml(entry.feature_title || entry.feature_id)}</span>` : ''}
+        ${kindTagsHtml}
+        <span class="summary" title="${escHtml(summaryText)}">${escHtml(summaryText)}</span>
+        ${headerTagsHtml}
+        ${entry.jira_ticket ? `<span class="jira-chip">${escHtml(entry.jira_ticket)}</span>` : ''}
+        ${authorHtml}
+        <button class="expand-btn" title="Expand">▼</button>
+      </div>
+      <div class="entry-detail">
+        ${gitMsgHtml}${jiraHtml}${tagsHtml}${pathsRowHtml}${gitHashHtml}
+        ${ctx ? '' : `<div class="detail-row"><span class="detail-label">Audience</span><span class="detail-value">${escHtml(aud)}</span></div>`}
+        ${confHtml}${crossNote}
+      </div>
+    </article>`;
   }
 
   window.toggleEntry = function (el) { el.classList.toggle('expanded'); };
 
-  // ── Column rendering ──────────────────────────────────────────────────
-  function renderColumn(bodyId, countId, list, ctx) {
-    const body = document.getElementById(bodyId);
-    const countEl = document.getElementById(countId);
+  // ── Dev Sync: tweet-style prose ───────────────────────────────────────
+  function renderDevSync(baseFiltered) {
+    const body = document.getElementById('ds-body');
+    const sub = document.getElementById('ds-sub');
     if (!body) return;
-    countEl.textContent = list.length ? `(${list.length})` : '';
-    if (!list.length) {
-      body.innerHTML = `<div class="empty" style="padding:32px 0">No entries.</div>`;
-      return;
-    }
-    const groups = {};
-    for (const e of list) { const d = e.date || 'unknown'; (groups[d] = groups[d] || []).push(e); }
-    const dates = Object.keys(groups).sort().reverse();
-    body.innerHTML = dates.map(d => `
-      <section class="date-group">
-        <h2 class="date-label">${d === 'unknown' ? 'Unknown date' : formatDate(d)}</h2>
-        ${groups[d].map(e => renderEntry(e, ctx)).join('')}
-      </section>`).join('');
-  }
 
-  // ── Dev Sync ──────────────────────────────────────────────────────────
-  function buildDevSync(baseFiltered) {
-    const qualifying = baseFiltered.filter(e => {
+    // Dev Sync shows developer + both entries
+    const devEntries = baseFiltered.filter(e => {
       const a = e.audience || 'developer';
       return a === 'developer' || a === 'both';
     });
-    const features = new Map();
-    const authors = new Set();
-    const highlights = [];
 
-    for (const e of qualifying) {
-      const fid = e.feature_id || '__none__';
-      const ftitle = e.feature_title || e.feature_id || 'Unscoped';
-      if (!features.has(fid)) features.set(fid, { featureId: fid, featureTitle: ftitle, entries: [] });
-      features.get(fid).entries.push(e);
-      if (e.git_author) authors.add(firstNameOnly(e.git_author));
-      if ((e.tags || []).some(t => HIGHLIGHT_TAGS.includes(t))) highlights.push(e);
-    }
-
-    for (const g of features.values())
-      g.entries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-    const byFeature = [...features.values()].sort((a, b) => {
-      const da = a.entries[0]?.date || '';
-      const db = b.entries[0]?.date || '';
-      return db.localeCompare(da);
-    });
-
-    const total = qualifying.length;
-    const featureCount = byFeature.filter(g => g.featureId !== '__none__').length || byFeature.length;
-    const authorCount = authors.size;
-
-    return {
-      total, featureCount, authorCount,
-      summaryLine: `${total} change${total === 1 ? '' : 's'} across ${featureCount} feature${featureCount === 1 ? '' : 's'}` +
-        (authorCount ? ` by ${authorCount} author${authorCount === 1 ? '' : 's'}` : ''),
-      highlights, byFeature, isEmpty: total === 0,
-    };
-  }
-
-  function renderDevSync(baseFiltered) {
-    const body = document.getElementById('col-devsync-body');
-    const countEl = document.getElementById('count-devsync');
-    if (!body) return;
-
-    const sync = buildDevSync(baseFiltered);
-    countEl.textContent = sync.total ? `(${sync.total})` : '';
-
-    if (sync.isEmpty) {
-      body.innerHTML = `<div class="empty" style="padding:32px 0">No developer changes match your filters.</div>`;
+    if (!devEntries.length) {
+      sub.textContent = '';
+      body.innerHTML = '<div class="ds-empty">Nothing here yet. Run backfill to populate.</div>';
       return;
     }
 
-    const highlightsHtml = sync.highlights.length
-      ? `<div class="ds-section">
-           <div class="ds-section-title">⚠ Highlights (${sync.highlights.length})</div>
-           ${sync.highlights.map(e => renderEntry(e, 'developer')).join('')}
-         </div>`
-      : '';
+    const features = new Set(devEntries.filter(e => e.feature_id).map(e => e.feature_id));
+    const authors = [...new Set(devEntries.filter(e => e.git_author).map(e => firstNameOnly(e.git_author)))];
+    const dates = devEntries.map(e => e.date).filter(Boolean).sort();
 
-    const featuresHtml = sync.byFeature.map(g => `
-      <div class="ds-feature-group">
-        <div class="ds-feature-title">${escHtml(g.featureTitle)}<span class="ds-feature-count">${g.entries.length}</span></div>
-        ${g.entries.map(e => renderEntry(e, 'developer')).join('')}
-      </div>`).join('');
+    sub.textContent = `${devEntries.length} change${devEntries.length !== 1 ? 's' : ''} · ${dates[dates.length - 1] || ''}`;
 
-    body.innerHTML = `
-      <div class="ds-summary">${escHtml(sync.summaryLine)}</div>
-      ${highlightsHtml}
-      ${featuresHtml}`;
+    let html = '';
+
+    // Stats line
+    html += `<div class="ds-stats">
+      <span><strong>${devEntries.length}</strong> change${devEntries.length !== 1 ? 's' : ''}</span>
+      <span class="ds-dot">·</span>
+      <span class="ds-feat-count">${features.size}</span><span> feature${features.size !== 1 ? 's' : ''}</span>
+      ${authors.length ? `<span class="ds-dot">·</span><span>${escHtml(authors.slice(0, 3).join(', '))}</span>` : ''}
+    </div>`;
+
+    // Highlights block
+    const highlights = devEntries.filter(e => (e.tags || []).some(t => HIGHLIGHT_TAGS.includes(t)));
+    if (highlights.length) {
+      const items = highlights.map(e => {
+        const tag = (e.tags || []).find(t => HIGHLIGHT_TAGS.includes(t)) || '';
+        return `<div class="ds-hl-item"><span class="ds-hl-tag">${escHtml(tag)}</span>${escHtml(e.summary)}</div>`;
+      }).join('');
+      html += `<div class="ds-highlights"><div class="ds-highlights-title">⚠ Heads up (${highlights.length})</div>${items}</div>`;
+    }
+
+    // Per-feature prose blocks
+    const byFeature = new Map();
+    for (const e of devEntries) {
+      const fid = e.feature_id || '__none__';
+      const ftitle = e.feature_title || e.feature_id || 'Unscoped';
+      if (!byFeature.has(fid)) byFeature.set(fid, { title: ftitle, entries: [] });
+      byFeature.get(fid).entries.push(e);
+    }
+
+    // Sort by entry count desc
+    const sorted = [...byFeature.values()].sort((a, b) => b.entries.length - a.entries.length);
+
+    // Global dedup: each commit appears in only one feature block (whichever has the most entries)
+    const seenHashes = new Set();
+
+    const rankKind = k => {
+      if (!k || !k.length) return 4;
+      const f = k[0];
+      if (f === 'new-feature') return 0;
+      if (f === 'bug-fix') return 1;
+      if (f === 'behavior-change') return 2;
+      if (f === 'refactor') return 3;
+      return 4;
+    };
+
+    for (const { title, entries: fEntries } of sorted) {
+      const fAuthors = [...new Set(fEntries.map(e => firstNameOnly(e.git_author)).filter(Boolean))];
+      const ranked = [...fEntries].sort((a, b) => rankKind(a.kind) - rankKind(b.kind));
+
+      // Collect bullets, skipping commits already shown in a prior feature block
+      const bullets = [];
+      for (const e of ranked) {
+        const key = e.git_hash || e.summary;
+        if (!key || seenHashes.has(key)) continue;
+        seenHashes.add(key);
+        if (e.summary) bullets.push(e.summary);
+        if (bullets.length >= 4) break;
+      }
+
+      if (!bullets.length) continue; // all commits already shown elsewhere
+
+      // Kind chips (based on full fEntries so counts are accurate)
+      const kindCounts = {};
+      fEntries.forEach(e => (e.kind || []).forEach(k => kindCounts[k] = (kindCounts[k] || 0) + 1));
+      const kindChips = Object.entries(kindCounts)
+        .filter(([k]) => k !== 'path_touched' && k !== 'path-touched')
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([k, n]) => {
+          const cls = k.replace(/_/g, '-');
+          return `<span class="ds-kind-chip ${escHtml(cls)}">${n} ${escHtml(k.replace(/-/g, ' '))}</span>`;
+        })
+        .join('');
+
+      const bulletHtml = `<ul class="ds-bullet-list">${bullets.map(s => `<li class="ds-bullet-item">${escHtml(s)}</li>`).join('')}</ul>`;
+
+      html += `<div class="ds-feature">
+        <div class="ds-feature-row">
+          <span class="ds-feature-name">${escHtml(title)}</span>
+          <span class="ds-feature-meta">${fEntries.length} · ${escHtml(fAuthors.slice(0, 2).join(', '))}</span>
+        </div>
+        ${kindChips ? `<div style="margin-bottom:6px;line-height:1.8">${kindChips}</div>` : ''}
+        ${bulletHtml}
+      </div>`;
+    }
+
+    body.innerHTML = html;
   }
 
-  // ── Layout mode ───────────────────────────────────────────────────────
-  function isThreeCol() { return window.innerWidth >= THREE_COL_MIN; }
-
+  // ── Header height tracking ────────────────────────────────────────────
   function updateHeaderHeight() {
     const h = document.querySelector('header').getBoundingClientRect().height;
     document.documentElement.style.setProperty('--header-h', h + 'px');
   }
-
-  function syncLayoutMode() {
-    document.body.classList.toggle('three-col', isThreeCol());
-    if (isThreeCol() && activeAudience !== 'all') {
-      activeAudience = 'all';
-      document.querySelectorAll('.tab').forEach(t =>
-        t.classList.toggle('active', t.dataset.audience === 'all'));
-    }
-    updateHeaderHeight();
-  }
-
   new ResizeObserver(updateHeaderHeight).observe(document.querySelector('header'));
-  window.addEventListener('resize', () => { syncLayoutMode(); render(); });
-
-  // ── Relocate about-panel out of #timeline ─────────────────────────────
-  (function relocateAbout() {
-    const ap = document.getElementById('about-panel');
-    const host = document.getElementById('about-panel-host');
-    if (ap && host) host.appendChild(ap);
-  })();
 
   // ── Main render ───────────────────────────────────────────────────────
   function render() {
     updateHeaderHeight();
     const entries = viewCleared ? [] : allEntries;
     const baseFiltered = entries.filter(matchesFilter);
-
-    document.getElementById('count').textContent =
-      baseFiltered.length + ' of ' + entries.length + ' entries';
-
-    if (isThreeCol()) {
-      renderColumn('col-product-body',   'count-product',   baseFiltered.filter(e => matchesAudience(e, 'product')),   'product');
-      renderColumn('col-developer-body', 'count-developer', baseFiltered.filter(e => matchesAudience(e, 'developer')), 'developer');
-      renderDevSync(baseFiltered);
-      return;
-    }
-
-    // Mobile / single-column path
     const filtered = baseFiltered.filter(e => matchesAudience(e, activeAudience));
-    const timeline = document.getElementById('timeline');
 
-    if (filtered.length === 0) {
+    document.getElementById('count').textContent = filtered.length + ' of ' + entries.length + ' entries';
+
+    // Always render Dev Sync from base-filtered (ignores audience tab)
+    renderDevSync(baseFiltered);
+
+    // Render timeline
+    const timeline = document.getElementById('timeline');
+    if (!filtered.length) {
       timeline.innerHTML = '<div class="empty">No entries match your search.</div>';
       return;
     }
 
     const groups = {};
-    for (const entry of filtered) {
-      const date = entry.date || 'unknown';
-      (groups[date] = groups[date] || []).push(entry);
-    }
-
-    const html = Object.keys(groups).sort().reverse().map(date => `
+    for (const e of filtered) { const d = e.date || 'unknown'; (groups[d] = groups[d] || []).push(e); }
+    timeline.innerHTML = Object.keys(groups).sort().reverse().map(date => `
       <section class="date-group">
         <h2 class="date-label">${date === 'unknown' ? 'Unknown date' : formatDate(date)}</h2>
-        ${groups[date].map(e => renderEntry(e, null)).join('')}
+        ${groups[date].map(e => renderEntry(e, activeAudience === 'all' ? null : activeAudience)).join('')}
       </section>`).join('');
-
-    timeline.innerHTML = html;
   }
 
   // ── Developer tab visibility ──────────────────────────────────────────
-  const devCount = allEntries.filter(e => {
-    const a = e.audience || 'developer';
-    return a === 'developer' || a === 'both';
-  }).length;
+  const devCount = allEntries.filter(e => { const a = e.audience || 'developer'; return a === 'developer' || a === 'both'; }).length;
   if (devCount <= 1) {
-    const devTab = document.querySelector('.tab[data-audience="developer"]');
-    if (devTab) devTab.style.display = 'none';
+    const dt = document.querySelector('.tab[data-audience="developer"]');
+    if (dt) dt.style.display = 'none';
   }
 
-  // ── Tabs ──────────────────────────────────────────────────────────────
+  // ── Event wiring ──────────────────────────────────────────────────────
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -2559,7 +2541,6 @@
     });
   });
 
-  // ── Search ────────────────────────────────────────────────────────────
   let searchTimer;
   document.getElementById('search').addEventListener('input', e => {
     clearTimeout(searchTimer);
@@ -2571,59 +2552,40 @@
     }, 150);
   });
 
-  // ── Tag filter panel ──────────────────────────────────────────────────
+  // ── Tag filter ────────────────────────────────────────────────────────
   function buildTagFilter() {
     const counts = {};
-    for (const e of allEntries) {
-      for (const t of (e.tags || [])) { counts[t] = (counts[t] || 0) + 1; }
-    }
+    for (const e of allEntries) for (const t of (e.tags || [])) counts[t] = (counts[t] || 0) + 1;
     const cats = { impact: [], quality: [], process: [], tech: [] };
-    for (const [tag, count] of Object.entries(counts)) {
-      const c = tagCat(tag);
-      if (cats[c]) cats[c].push({ tag, count });
-    }
-    const catLabels = { impact: 'Impact', quality: 'Quality', process: 'Process', tech: 'Tech' };
+    for (const [tag, count] of Object.entries(counts)) { const c = tagCat(tag); if (cats[c]) cats[c].push({ tag, count }); }
+    const labels = { impact: 'Impact', quality: 'Quality', process: 'Process', tech: 'Tech' };
     let html = '';
     for (const [cat, tags] of Object.entries(cats)) {
       if (!tags.length) continue;
       tags.sort((a, b) => b.count - a.count);
-      const chips = tags.map(({ tag, count }) => {
-        const active = activeTags.has(tag) ? ' active' : '';
-        return `<button class="filter-chip ${cat}${active}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`;
-      }).join('');
-      html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${catLabels[cat]}</span><div class="tag-chips-row">${chips}</div></div>`;
+      const chips = tags.map(({ tag, count }) =>
+        `<button class="filter-chip ${cat}${activeTags.has(tag) ? ' active' : ''}" data-tag="${escHtml(tag)}">${escHtml(tag)} <span class="chip-count">${count}</span></button>`
+      ).join('');
+      html += `<div class="tag-filter-row"><span class="cat-label ${cat}">${labels[cat]}</span><div class="tag-chips-row">${chips}</div></div>`;
     }
     document.getElementById('tag-filter-body').innerHTML = html;
     document.getElementById('tag-filter-body').querySelectorAll('.filter-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         const tag = btn.dataset.tag;
         activeTags.has(tag) ? activeTags.delete(tag) : activeTags.add(tag);
-        saveTagFilter();
-        updateTagUI();
-        render();
+        saveTagFilter(); updateTagUI(); render();
       });
     });
   }
 
   function updateTagUI() {
-    document.querySelectorAll('.filter-chip').forEach(btn =>
-      btn.classList.toggle('active', activeTags.has(btn.dataset.tag)));
+    document.querySelectorAll('.filter-chip').forEach(b => b.classList.toggle('active', activeTags.has(b.dataset.tag)));
     const clearBtn = document.getElementById('clear-tags');
     if (clearBtn) clearBtn.style.display = activeTags.size > 0 ? '' : 'none';
-    const summary = document.getElementById('active-tag-summary');
-    if (summary) {
-      if (activeTags.size > 0) {
-        summary.textContent = activeTags.size + ' tag' + (activeTags.size > 1 ? 's' : '') + ' active';
-        summary.style.display = '';
-      } else {
-        summary.style.display = 'none';
-      }
-    }
-    const toggleBtn = document.getElementById('tag-filter-toggle');
-    if (toggleBtn) {
-      const isOpen = document.getElementById('tag-filter').style.display !== 'none';
-      toggleBtn.classList.toggle('panel-open', isOpen);
-    }
+    const sum = document.getElementById('active-tag-summary');
+    if (sum) { sum.textContent = activeTags.size > 0 ? activeTags.size + ' tag' + (activeTags.size > 1 ? 's' : '') + ' active' : ''; sum.style.display = activeTags.size > 0 ? '' : 'none'; }
+    const tb = document.getElementById('tag-filter-toggle');
+    if (tb) tb.classList.toggle('panel-open', document.getElementById('tag-filter').style.display !== 'none');
   }
 
   document.getElementById('tag-filter-toggle').addEventListener('click', () => {
@@ -2631,173 +2593,95 @@
     const open = panel.style.display !== 'none';
     panel.style.display = open ? 'none' : 'block';
     try { localStorage.setItem('fm-tag-panel', open ? 'closed' : 'open'); } catch (_) {}
-    updateTagUI();
-    updateHeaderHeight();
+    updateTagUI(); updateHeaderHeight();
   });
+  try { if (localStorage.getItem('fm-tag-panel') === 'open') document.getElementById('tag-filter').style.display = 'block'; } catch (_) {}
+  document.getElementById('clear-tags').addEventListener('click', () => { activeTags.clear(); saveTagFilter(); updateTagUI(); render(); });
 
-  try {
-    if (localStorage.getItem('fm-tag-panel') === 'open')
-      document.getElementById('tag-filter').style.display = 'block';
-  } catch (_) {}
-
-  document.getElementById('clear-tags').addEventListener('click', () => {
-    activeTags.clear();
-    saveTagFilter();
-    updateTagUI();
-    render();
-  });
-
-  buildTagFilter();
-  updateTagUI();
+  buildTagFilter(); updateTagUI();
 
   // ── Toolbar ───────────────────────────────────────────────────────────
   function copyText(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText)
-      return navigator.clipboard.writeText(text);
-    return new Promise((resolve, reject) => {
-      const ta = document.createElement('textarea');
-      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise((res, rej) => {
+      const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
       document.body.appendChild(ta); ta.select();
-      const ok = document.execCommand('copy');
-      document.body.removeChild(ta);
-      ok ? resolve() : reject(new Error('execCommand failed'));
+      document.execCommand('copy') ? res() : rej(); document.body.removeChild(ta);
     });
   }
-
   function flashBtn(btn, label) {
-    const orig = btn.textContent;
-    btn.textContent = label || 'Copied!';
-    btn.classList.add('flash');
+    const orig = btn.textContent; btn.textContent = label || 'Copied!'; btn.classList.add('flash');
     setTimeout(() => { btn.textContent = orig; btn.classList.remove('flash'); }, 1500);
   }
+  function getFilteredEntries() { return (viewCleared ? [] : allEntries).filter(matchesFilter).filter(e => matchesAudience(e, activeAudience)); }
 
-  function getFilteredEntries() {
-    return (viewCleared ? [] : allEntries).filter(matchesFilter).filter(e => matchesAudience(e, activeAudience));
-  }
-
-  // Expand All
   const expandAllBtn = document.getElementById('expand-all-btn');
   expandAllBtn.addEventListener('click', () => {
     allExpanded = !allExpanded;
-    document.querySelectorAll('#timeline .entry, #columns .entry').forEach(el =>
-      el.classList.toggle('expanded', allExpanded));
+    document.querySelectorAll('#timeline .entry').forEach(el => el.classList.toggle('expanded', allExpanded));
     expandAllBtn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
   });
 
-  // Copy JSON
-  const copyJsonBtn = document.getElementById('copy-json-btn');
-  const copyJsonMode = document.getElementById('copy-json-mode');
-  copyJsonBtn.addEventListener('click', () => {
-    const useFiltered = copyJsonMode.value === 'filtered';
-    const payload = useFiltered ? getFilteredEntries() : allEntries;
+  document.getElementById('copy-json-btn').addEventListener('click', () => {
+    const payload = document.getElementById('copy-json-mode').value === 'filtered' ? getFilteredEntries() : allEntries;
     copyText(JSON.stringify(payload, null, 2))
-      .then(() => flashBtn(copyJsonBtn, 'Copied!'))
-      .catch(() => flashBtn(copyJsonBtn, 'Failed'));
+      .then(() => flashBtn(document.getElementById('copy-json-btn'), 'Copied!'))
+      .catch(() => flashBtn(document.getElementById('copy-json-btn'), 'Failed'));
   });
 
-  // Copy Markdown
-  function entriesToMarkdown(list) {
-    if (!list.length) return '';
+  document.getElementById('copy-md-btn').addEventListener('click', () => {
+    const list = getFilteredEntries();
     const groups = {};
     for (const e of list) { const d = e.date || 'unknown'; (groups[d] = groups[d] || []).push(e); }
     const lines = [];
-    for (const date of Object.keys(groups).sort().reverse()) {
-      lines.push('## ' + date);
-      for (const e of groups[date]) {
-        const feature = e.feature_id ? `**[${e.feature_id}]**` : '';
-        const tags = Array.isArray(e.kind) && e.kind.length ? ' `' + e.kind.join(', ') + '`' : '';
-        lines.push('- ' + [feature, e.summary || ''].filter(Boolean).join(' ') + tags);
-      }
+    for (const d of Object.keys(groups).sort().reverse()) {
+      lines.push('## ' + d);
+      for (const e of groups[d]) lines.push('- ' + (e.feature_id ? `**[${e.feature_id}]** ` : '') + (e.summary || ''));
       lines.push('');
     }
-    return lines.join('\n').trimEnd();
-  }
-
-  const copyMdBtn = document.getElementById('copy-md-btn');
-  copyMdBtn.addEventListener('click', () => {
-    copyText(entriesToMarkdown(getFilteredEntries()))
-      .then(() => flashBtn(copyMdBtn, 'Copied!'))
-      .catch(() => flashBtn(copyMdBtn, 'Failed'));
+    copyText(lines.join('\n').trimEnd())
+      .then(() => flashBtn(document.getElementById('copy-md-btn'), 'Copied!'))
+      .catch(() => flashBtn(document.getElementById('copy-md-btn'), 'Failed'));
   });
 
-  // Export CSV
-  function entriesToCsv(list) {
-    const cols = ['date', 'feature_id', 'summary', 'kind', 'tags', 'git_hash'];
-    const esc = v => {
-      const s = String(v == null ? '' : v);
-      return s.includes(',') || s.includes('"') || s.includes('\n')
-        ? '"' + s.replace(/"/g, '""') + '"' : s;
-    };
-    const rows = [cols.join(',')];
-    for (const e of list) {
-      rows.push([
-        e.date || '', e.feature_id || '', e.summary || '',
-        Array.isArray(e.kind) ? e.kind.join(';') : (e.kind || ''),
-        Array.isArray(e.tags) ? e.tags.join(';') : (e.tags || ''),
-        e.git_hash || '',
-      ].map(esc).join(','));
-    }
-    return rows.join('\r\n');
-  }
-
-  const exportCsvBtn = document.getElementById('export-csv-btn');
-  exportCsvBtn.addEventListener('click', () => {
-    const csv = entriesToCsv(getFilteredEntries());
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  document.getElementById('export-csv-btn').addEventListener('click', () => {
+    const esc = v => { const s = String(v == null ? '' : v); return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    const rows = [['date','feature_id','summary','kind','tags','git_hash'].join(',')];
+    for (const e of getFilteredEntries())
+      rows.push([e.date||'', e.feature_id||'', e.summary||'', (e.kind||[]).join(';'), (e.tags||[]).join(';'), e.git_hash||''].map(esc).join(','));
+    const blob = new Blob([rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'changelog.csv';
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a); URL.revokeObjectURL(url);
-    flashBtn(exportCsvBtn, 'Saved!');
+    const a = Object.assign(document.createElement('a'), { href: url, download: 'changelog.csv' });
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    flashBtn(document.getElementById('export-csv-btn'), 'Saved!');
   });
 
   // ── Clear view ────────────────────────────────────────────────────────
-  const clearViewBtn = document.getElementById('clear-view-btn');
-  const clearBanner = document.getElementById('clear-banner');
-  const restoreBtn = document.getElementById('restore-btn');
-
-  clearViewBtn.addEventListener('click', () => {
-    if (!confirm('Clear all entries from this view?\n\nThis only affects the current browser session — your changelog files are untouched.\n\nTo permanently clear, run:\n  python plugin/hooks/fm_backfill.py --clear')) return;
+  document.getElementById('clear-view-btn').addEventListener('click', () => {
+    if (!confirm('Clear all entries from view?\n\nYour changelog files are untouched. To permanently clear:\n  python plugin/hooks/fm_backfill.py --clear')) return;
     viewCleared = true;
-    clearBanner.style.display = 'flex';
+    document.getElementById('clear-banner').style.display = 'flex';
     render();
   });
-
-  restoreBtn.addEventListener('click', () => {
+  document.getElementById('restore-btn').addEventListener('click', () => {
     viewCleared = false;
-    clearBanner.style.display = 'none';
+    document.getElementById('clear-banner').style.display = 'none';
     render();
   });
 
-  // ── Focus toggle ──────────────────────────────────────────────────────
-  const focusCycle = [null, 'product', 'developer', 'devsync'];
-  const focusToggleBtn = document.getElementById('focus-toggle');
-
-  focusToggleBtn.addEventListener('click', () => {
-    focusMode = focusCycle[(focusCycle.indexOf(focusMode) + 1) % focusCycle.length];
-    document.body.classList.remove('focus-product', 'focus-developer', 'focus-devsync');
-    if (focusMode) document.body.classList.add('focus-' + focusMode);
-    const label = focusMode ? (focusMode[0].toUpperCase() + focusMode.slice(1)) : 'All';
-    focusToggleBtn.textContent = '⛶ Focus: ' + label;
-  });
-
-  // ── Theme toggle ──────────────────────────────────────────────────────
+  // ── Theme ─────────────────────────────────────────────────────────────
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme-toggle');
-  try {
-    const saved = localStorage.getItem('fm-theme');
-    if (saved === 'light') { root.setAttribute('data-theme', 'light'); themeBtn.textContent = '☾'; }
-  } catch (_) {}
+  try { if (localStorage.getItem('fm-theme') === 'light') { root.setAttribute('data-theme', 'light'); themeBtn.textContent = '☾'; } } catch (_) {}
   themeBtn.addEventListener('click', () => {
-    const isLight = root.getAttribute('data-theme') === 'light';
-    root.setAttribute('data-theme', isLight ? 'dark' : 'light');
-    themeBtn.textContent = isLight ? '☀︎' : '☾';
-    try { localStorage.setItem('fm-theme', isLight ? 'dark' : 'light'); } catch (_) {}
+    const light = root.getAttribute('data-theme') === 'light';
+    root.setAttribute('data-theme', light ? 'dark' : 'light');
+    themeBtn.textContent = light ? '☀︎' : '☾';
+    try { localStorage.setItem('fm-theme', light ? 'dark' : 'light'); } catch (_) {}
   });
 
   // ── Init ──────────────────────────────────────────────────────────────
-  syncLayoutMode();
+  updateHeaderHeight();
   render();
 })();
 </script>

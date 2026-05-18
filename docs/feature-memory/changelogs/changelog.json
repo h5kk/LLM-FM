@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated": "2026-05-18T18:31:38.170873+00:00",
+  "generated": "2026-05-18T18:32:10.808633+00:00",
   "entries": [
     {
       "event_id": "f3327e8d096f-plugin-core",
@@ -982,6 +982,266 @@
       "confidence": "high",
       "review_status": "auto",
       "source": "git-backfill"
+    },
+    {
+      "event_id": "20260518T182551Z-6d73",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/claude_stop.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182600Z-89a1",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/claude_stop.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/claude_stop.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182605Z-ecc2",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182615Z-45bf",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182620Z-0e98",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182629Z-f90d",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182633Z-a26a",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_backfill.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_backfill.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182717Z-1983",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/.claude-plugin/plugin.json",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182722Z-9326",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/.claude-plugin/plugin.json",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [],
+      "paths": [
+        "plugin/.claude-plugin/plugin.json"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T182726Z-fc73",
+      "date": "2026-05-18",
+      "feature_id": "hooks",
+      "feature_title": "hooks",
+      "audience": "developer",
+      "summary": "Modified plugin/hooks/fm_common.py",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "python"
+      ],
+      "paths": [
+        "plugin/hooks/fm_common.py"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
+    },
+    {
+      "event_id": "20260518T183026Z-045c",
+      "date": "2026-05-18",
+      "feature_id": "plugin-core",
+      "feature_title": "plugin-core",
+      "audience": "developer",
+      "summary": "Modified plugin/assets/changelog-viewer.html",
+      "kind": [
+        "path_touched"
+      ],
+      "tags": [
+        "html-css"
+      ],
+      "paths": [
+        "plugin/assets/changelog-viewer.html"
+      ],
+      "git_author": "h5k",
+      "git_email": "31630310+h5kk@users.noreply.github.com",
+      "git_message": "Backfill changelog.json with v0.5.0 commit entries",
+      "git_hash": "330b8c0a952cd63c4d79a09d4a3d1d80711af702",
+      "confidence": "high",
+      "review_status": "auto",
+      "source": "hook"
     },
     {
       "event_id": "fad7fe86bd01-plugin-core",
