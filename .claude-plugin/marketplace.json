@@ -8,10 +8,7 @@
     {
       "name": "feature-memory",
       "description": "Maintains feature-level memory for software repos. Hooks into agent lifecycle to keep docs current as code changes.",
-      "source": {
-        "type": "local",
-        "path": "plugin"
-      }
+      "source": "./plugin"
     }
   ]
 }
