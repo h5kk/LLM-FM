@@ -1,6 +1,6 @@
 {
   "name": "feature-memory",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, dual developer+product changelogs, tag-filtered changelog viewer, relationship diagrams, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
   "author": {
     "name": "Hanny Noueilaty",
@@ -15,42 +15,5 @@
     "knowledge-base",
     "hooks",
     "developer-tools"
-  ],
-  "skills": [
-    {
-      "name": "feature-memory",
-      "path": "skills/feature-memory/SKILL.md",
-      "description": "Maintains Feature Memory docs for changed source files. Keeps product summaries, engineering summaries, source maps, relationships, and changelogs current."
-    },
-    {
-      "name": "feature-memory-init",
-      "path": "skills/feature-memory-init/SKILL.md",
-      "description": "Initializes Feature Memory in the current project. Creates the docs structure, config, changelog viewer, and event log. Scans the codebase to detect features."
-    },
-    {
-      "name": "feature-memory-backfill",
-      "path": "skills/feature-memory-backfill/SKILL.md",
-      "description": "Backfills the Feature Memory changelog from git history. Maps commits to features and appends structured entries to changelog.json, then refreshes the viewer."
-    },
-    {
-      "name": "feature-memory-changelog-refresh",
-      "path": "skills/feature-memory-changelog-refresh/SKILL.md",
-      "description": "Re-infers and replaces tags for ALL existing changelog entries. No git re-scan — uses stored paths and commit messages."
-    },
-    {
-      "name": "feature-memory-changelog-clear",
-      "path": "skills/feature-memory-changelog-clear/SKILL.md",
-      "description": "Clears all entries from changelog.json without touching feature .md docs. Changelog can be repopulated with backfill."
-    },
-    {
-      "name": "feature-memory-changelog-purge-md",
-      "path": "skills/feature-memory-changelog-purge-md/SKILL.md",
-      "description": "Removes changelog entries whose every path is a .md file (doc-only commits that don't represent feature changes)."
-    },
-    {
-      "name": "feature-memory-changelog-dedup",
-      "path": "skills/feature-memory-changelog-dedup/SKILL.md",
-      "description": "Merges duplicate changelog entries that share the same git commit and feature into one. Unions paths and tags, prefers backfill-quality summaries over hook-generated ones."
-    }
   ]
 }
