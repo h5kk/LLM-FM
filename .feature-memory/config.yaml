@@ -55,3 +55,21 @@ skip_patterns: []
 
 tagging:
   strategy: cli   # cli | keyword | none
+
+# Changelog configurability (all keys optional; omission = prior behavior).
+changelog:
+  verbosity: normal          # terse | normal | detailed
+  summary_rule: ""           # optional steering instruction for topic tagging
+  tagging: true              # master switch; false overrides tagging.strategy -> none
+  highlight_tags:            # tags that drive Dev Sync "Watch out" highlights
+    - breaking-change
+    - api-change
+    - security
+    - schema-change
+    - data-migration
+  metrics:
+    enabled: true            # show the Metrics tab in the viewer
+    code_churn: false        # backfill-only: git numstat per commit (--code-churn)
+  custom_docs:
+    enabled: true            # ingest custom/wiki docs + show the Wiki tab
+    dir: docs/feature-memory/custom

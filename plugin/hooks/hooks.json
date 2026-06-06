@@ -1,5 +1,5 @@
 {
-  "description": "Feature Memory lifecycle hooks. Tracks file edits, injects context at session start, and reports documentation gaps at session end.",
+  "description": "Feature Memory lifecycle hooks. Tracks file edits, injects context at session start, and reports documentation gaps at session end. Each hook is launched through _run.py, a polyglot bootstrap that guarantees the Python 3 hooks run even when `python` resolves to Python 2.",
   "hooks": {
     "SessionStart": [
       {
@@ -8,7 +8,7 @@
           {
             "type": "command",
             "command": "python",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/claude_session_start.py"],
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/_run.py", "claude_session_start"],
             "timeout": 5000
           }
         ]
@@ -21,7 +21,7 @@
           {
             "type": "command",
             "command": "python",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/claude_post_tool.py"],
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/_run.py", "claude_post_tool"],
             "timeout": 3000
           }
         ]
@@ -34,7 +34,7 @@
           {
             "type": "command",
             "command": "python",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/claude_stop.py"],
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/_run.py", "claude_stop"],
             "timeout": 15000
           }
         ]

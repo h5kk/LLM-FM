@@ -234,3 +234,14 @@ echo "What features does this project have?" | fm-test-skill-trigger
 - [ ] All 7 manual test scenarios documented
 - [ ] Skills reference `fm` CLI commands correctly
 - [ ] Live context command (`fm context --for-agent`) works when FM is initialized
+
+---
+
+## v0.8.0 addendum — `feature-memory-changelog-custom`
+
+New skill `/feature-memory-changelog-custom` authors a user-written changelog
+entry (`doc_type: entry`, Timeline + CUSTOM badge) or wiki page
+(`doc_type: wiki`, Wiki tab) under `docs/feature-memory/custom/`. Backed by
+`plugin/hooks/fm_custom.py` (importable + CLI `--list`/`--validate`). Files are
+re-scanned fresh each Stop into the separate `custom-docs-data` slot and never
+written to `changelog.json` (edit updates, delete removes).

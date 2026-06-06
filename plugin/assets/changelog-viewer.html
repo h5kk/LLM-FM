@@ -1,10 +1,10 @@
-<!-- fm-viewer-version: 10 -->
+<!-- fm-viewer-version: 11 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="fm-viewer-version" content="10">
+  <meta name="fm-viewer-version" content="11">
   <title>Feature Memory Changelog</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -618,6 +618,64 @@
       .kind-tag, .feature-badge { display: none; }
       .toolbar { gap: 6px; }
     }
+
+    /* ── v11: segmented view switch (Timeline | Wiki | Metrics) ── */
+    .view-switch { display: inline-flex; gap: 0; border: 1px solid var(--border);
+      border-radius: 7px; overflow: hidden; margin: 4px 0 6px; }
+    .seg-btn { background: transparent; color: var(--muted); border: 0;
+      padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+      border-right: 1px solid var(--border); }
+    .seg-btn:last-child { border-right: 0; }
+    .seg-btn:hover { color: var(--text); }
+    .seg-btn.active { background: var(--accent); color: #fff; }
+    .seg-count { opacity: .65; font-weight: 400; margin-left: 5px; }
+
+    /* ── v11: custom badge ── */
+    .custom-badge { background: #4c1d95; color: #c4b5fd; font-size: 10px;
+      font-weight: 700; padding: 1px 6px; border-radius: 4px; letter-spacing: .3px; }
+    :root[data-theme="light"] .custom-badge { background: #ede9fe; color: #6d28d9; }
+
+    /* ── v11: Wiki view ── */
+    #wiki-view, #metrics-view { padding: 18px 28px 60px; max-width: 1100px; }
+    .wiki-card { border: 1px solid var(--border); border-radius: 8px;
+      margin-bottom: 12px; background: var(--card); }
+    .wiki-head { display: flex; align-items: center; gap: 10px; cursor: pointer;
+      padding: 12px 16px; }
+    .wiki-title { font-weight: 600; font-size: 14px; color: var(--text); flex: 1; }
+    .wiki-meta { font-size: 11px; color: var(--muted); }
+    .wiki-body { display: none; padding: 4px 20px 18px; border-top: 1px solid var(--border);
+      font-size: 13.5px; line-height: 1.7; color: var(--text); }
+    .wiki-card.open .wiki-body { display: block; }
+    .wiki-body h1,.wiki-body h2,.wiki-body h3 { margin: 16px 0 8px; line-height: 1.3; }
+    .wiki-body h1 { font-size: 19px; } .wiki-body h2 { font-size: 16px; }
+    .wiki-body h3 { font-size: 14px; }
+    .wiki-body code { background: var(--code-bg,#1e293b); padding: 1px 5px;
+      border-radius: 4px; font-size: 12px; font-family: ui-monospace,monospace; }
+    .wiki-body pre { background: var(--code-bg,#1e293b); padding: 12px;
+      border-radius: 6px; overflow-x: auto; }
+    .wiki-body pre code { background: none; padding: 0; }
+    .wiki-body a { color: var(--accent); }
+    .wiki-body ul,.wiki-body ol { padding-left: 22px; margin: 8px 0; }
+    :root[data-theme="light"] .wiki-body code,
+    :root[data-theme="light"] .wiki-body pre { background: #f1f5f9; }
+
+    /* ── v11: Metrics charts ── */
+    .metric-block { border: 1px solid var(--border); border-radius: 8px;
+      padding: 16px 18px; margin-bottom: 16px; background: var(--card); }
+    .metric-title { font-size: 13px; font-weight: 700; color: var(--text);
+      margin-bottom: 12px; text-transform: uppercase; letter-spacing: .4px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin: 5px 0; font-size: 12px; }
+    .bar-label { width: 150px; color: var(--muted); text-align: right;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { flex: 1; background: var(--border); border-radius: 4px; height: 16px; }
+    .bar-fill { height: 16px; border-radius: 4px; background: var(--accent); }
+    .bar-val { width: 64px; color: var(--text); font-variant-numeric: tabular-nums; }
+    .metric-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .metric-table th,.metric-table td { text-align: left; padding: 6px 10px;
+      border-bottom: 1px solid var(--border); }
+    .metric-table th { color: var(--muted); font-weight: 600; }
+    .metric-empty { color: var(--muted); font-size: 13px; padding: 30px; text-align: center; }
+    body[data-verbosity="terse"] .entry-header-tags { display: none; }
   </style>
 </head>
 <body>
@@ -629,7 +687,12 @@
     <button class="hdr-btn" id="theme-toggle" title="Toggle light/dark">☀︎</button>
     <span id="count"></span>
   </div>
-  <div class="tabs">
+  <div class="view-switch" id="view-switch">
+    <button class="seg-btn active" data-view="timeline">Timeline</button>
+    <button class="seg-btn" data-view="wiki" id="seg-wiki">Wiki<span class="seg-count" id="wiki-count"></span></button>
+    <button class="seg-btn" data-view="metrics">Metrics</button>
+  </div>
+  <div class="tabs" id="audience-tabs">
     <button class="tab active" data-audience="all">All</button>
     <button class="tab" data-audience="product">Product</button>
     <button class="tab" data-audience="developer">Developer</button>
@@ -689,8 +752,19 @@
   </aside>
   <div id="main-col">
     <main id="timeline"></main>
+    <div id="wiki-view" style="display:none"></div>
+    <div id="metrics-view" style="display:none"></div>
   </div>
 </div>
+
+<script id="custom-docs-data" type="application/json">
+{
+  "schema_version": 2,
+  "enabled": true,
+  "entries": [],
+  "wiki": []
+}
+</script>
 
 <script id="changelog-data" type="application/json">
 {
@@ -726,7 +800,21 @@
   } catch (e) {
     document.getElementById('timeline').innerHTML = '<p class="empty">Changelog data could not be parsed.</p>';
   }
-  const allEntries = Array.isArray(data.entries) ? data.entries : [];
+  // ── Custom docs (separate slot — never in changelog.json) ────────────
+  let customData = {};
+  try {
+    customData = JSON.parse(document.getElementById('custom-docs-data').textContent || '{}');
+  } catch (e) { customData = {}; }
+  const customEnabled = customData.enabled !== false;
+  const customEntries = (customEnabled && Array.isArray(customData.entries)) ? customData.entries : [];
+  const wikiDocs = (customEnabled && Array.isArray(customData.wiki)) ? customData.wiki : [];
+
+  // Custom timeline entries flow into the timeline (chronological) with a badge.
+  const allEntries = (Array.isArray(data.entries) ? data.entries : []).concat(customEntries);
+
+  // ── Config echo (verbosity / highlight tags) ─────────────────────────
+  const cfg = (data.config && typeof data.config === 'object') ? data.config : {};
+  const VERBOSITY = cfg.verbosity || 'normal';
 
   if (data.generated) {
     const d = new Date(data.generated);
@@ -740,7 +828,10 @@
   let searchQuery = '';
   let allExpanded = false;
   let viewCleared = false;
-  const HIGHLIGHT_TAGS = ['breaking-change', 'api-change', 'security', 'schema-change', 'data-migration'];
+  let currentView = 'timeline';   // timeline | wiki | metrics
+  const HIGHLIGHT_TAGS = (Array.isArray(cfg.highlight_tags) && cfg.highlight_tags.length)
+    ? cfg.highlight_tags
+    : ['breaking-change', 'api-change', 'security', 'schema-change', 'data-migration'];
 
   try { JSON.parse(localStorage.getItem('fm-tags') || '[]').forEach(t => activeTags.add(t)); } catch (_) {}
 
@@ -859,6 +950,7 @@
     return `<article class="entry" data-audience="${escHtml(aud)}">
       <div class="entry-header" onclick="toggleEntry(this.parentElement)">
         <span class="audience-dot ${dotClass}"></span>
+        ${entry.source === 'custom' ? '<span class="custom-badge" title="User-authored custom entry">CUSTOM</span>' : ''}
         ${entry.feature_id ? `<span class="feature-badge" title="${escHtml(entry.feature_id)}">${escHtml(entry.feature_title || entry.feature_id)}</span>` : ''}
         ${kindTagsHtml}
         <span class="summary" title="${escHtml(summaryText)}">${escHtml(summaryText)}</span>
@@ -973,10 +1065,11 @@
     sentences.push(`Overall the codebase is ${posture}.`);
 
     const text = sentences.join(' ');
+    const exp = VERBOSITY === 'terse' ? '' : 'expanded';
     return `<div class="ds-catchup">
       <div class="ds-catchup-title">Catch-up</div>
-      <div class="ds-catchup-body expanded" id="ds-catchup-body">${text}</div>
-      <button class="ds-catchup-toggle" id="ds-catchup-btn" onclick="toggleCatchup()">Read less ▴</button>
+      <div class="ds-catchup-body ${exp}" id="ds-catchup-body">${text}</div>
+      <button class="ds-catchup-toggle" id="ds-catchup-btn" onclick="toggleCatchup()">${exp ? 'Read less ▴' : 'Read more ▾'}</button>
     </div>`;
   }
 
@@ -1114,9 +1207,174 @@
   }
   new ResizeObserver(updateHeaderHeight).observe(document.querySelector('header'));
 
+  // ── v11: safe mini-markdown renderer (escape-first, no raw HTML) ──────
+  function sanitizeUrl(u) {
+    const v = String(u == null ? '' : u).trim();
+    if (/^(https?:\/\/|mailto:)/i.test(v)) return v;          // explicit safe scheme
+    if (/^[a-zA-Z][a-zA-Z0-9+.\-]*:/.test(v)) return '';      // any other scheme rejected (javascript:, data:, vbscript:)
+    return v;                                                 // relative / #anchor allowed
+  }
+
+  function mdToHtml(src) {
+    // 1. Escape EVERYTHING first — no raw HTML/SVG/script can survive.
+    let s = escHtml(src || '');
+    // 2. Fenced code blocks (content stays escaped, never re-parsed).
+    const blocks = [];
+    s = s.replace(/```([\s\S]*?)```/g, function (_m, code) {
+      code = code.replace(/^[\w.\-]*\n/, '').replace(/\n$/, '');
+      blocks.push('<pre><code>' + code + '</code></pre>');
+      return '\n@@FMBLK' + (blocks.length - 1) + '@@\n';
+    });
+    // 3. Inline constructs (whitelist only).
+    s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    s = s.replace(/\[([^\]\n]+)\]\(([^)\s]+)\)/g, function (_m, t, u) {
+      const safe = sanitizeUrl(u);
+      return safe ? '<a href="' + safe + '" target="_blank" rel="noopener noreferrer">' + t + '</a>' : t;
+    });
+    // 4. Block-level line parse.
+    const lines = s.split('\n');
+    let html = '', listType = null;
+    const closeList = function () { if (listType) { html += '</' + listType + '>'; listType = null; } };
+    for (const line of lines) {
+      const bm = line.match(/^@@FMBLK(\d+)@@$/);
+      if (bm) { closeList(); html += blocks[+bm[1]] || ''; continue; }
+      if (/^\s*$/.test(line)) { closeList(); continue; }
+      let m;
+      if ((m = line.match(/^(#{1,6})\s+(.*)$/))) { closeList(); const lv = m[1].length; html += '<h' + lv + '>' + m[2] + '</h' + lv + '>'; continue; }
+      if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) { if (listType !== 'ul') { closeList(); html += '<ul>'; listType = 'ul'; } html += '<li>' + m[1] + '</li>'; continue; }
+      if ((m = line.match(/^\s*\d+\.\s+(.*)$/))) { if (listType !== 'ol') { closeList(); html += '<ol>'; listType = 'ol'; } html += '<li>' + m[1] + '</li>'; continue; }
+      closeList();
+      html += '<p>' + line + '</p>';
+    }
+    closeList();
+    return html;
+  }
+
+  // ── v11: Wiki view ───────────────────────────────────────────────────
+  function wikiMatches(d) {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return [d.title || '', d.feature_id || '', (d.tags || []).join(' '), d.body_md || '']
+      .join(' ').toLowerCase().includes(q);
+  }
+
+  function renderWiki() {
+    const host = document.getElementById('wiki-view');
+    const docs = wikiDocs.filter(wikiMatches);
+    if (!docs.length) {
+      host.innerHTML = '<div class="metric-empty">' +
+        (wikiDocs.length ? 'No wiki docs match your search.'
+          : 'No wiki docs yet. Add one with the /feature-memory-changelog-custom skill.') +
+        '</div>';
+      return;
+    }
+    host.innerHTML = docs.map(function (d, i) {
+      const meta = [d.feature_id ? escHtml(d.feature_id) : '', d.audience ? escHtml(d.audience) : '',
+        (d.tags || []).map(escHtml).join(', ')].filter(Boolean).join(' · ');
+      return '<div class="wiki-card" data-i="' + i + '">' +
+        '<div class="wiki-head" onclick="this.parentElement.classList.toggle(\'open\')">' +
+        '<span class="wiki-title">' + escHtml(d.title || 'Untitled') + '</span>' +
+        '<span class="wiki-meta">' + meta + '</span></div>' +
+        '<div class="wiki-body">' + mdToHtml(d.body_md || '') + '</div></div>';
+    }).join('');
+  }
+
+  // ── v11: Metrics view (zero-dep inline bars/table) ───────────────────
+  function barRows(pairs, color) {
+    const max = pairs.reduce(function (a, p) { return Math.max(a, p[1]); }, 0) || 1;
+    return pairs.map(function (p) {
+      const pct = Math.round((p[1] / max) * 100);
+      return '<div class="bar-row"><span class="bar-label" title="' + escHtml(p[0]) + '">' +
+        escHtml(p[0]) + '</span><span class="bar-track"><span class="bar-fill" style="width:' +
+        pct + '%;background:' + color + '"></span></span><span class="bar-val">' + p[1] + '</span></div>';
+    }).join('');
+  }
+
+  function renderMetrics() {
+    const host = document.getElementById('metrics-view');
+    const entries = (viewCleared ? [] : allEntries).filter(matchesFilter)
+      .filter(function (e) { return matchesAudience(e, activeAudience); });
+    if (!entries.length) {
+      host.innerHTML = '<div class="metric-empty">No entries match the current filter.</div>';
+      return;
+    }
+    const byFeat = {}, byKind = {}, byDate = {}, byAuthor = {};
+    let ins = 0, dels = 0, churnCount = 0;
+    for (const e of entries) {
+      const f = e.feature_title || e.feature_id || 'unmapped';
+      byFeat[f] = (byFeat[f] || 0) + 1;
+      for (const k of (e.kind || [])) byKind[k] = (byKind[k] || 0) + 1;
+      if (e.date) byDate[e.date] = (byDate[e.date] || 0) + 1;
+      const a = firstNameOnly(e.git_author) || '—';
+      byAuthor[a] = byAuthor[a] || { commits: 0, ins: 0, dels: 0 };
+      byAuthor[a].commits++;
+      if (e.metrics) {
+        churnCount++;
+        ins += e.metrics.insertions || 0; dels += e.metrics.deletions || 0;
+        byAuthor[a].ins += e.metrics.insertions || 0;
+        byAuthor[a].dels += e.metrics.deletions || 0;
+      }
+    }
+    const top = function (o, n) { return Object.entries(o).sort(function (x, y) { return y[1] - x[1]; }).slice(0, n); };
+    const dateRows = Object.keys(byDate).sort().slice(-30).map(function (d) { return [d, byDate[d]]; });
+    const churnNote = churnCount
+      ? '<div class="metric-block"><div class="metric-title">Code churn</div>' +
+        '<div style="font-size:13px;color:var(--text)">+' + ins + ' / −' + dels +
+        ' lines across ' + churnCount + ' commit(s)</div></div>'
+      : '<div class="metric-block"><div class="metric-title">Code churn</div>' +
+        '<div class="metric-empty" style="padding:14px">No churn data. Run <code>fm_backfill.py --code-churn</code> ' +
+        'or set <code>changelog.metrics.code_churn: true</code>.</div></div>';
+
+    const authorRows = top(byAuthor, 12).map(function (p) {
+      return '<tr><td>' + escHtml(p[0]) + '</td><td>' + p[1].commits +
+        '</td><td>' + (p[1].ins || 0) + '</td><td>' + (p[1].dels || 0) + '</td></tr>';
+    }).join('');
+
+    host.innerHTML =
+      '<div class="metric-block"><div class="metric-title">Activity over time</div>' +
+        (dateRows.length ? barRows(dateRows, 'var(--accent)') : '<div class="metric-empty">No dates</div>') + '</div>' +
+      '<div class="metric-block"><div class="metric-title">By feature</div>' +
+        barRows(top(byFeat, 12), '#6366f1') + '</div>' +
+      '<div class="metric-block"><div class="metric-title">By change kind</div>' +
+        barRows(top(byKind, 8).map(function (p) { return [p[0].replace(/-/g, ' '), p[1]]; }), '#10b981') + '</div>' +
+      '<div class="metric-block"><div class="metric-title">Top contributors</div>' +
+        '<table class="metric-table"><thead><tr><th>Author</th><th>Changes</th>' +
+        '<th>+ins</th><th>−del</th></tr></thead><tbody>' + authorRows + '</tbody></table></div>' +
+      churnNote;
+  }
+
+  // ── v11: view switching (Timeline | Wiki | Metrics) ──────────────────
+  function applyViewChrome() {
+    const isTL = currentView === 'timeline';
+    document.getElementById('timeline').style.display = isTL ? '' : 'none';
+    document.getElementById('wiki-view').style.display = currentView === 'wiki' ? '' : 'none';
+    document.getElementById('metrics-view').style.display = currentView === 'metrics' ? '' : 'none';
+    // Audience tabs / Dev Sync / tag panel are Timeline-only context.
+    const at = document.getElementById('audience-tabs');
+    if (at) at.style.display = isTL ? '' : 'none';
+    const ds = document.getElementById('devsync-col');
+    if (ds) ds.style.display = isTL ? '' : 'none';
+  }
+
+  function setView(v) {
+    currentView = v;
+    document.querySelectorAll('.seg-btn').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.view === v);
+    });
+    applyViewChrome();
+    render();
+  }
+  window.__setView = setView;
+
   // ── Main render ───────────────────────────────────────────────────────
   function render() {
     updateHeaderHeight();
+    if (currentView === 'wiki') { renderWiki(); return; }
+    if (currentView === 'metrics') { renderMetrics(); return; }
+
     const entries = viewCleared ? [] : allEntries;
     const baseFiltered = entries.filter(matchesFilter);
     const filtered = baseFiltered.filter(e => matchesAudience(e, activeAudience));
@@ -1148,6 +1406,21 @@
     const dt = document.querySelector('.tab[data-audience="developer"]');
     if (dt) dt.style.display = 'none';
   }
+
+  // ── v11: segmented view switch wiring ─────────────────────────────────
+  (function initViewSwitch() {
+    document.body.setAttribute('data-verbosity', VERBOSITY);
+    const wc = document.getElementById('wiki-count');
+    if (wc) wc.textContent = wikiDocs.length ? ' ' + wikiDocs.length : '';
+    const segWiki = document.getElementById('seg-wiki');
+    if (segWiki && (!customEnabled || wikiDocs.length === 0)) {
+      segWiki.style.display = 'none';
+    }
+    document.querySelectorAll('.seg-btn').forEach(function (b) {
+      b.addEventListener('click', function () { setView(b.dataset.view); });
+    });
+    applyViewChrome();
+  })();
 
   // ── Event wiring ──────────────────────────────────────────────────────
   document.querySelectorAll('.tab').forEach(tab => {

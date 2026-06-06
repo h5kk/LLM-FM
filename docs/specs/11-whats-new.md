@@ -260,3 +260,22 @@ The skill carries these guidelines in its instructions:
 2. Should there be a "preview" mode that generates entries without writing? (Yes — via `--review` flag or skill confirmation step)
 3. Should the Stop hook auto-detect user-facing changes? (Heuristic: if routes/components changed, it's likely user-facing. If only models/middleware, probably not.)
 4. Should entries support i18n? (Defer — not Phase 0/1 scope)
+
+---
+
+## v0.8.0 — Configurability, custom docs, metrics
+
+- `changelog:` config block: `verbosity` (terse|normal|detailed),
+  `summary_rule` (topic-tag steering), `tagging` master switch,
+  `highlight_tags`, `metrics`, `custom_docs`. Parsed by an independent nested
+  stdlib parser (`fm_common.load_changelog_config`); tabs rejected; safe
+  defaults; never raises.
+- Custom changelog/wiki docs via `/feature-memory-changelog-custom` +
+  `fm_custom.py`, embedded in a separate viewer slot.
+- Viewer v11: segmented `Timeline | Wiki | Metrics` switch, escape-first
+  sanitized mini-markdown renderer (XSS corpus tested), zero-dep inline-SVG
+  metric charts, `CUSTOM` badges, verbosity-aware density.
+- Hardening: shared `dump_inline_json` escapes `</` → `<\/` at every
+  inline-JSON-in-HTML writer (fixes a latent `</script>` corruption bug).
+- Hotfix folded in: `_run.py` polyglot bootstrap + PEP 263 declarations so
+  hooks run even when `python` is Python 2.

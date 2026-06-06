@@ -1,6 +1,6 @@
 {
   "name": "feature-memory",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Maintains feature-level memory for software repos. Compiles project knowledge into persistent, interlinked markdown docs with source maps, dual developer+product changelogs, tag-filtered changelog viewer, relationship diagrams, and confidence tracking. Hooks into the agent lifecycle to keep docs current as code changes.",
   "author": {
     "name": "Hanny Noueilaty",

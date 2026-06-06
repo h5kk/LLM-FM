@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """PostToolUse hook: record edited paths and remind about feature docs."""
 import json
 import os

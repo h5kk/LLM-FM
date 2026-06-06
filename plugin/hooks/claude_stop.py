@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Stop hook: check for missing doc updates and compile changelog.json.
 
 Filters events by current session_id. Captures git info once (15s budget).
@@ -17,7 +18,10 @@ from fm_common import (
     get_feature_doc_path, get_git_info, _infer_tags, _check_viewer_update,
     load_skip_patterns, should_skip_path, _infer_audience, _infer_kind,
     rotate_events_if_oversized, load_tag_strategy, _keyword_tags_for_entry,
+    dump_inline_json, load_changelog_config, verbosity_tag_cap,
+    changelog_config_echo, inject_inline_json_block, log_error,
 )
+from fm_custom import load_custom_docs
 
 
 def _compile_changelog(project_dir, events, features, git_info):
@@ -64,8 +68,14 @@ def _compile_changelog(project_dir, events, features, git_info):
     git_author = git_info.get("git_author") if git_info else None
     git_email = git_info.get("git_email") if git_info else None
 
-    # Determine tagging strategy for this project
+    # Determine tagging strategy for this project. The changelog `tagging:`
+    # master switch (false) overrides any tagging.strategy → none. Verbosity
+    # caps how many keyword tags an entry gets.
     tag_strategy = load_tag_strategy(project_dir)
+    cl_cfg = load_changelog_config(project_dir)
+    if not cl_cfg.get("tagging", True):
+        tag_strategy = "none"
+    tag_cap = verbosity_tag_cap(cl_cfg.get("verbosity", "normal"))
 
     # Extract session_id for stable WIP entry IDs
     session_id = next((e.get("session_id", "") for e in events if e.get("session_id")), "")
@@ -136,7 +146,7 @@ def _compile_changelog(project_dir, events, features, git_info):
         }
         # Honor tagging strategy: keyword = immediate heuristic tags; none = skip tagging
         if tag_strategy == "keyword":
-            entry["topic_tags"] = _keyword_tags_for_entry(entry)
+            entry["topic_tags"] = _keyword_tags_for_entry(entry)[:tag_cap]
             entry["topic_pending"] = False
         elif tag_strategy == "none":
             entry["topic_pending"] = False
@@ -190,6 +200,7 @@ def _compile_changelog(project_dir, events, features, git_info):
     output_data = {
         "schema_version": 2,
         "generated": datetime.now(timezone.utc).isoformat(),
+        "config": changelog_config_echo(cl_cfg),
         "entries": all_entries,
     }
 
@@ -200,6 +211,7 @@ def _compile_changelog(project_dir, events, features, git_info):
             pass
 
     _update_viewer_data(docs_root, output_data)
+    _update_custom_slot(project_dir, docs_root, cl_cfg)
 
 
 def _find_viewer_template():
@@ -244,7 +256,7 @@ def _update_viewer_data(docs_root, data):
         _check_viewer_update(docs_root)
     try:
         content = viewer_path.read_text(encoding="utf-8")
-        json_str = json.dumps(data, indent=2, ensure_ascii=False)
+        json_str = dump_inline_json(data)
         if len(json_str) > 500_000:
             from fm_common import log_error
             log_error(
@@ -261,6 +273,26 @@ def _update_viewer_data(docs_root, data):
             viewer_path.write_text(new_content, encoding="utf-8")
     except Exception:
         pass
+
+
+def _update_custom_slot(project_dir, docs_root, cl_cfg):
+    """Rebuild the SEPARATE custom-docs-data slot from a fresh dir scan.
+
+    Council blocker ii: kept entirely separate from _compile_changelog so
+    custom docs have true re-scan/delete semantics and never pollute the
+    append-only changelog.json. Best-effort; never raises into the hook.
+    """
+    try:
+        viewer_path = docs_root / "changelog-viewer.html"
+        if not viewer_path.exists():
+            return  # created/upgraded on the changelog-data path first
+        slot, _issues = load_custom_docs(project_dir, cl_cfg)
+        content = viewer_path.read_text(encoding="utf-8")
+        new_content = inject_inline_json_block(content, "custom-docs-data", slot)
+        if new_content != content:
+            viewer_path.write_text(new_content, encoding="utf-8")
+    except Exception as e:
+        log_error(f"_update_custom_slot error: {e}")
 
 
 def main():

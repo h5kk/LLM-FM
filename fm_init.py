@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Feature Memory Phase 0 Initializer.
 
 Single-file, zero-dependency script that bootstraps the Feature Memory system

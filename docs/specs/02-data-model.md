@@ -539,3 +539,21 @@ Use string formatting, not a template engine. Keep it simple.
 - [ ] Template functions render correct markdown for all document types
 - [ ] Event log format documented and write utility implemented
 - [ ] Unit tests cover model validation (valid + invalid inputs)
+
+---
+
+## v0.8.0 addendum — additive changelog fields (schema_version stays 2)
+
+`changelog.json` and the viewer gained optional, additive fields. No migration
+(per CLAUDE.md, additive changelog fields are a minor bump, not a schema break):
+
+- Top-level `config`: echo of effective changelog config
+  `{verbosity, highlight_tags[], custom_docs_enabled, metrics_enabled}` so the
+  offline viewer adapts without re-reading YAML.
+- Entry `metrics`: optional `{files_changed, insertions, deletions}` from
+  backfill `--code-churn` (git numstat). Absent unless churn is enabled.
+- Custom docs live in a SEPARATE viewer slot `<script id="custom-docs-data">`
+  (`{schema_version, enabled, entries[], wiki[]}`), rebuilt fresh every Stop by
+  `fm_custom.load_custom_docs()` — true re-scan/delete semantics, never merged
+  into the append-only `changelog.json`. Custom docs add `source: "custom"`,
+  `doc_type` (`entry`|`wiki`), `body_md`, `title`.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Backfill changelog.json from git commit history.
 
 Reads git log, maps changed files to features via config, and appends structured
@@ -21,7 +22,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update, generate_topic_tags_batch, load_skip_patterns, should_skip_path, _infer_kind
+from fm_common import load_config, match_path_to_features, _infer_tags, _check_viewer_update, generate_topic_tags_batch, load_skip_patterns, should_skip_path, _infer_kind, dump_inline_json, load_changelog_config, verbosity_tag_cap, changelog_config_echo, inject_inline_json_block
+from fm_custom import load_custom_docs
+
+
+def _topic_opts(project_dir):
+    """Resolve (strategy, summary_rule, max_tags) from the changelog config.
+
+    Backfill's tagging path is the claude CLI by default; the changelog
+    ``tagging: false`` master switch maps to strategy 'none'.
+    """
+    cfg = load_changelog_config(project_dir)
+    strategy = "cli" if cfg.get("tagging", True) else "none"
+    return strategy, cfg.get("summary_rule", ""), verbosity_tag_cap(cfg.get("verbosity", "normal"))
 
 _JIRA_RE = re.compile(r'\b([A-Z][A-Z0-9]{1,9}-\d+)\b')
 
@@ -82,6 +95,36 @@ def _get_commit_files(project_dir, commit_hash):
     return [f for f in out.splitlines() if f.strip()]
 
 
+_CHURN_COMMIT_CAP = 80  # never run numstat across more commits than this
+
+
+def _get_commit_numstat(project_dir, commit_hash):
+    """Return {files_changed, insertions, deletions} for a commit, or None.
+
+    Parses ``git show --numstat --format= <hash>``. Binary files report
+    ``-\\t-\\t<path>`` and contribute to files_changed but not line counts.
+    Backfill-only (council Q4: never in the Stop hook's 15s budget). The
+    underlying ``_git`` call is timeout-bounded; any failure -> None.
+    """
+    out = _git("show", "--numstat", "--format=", "--root", commit_hash, cwd=project_dir)
+    if not out:
+        return None
+    files = ins = dels = 0
+    for line in out.splitlines():
+        parts = line.split("\t")
+        if len(parts) < 3:
+            continue
+        files += 1
+        a, b = parts[0].strip(), parts[1].strip()
+        if a.isdigit():
+            ins += int(a)
+        if b.isdigit():
+            dels += int(b)
+    if files == 0:
+        return None
+    return {"files_changed": files, "insertions": ins, "deletions": dels}
+
+
 
 def _infer_audience(paths, kinds):
     # Pure refactor/test/config → developer only
@@ -139,14 +182,23 @@ def _update_viewer(docs_root, data):
     else:
         _check_viewer_update(docs_root)
     try:
+        project_dir = docs_root.parent.parent
+        cl_cfg = load_changelog_config(project_dir)
+        data["config"] = changelog_config_echo(cl_cfg)
         content = viewer.read_text(encoding="utf-8")
-        json_str = json.dumps(data, indent=2, ensure_ascii=False)
+        json_str = dump_inline_json(data)
         new_content = re.sub(
             r'(<script id="changelog-data"[^>]*>)([\s\S]*?)(</script>)',
             lambda m: m.group(1) + "\n" + json_str + "\n" + m.group(3),
             content,
             count=1,
         )
+        # Separate custom-docs slot — fresh dir scan, isolated from changelog.json.
+        try:
+            slot, _issues = load_custom_docs(project_dir, cl_cfg)
+            new_content = inject_inline_json_block(new_content, "custom-docs-data", slot)
+        except Exception as e:
+            print(f"  Warning: custom-docs slot update failed: {e}")
         if new_content != content:
             viewer.write_text(new_content, encoding="utf-8")
             print(f"  Updated {viewer.relative_to(docs_root.parent.parent)}")
@@ -221,7 +273,10 @@ def _retag_existing(project_dir, changelog_path, docs_root):
     print(f"Regex tags refreshed for {len(entries)} entries. Generating topic tags via LLM...")
 
     # Phase 2 — LLM semantic topic tags (batched claude CLI calls)
-    topic_lists = generate_topic_tags_batch(entries)
+    _strat, _rule, _cap = _topic_opts(project_dir)
+    topic_lists = generate_topic_tags_batch(
+        entries, strategy=_strat, summary_rule=_rule, max_tags=_cap
+    )
     for entry, topic_tags in zip(entries, topic_lists):
         entry["topic_tags"] = topic_tags
 
@@ -235,7 +290,7 @@ def _retag_existing(project_dir, changelog_path, docs_root):
     print("Done.")
 
 
-def _drain_pending(changelog_path, docs_root):
+def _drain_pending(project_dir, changelog_path, docs_root):
     """Generate LLM topic tags for entries marked topic_pending=True."""
     if not changelog_path.exists():
         print("No changelog.json found.")
@@ -251,8 +306,11 @@ def _drain_pending(changelog_path, docs_root):
         print("No pending entries — all topic tags already generated.")
         return
 
+    _strat, _rule, _cap = _topic_opts(project_dir)
     print(f"Generating topic tags for {len(pending)} pending entries...")
-    topic_lists = generate_topic_tags_batch(pending)
+    topic_lists = generate_topic_tags_batch(
+        pending, strategy=_strat, summary_rule=_rule, max_tags=_cap
+    )
     for entry, topic_tags in zip(pending, topic_lists):
         entry["topic_tags"] = topic_tags
         entry.pop("topic_pending", None)
@@ -364,6 +422,9 @@ def main():
                        help="Clear ALL entries from changelog.json (feature .md docs untouched)")
     group.add_argument("--dedup", action="store_true",
                        help="Merge duplicate entries sharing the same git commit + feature into one")
+    parser.add_argument("--code-churn", action="store_true", dest="code_churn",
+                        help="Attach per-commit churn (files/insertions/deletions) "
+                             "via git numstat. Also enabled by changelog.metrics.code_churn.")
     args = parser.parse_args()
 
     if not any([args.hours, args.since, args.since_commit, args.all_commits,
@@ -386,7 +447,7 @@ def main():
         return
 
     if args.drain_pending:
-        _drain_pending(changelog_path, docs_root)
+        _drain_pending(project_dir, changelog_path, docs_root)
         return
 
     if args.purge_md_only:
@@ -450,6 +511,15 @@ def main():
     )
     print(f"Processing {len(commits)} commit(s) ({label})…")
 
+    cl_cfg = load_changelog_config(project_dir)
+    churn_enabled = bool(args.code_churn or cl_cfg.get("metrics", {}).get("code_churn", False))
+    if churn_enabled and len(commits) > _CHURN_COMMIT_CAP:
+        print(f"  Code churn skipped: {len(commits)} commits exceeds cap "
+              f"{_CHURN_COMMIT_CAP} (keeps backfill bounded).")
+        churn_enabled = False
+    elif churn_enabled:
+        print("  Code churn: collecting per-commit numstat…")
+
     added = 0
     for commit in commits:
         files = _get_commit_files(project_dir, commit["hash"])
@@ -462,6 +532,8 @@ def main():
         source_files = [f for f in source_files if not should_skip_path(f, skip_patterns)]
         if not source_files:
             continue
+
+        commit_metrics = _get_commit_numstat(project_dir, commit["hash"]) if churn_enabled else None
 
         feature_files: dict[str, list[str]] = {}
         unmapped_files = []
@@ -506,6 +578,8 @@ def main():
                 }
                 if jira_ticket:
                     entry["jira_ticket"] = jira_ticket
+                if commit_metrics:
+                    entry["metrics"] = commit_metrics
                 existing[eid] = entry
                 existing_pairs.add((commit['hash'][:12], fid))
                 added += 1
@@ -538,6 +612,8 @@ def main():
             }
             if jira_ticket:
                 entry["jira_ticket"] = jira_ticket
+            if commit_metrics:
+                entry["metrics"] = commit_metrics
             existing[eid] = entry
             existing_pairs.add((commit['hash'][:12], None))
             added += 1

@@ -72,6 +72,12 @@ updated: "YYYY-MM-DD"
 ### `docs/feature-memory/features/` (empty directory — use .gitkeep)
 ### `docs/feature-memory/reports/` (empty directory — use .gitkeep)
 ### `docs/feature-memory/changelogs/` (empty directory)
+### `docs/feature-memory/custom/` (empty directory — use .gitkeep)
+
+User-authored custom changelog entries and wiki docs live here. They are
+re-scanned fresh on every Stop into a SEPARATE viewer data slot
+(`custom-docs-data`) and never written into `changelog.json`. Author them via
+the `/feature-memory-changelog-custom` skill.
 
 ### `docs/feature-memory/changelogs/changelog.json`
 ```json
@@ -105,6 +111,24 @@ mapping:
     - "tests/test_*.py"
     - "**/*_test.*"
     - "**/*.test.*"
+
+# Optional — changelog configurability (omission keeps default behavior).
+changelog:
+  verbosity: normal          # terse | normal | detailed
+  summary_rule: ""           # optional steering instruction for topic tagging
+  tagging: true              # master switch; false => no topic tags
+  highlight_tags:
+    - breaking-change
+    - api-change
+    - security
+    - schema-change
+    - data-migration
+  metrics:
+    enabled: true
+    code_churn: false        # backfill-only git numstat (--code-churn)
+  custom_docs:
+    enabled: true
+    dir: docs/feature-memory/custom
 ```
 
 ### `.feature-memory/events.jsonl` (empty file)

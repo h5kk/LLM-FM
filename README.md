@@ -95,6 +95,34 @@ Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc 
 
 `docs/feature-memory/index.md` includes an auto-generated Mermaid diagram compiled from `[[feature-id]]` relationship links across all feature pages. The maintainer skill regenerates it when relationships change.
 
+### Changelog Configurability, Custom Docs & Metrics (v0.8.0)
+
+Add an optional `changelog:` block to `.feature-memory/config.yaml`:
+
+```yaml
+changelog:
+  verbosity: normal          # terse | normal | detailed
+  summary_rule: ""           # steering hint for topic tagging
+  tagging: true              # master on/off (overrides tagging.strategy)
+  highlight_tags: [breaking-change, api-change, security]
+  metrics:    { enabled: true,  code_churn: false }
+  custom_docs:{ enabled: true,  dir: docs/feature-memory/custom }
+```
+
+- **Verbosity** scales topic-tag count and viewer density (`terse`→1 tag,
+  `detailed`→5 + commit churn column).
+- **Custom docs** — drop markdown in `docs/feature-memory/custom/`:
+  `doc_type: entry` shows in the **Timeline** with a `CUSTOM` badge;
+  `doc_type: wiki` shows in the new **Wiki** tab. Re-scanned fresh every
+  Stop into a separate viewer slot — never written to `changelog.json`.
+  Author via `/feature-memory-changelog-custom`.
+- **Metrics tab** — zero-dependency inline charts (activity over time, by
+  feature, by kind, top contributors). Per-commit churn via
+  `fm_backfill.py --code-churn` (backfill-only to protect the Stop budget).
+
+All additive: omit the block and behavior is unchanged. `changelog.json`
+`schema_version` stays `2` (new fields are optional).
+
 ![The Pipeline — two agent roles consume and maintain compiled docs](images/v2_ThePipeline.png)
 
 ## Quick Start
@@ -115,6 +143,7 @@ Sub-pages carry their own `audience` frontmatter so the Stop hook can route doc 
 | `feature-memory-changelog-clear` | `clear changelog` | Clears all entries from changelog.json without touching feature .md docs |
 | `feature-memory-changelog-purge-md` | `purge md-only entries` | Removes entries whose every path is a .md file |
 | `feature-memory-changelog-dedup` | `dedup changelog` | Merges duplicate entries sharing the same git commit and feature |
+| `feature-memory-changelog-custom` | `add custom changelog/wiki doc` | Authors a custom Timeline entry or Wiki doc surfaced in the viewer (separate slot, never touches changelog.json) |
 
 ### Agent commands
 

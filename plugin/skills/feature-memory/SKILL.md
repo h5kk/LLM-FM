@@ -113,6 +113,17 @@ To regenerate:
 10. **Verify before trusting**: If a feature page has `review_status: needs_review` or `stale`, or `confidence: low`, verify key claims against source files before relying on them.
 11. Do not regenerate the Mermaid diagram unless relationships actually changed — it adds noise to diffs.
 
+### Changelog configurability & custom docs
+
+The optional `changelog:` block in `.feature-memory/config.yaml` controls
+verbosity, a `summary_rule` steering hint, a `tagging` master switch,
+`highlight_tags`, `metrics`, and `custom_docs`. Respect `summary_rule` when
+writing changelog summaries. Do **not** hand-edit `changelog.json` for
+narrative notes — user-authored release notes / wiki pages belong in
+`docs/feature-memory/custom/` (the `/feature-memory-changelog-custom` skill),
+which is re-scanned into a separate viewer slot and never pollutes
+`changelog.json`.
+
 ### Initialization
 
 If `docs/feature-memory/` does not exist, tell the user to say "initialize feature memory" to trigger the `feature-memory-init` skill, which scaffolds the structure and scans the project for features.

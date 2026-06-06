@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Shared utilities for Feature Memory hooks.
 
 Extracted to avoid code duplication across PostToolUse, Stop, and SessionStart hooks.
@@ -111,6 +112,140 @@ def load_tag_strategy(project_dir):
     except Exception:
         pass
     return "cli"
+
+
+def _changelog_defaults():
+    """Fresh default changelog-config dict (never share mutable defaults)."""
+    return {
+        "verbosity": "normal",  # terse | normal | detailed
+        "summary_rule": "",
+        "tagging": True,
+        "highlight_tags": [
+            "breaking-change", "api-change", "security",
+            "schema-change", "data-migration",
+        ],
+        "metrics": {"enabled": True, "code_churn": False},
+        "custom_docs": {"enabled": True, "dir": "docs/feature-memory/custom"},
+    }
+
+
+def _yaml_scalar(raw):
+    """Resolve a YAML scalar value.
+
+    Quoted values are taken verbatim (``#`` inside quotes is preserved). For
+    unquoted values a whitespace-preceded ``#`` begins a comment and is
+    dropped (standard YAML). To keep a literal ``#`` in ``summary_rule``,
+    quote the value.
+    """
+    s = raw.strip()
+    if s[:1] in ('"', "'"):
+        q = s[0]
+        end = s.find(q, 1)
+        return s[1:end] if end != -1 else s[1:]
+    m = re.search(r"\s#", s)
+    if m:
+        s = s[:m.start()]
+    return s.strip()
+
+
+def _yaml_bool(raw, default):
+    v = _yaml_scalar(raw).lower()
+    if v in ("true", "yes", "on", "1"):
+        return True
+    if v in ("false", "no", "off", "0"):
+        return False
+    return default
+
+
+def load_changelog_config(project_dir):
+    """Parse the optional nested ``changelog:`` block from config.yaml.
+
+    Independent of the flat single-level parsers (``load_config``,
+    ``load_tag_strategy``, ``load_skip_patterns``) because it needs a
+    two-level state machine (``metrics:`` / ``custom_docs:`` grandchildren and
+    a ``highlight_tags:`` block list). Tab indentation is rejected (YAML
+    forbids it) and any failure falls back to full defaults. Never raises.
+
+    Returns a fully-defaulted dict so callers can index it unconditionally.
+    """
+    cfg = _changelog_defaults()
+    config_path = project_dir / ".feature-memory" / "config.yaml"
+    if not config_path.exists():
+        return cfg
+    try:
+        in_block = False
+        current_sub = None       # None | 'metrics' | 'custom_docs' | 'highlight_tags'
+        hl = None                # collected highlight tags once the key is seen
+        for line in config_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            stripped = line.strip()
+
+            if not in_block:
+                if stripped == "changelog:":
+                    in_block = True
+                continue
+
+            indent_str = line[:len(line) - len(line.lstrip(" \t"))]
+            if "\t" in indent_str:
+                log_error(
+                    "load_changelog_config: tab indentation in changelog "
+                    "block (YAML forbids tabs); using defaults"
+                )
+                return _changelog_defaults()
+            indent = len(indent_str)
+
+            if indent == 0:
+                break  # a column-0 key ends the changelog block
+
+            if indent < 4:
+                # Level-1 key: scalar, mapping header, or list header.
+                current_sub = None
+                if stripped.endswith(":") and " " not in stripped[:-1]:
+                    key = stripped[:-1]
+                    if key in ("metrics", "custom_docs"):
+                        current_sub = key
+                    elif key == "highlight_tags":
+                        current_sub = "highlight_tags"
+                        hl = []
+                    continue
+                key, _, rawval = stripped.partition(":")
+                key = key.strip()
+                if key == "verbosity":
+                    v = _yaml_scalar(rawval)
+                    cfg["verbosity"] = v if v in ("terse", "normal", "detailed") else "normal"
+                elif key == "summary_rule":
+                    cfg["summary_rule"] = _yaml_scalar(rawval).replace("\n", " ")[:500]
+                elif key == "tagging":
+                    cfg["tagging"] = _yaml_bool(rawval, True)
+                continue
+
+            # indent >= 4: grandchild of metrics/custom_docs or a list item.
+            if current_sub == "highlight_tags" and stripped.startswith("- "):
+                tag = _yaml_scalar(stripped[2:])
+                if tag and hl is not None:
+                    hl.append(tag)
+                continue
+            if current_sub in ("metrics", "custom_docs") and ":" in stripped:
+                key, _, rawval = stripped.partition(":")
+                key = key.strip()
+                sub = cfg[current_sub]
+                if current_sub == "metrics" and key in ("enabled", "code_churn"):
+                    sub[key] = _yaml_bool(rawval, sub[key])
+                elif current_sub == "custom_docs" and key == "enabled":
+                    sub["enabled"] = _yaml_bool(rawval, sub["enabled"])
+                elif current_sub == "custom_docs" and key == "dir":
+                    d = _yaml_scalar(rawval)
+                    if d:
+                        sub["dir"] = d.replace("\\", "/")
+                continue
+
+        if hl is not None and hl:
+            cfg["highlight_tags"] = hl
+        return cfg
+    except Exception as e:
+        log_error("load_changelog_config error: %s" % e)
+        return _changelog_defaults()
 
 
 def match_path_to_features(file_path, features):
@@ -377,24 +512,48 @@ def rotate_events_if_oversized(events_path, max_mb=5):
 _TOPIC_TAG_RE = re.compile(r'^[a-z][a-z0-9-]{0,29}$')
 
 
-def _build_topic_prompt(entries):
+_VERBOSITY_TAG_CAP = {"terse": 1, "normal": 3, "detailed": 5}
+
+
+def verbosity_tag_cap(verbosity):
+    """Map a configured verbosity level to a topic-tag count cap."""
+    return _VERBOSITY_TAG_CAP.get(verbosity, 3)
+
+
+def _sanitize_rule(rule):
+    """Make a user ``summary_rule`` safe to splice into the LLM prompt.
+
+    Collapse newlines (prevents breaking the strict one-line-per-entry
+    output contract) and length-cap. The value is already trusted-ish (the
+    user's own config) but bounding it keeps the prompt well-formed.
+    """
+    return " ".join(str(rule or "").split())[:500]
+
+
+def _build_topic_prompt(entries, summary_rule="", max_tags=3):
     """Build a batched prompt for generating semantic topic tags.
 
     Uses numeric indices (0, 1, 2 ...) to avoid event_id format issues.
     Each entry needs: feature_id, paths, git_message.
+    ``max_tags`` reflects the configured verbosity (terse=1/normal=3/detailed=5).
+    ``summary_rule`` is an optional project-specific steering instruction.
     """
+    n = max(1, int(max_tags))
     lines = [
-        "You are tagging software changelog entries with 1-3 semantic topic tags.",
+        "You are tagging software changelog entries with 1-%d semantic topic tags." % n,
         "Rules:",
-        "- 1 to 3 tags per entry, lowercase kebab-case, 1-3 words each",
+        "- 1 to %d tags per entry, lowercase kebab-case, 1-3 words each" % n,
         "- Tags describe the SUBSYSTEM or CONCEPT being worked on",
         "  (e.g. session-hooks, changelog-viewer, tag-system, plugin-init, config-parser)",
         "- NO language/tech tags (no python, typescript, html, yaml, shell, etc.)",
         "- NO generic verbs (no update, fix, refactor, change, add)",
         "- Output EXACTLY one line per entry: <index>: tag-one, tag-two",
         "- Only output those lines, nothing else",
-        "",
     ]
+    rule = _sanitize_rule(summary_rule)
+    if rule:
+        lines.append("- ADDITIONAL PROJECT RULE: " + rule)
+    lines.append("")
     for i, e in enumerate(entries):
         fid = e.get("feature_id") or "unmapped"
         msg = (e.get("git_message") or "").strip()[:120]
@@ -404,11 +563,12 @@ def _build_topic_prompt(entries):
     return "\n".join(lines)
 
 
-def _parse_topic_tags(text, count):
+def _parse_topic_tags(text, count, max_tags=3):
     """Parse lines like '0: tag-one, tag-two' from LLM output.
 
-    Returns a list of tag lists indexed 0..count-1.
+    Returns a list of tag lists indexed 0..count-1, each capped at max_tags.
     """
+    cap = max(1, int(max_tags))
     result = [[] for _ in range(count)]
     for line in (text or "").splitlines():
         m = re.match(r'^(\d+):\s*(.+)$', line.strip())
@@ -418,11 +578,12 @@ def _parse_topic_tags(text, count):
         if idx >= count:
             continue
         parts = [p.strip().lower() for p in m.group(2).split(",")]
-        result[idx] = [p for p in parts if _TOPIC_TAG_RE.match(p)][:3]
+        result[idx] = [p for p in parts if _TOPIC_TAG_RE.match(p)][:cap]
     return result
 
 
-def generate_topic_tags_batch(entries, batch_size=15, timeout=45, strategy='cli', min_interval_s=0.5):
+def generate_topic_tags_batch(entries, batch_size=15, timeout=45, strategy='cli',
+                               min_interval_s=0.5, summary_rule="", max_tags=3):
     """Generate semantic topic tags for a list of changelog entries.
 
     strategy:
@@ -440,8 +601,10 @@ def generate_topic_tags_batch(entries, batch_size=15, timeout=45, strategy='cli'
     if strategy == 'none':
         return result
 
+    cap = max(1, int(max_tags))
+
     if strategy == 'keyword':
-        return [_keyword_tags_for_entry(e) for e in entries]
+        return [_keyword_tags_for_entry(e)[:cap] for e in entries]
 
     # strategy == 'cli'
     if not shutil.which("claude"):
@@ -457,14 +620,14 @@ def generate_topic_tags_batch(entries, batch_size=15, timeout=45, strategy='cli'
         if not first_batch and min_interval_s > 0:
             time.sleep(min_interval_s)
         first_batch = False
-        prompt = _build_topic_prompt(batch)
+        prompt = _build_topic_prompt(batch, summary_rule=summary_rule, max_tags=cap)
         try:
             r = subprocess.run(
                 ["claude", "-p", prompt, "--output-format", "text"],
                 capture_output=True, text=True, timeout=timeout,
             )
             if r.returncode == 0:
-                parsed = _parse_topic_tags(r.stdout, len(batch))
+                parsed = _parse_topic_tags(r.stdout, len(batch), max_tags=cap)
                 for j, tags in enumerate(parsed):
                     result[offset + j] = tags
         except (subprocess.TimeoutExpired, OSError, Exception):
@@ -473,7 +636,7 @@ def generate_topic_tags_batch(entries, batch_size=15, timeout=45, strategy='cli'
     return result
 
 
-_VIEWER_VERSION = 10  # increment when the viewer template gets significant UI changes
+_VIEWER_VERSION = 11  # increment when the viewer template gets significant UI changes
 
 # Paths matching these globs are never recorded as changelog entries.
 # Covers generated/compiled artifacts, caches, lock files, and IDE state.
@@ -551,6 +714,61 @@ def should_skip_path(file_path, skip_patterns):
             if fnmatch.fnmatch(normalized, pattern):
                 return True
     return False
+
+
+def dump_inline_json(data):
+    """Serialize ``data`` for embedding inside an HTML <script> element.
+
+    ``json.dumps`` does not escape ``/``, so a string value containing the
+    literal ``</script>`` (entirely plausible in a user-authored custom doc
+    that talks about HTML/CSP/the viewer) would prematurely close the data
+    element — breaking ``JSON.parse`` in the viewer AND corrupting the
+    regex-based re-injection on the next Stop (permanent data loss).
+
+    Escaping ``</`` as ``<\\/`` is JSON-safe: ``\\/`` is a valid JSON escape
+    for ``/`` so ``JSON.parse`` decodes it back to ``/`` in the browser, while
+    the HTML tokenizer never sees a closing tag. Used by every writer that
+    injects JSON into changelog-viewer.html.
+    """
+    return json.dumps(data, indent=2, ensure_ascii=False).replace("</", "<\\/")
+
+
+def changelog_config_echo(cfg):
+    """Slim, viewer-facing echo of the effective changelog config.
+
+    Embedded as ``data.config`` so the offline viewer can adapt (verbosity,
+    highlight tags, which tabs to show) without re-reading YAML. Additive and
+    optional — old viewers ignore it, new viewers default it when absent.
+    """
+    cfg = cfg or {}
+    return {
+        "verbosity": cfg.get("verbosity", "normal"),
+        "highlight_tags": list(cfg.get("highlight_tags", [])),
+        "custom_docs_enabled": bool(cfg.get("custom_docs", {}).get("enabled", True)),
+        "metrics_enabled": bool(cfg.get("metrics", {}).get("enabled", True)),
+    }
+
+
+def inject_inline_json_block(viewer_text, block_id, data):
+    """Replace a ``<script id="{block_id}" ...>...</script>`` body with ``data``.
+
+    JSON-in-HTML safe (uses :func:`dump_inline_json`). Returns the new text, or
+    the unchanged text if the block is absent (older viewer/template). Never
+    raises. Used for the separate ``custom-docs-data`` slot so custom docs stay
+    isolated from the append-only changelog-data block.
+    """
+    try:
+        pat = r'(<script id="%s"[^>]*>)([\s\S]*?)(</script>)' % re.escape(block_id)
+        payload = dump_inline_json(data)
+        return re.sub(
+            pat,
+            lambda m: m.group(1) + "\n" + payload + "\n" + m.group(3),
+            viewer_text,
+            count=1,
+        )
+    except Exception as e:
+        log_error("inject_inline_json_block(%s) error: %s" % (block_id, e))
+        return viewer_text
 
 
 def _check_viewer_update(docs_root):
