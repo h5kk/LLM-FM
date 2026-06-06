@@ -1,0 +1,5 @@
+# Feature Memory generated artifacts — derived from git history, not committed.
+# Rebuild with /feature-memory-changelog-refresh
+# (or: python plugin/hooks/fm_backfill.py --all)
+changelog-viewer.html
+changelogs/changelog.json

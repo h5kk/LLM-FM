@@ -334,6 +334,57 @@ def log_error(message):
         pass
 
 
+# Self-contained .gitignore drop-ins. These keep Feature Memory's auto-generated
+# artifacts and per-session runtime state out of version control WITHOUT forcing
+# every consumer repo to hand-edit its root .gitignore. Patterns are explicit
+# (never a blanket "*") because the plugin may copy its own hook scripts into
+# .feature-memory/hooks/ — a wildcard would silently ignore those.
+_RUNTIME_GITIGNORE = """\
+# Feature Memory runtime state — auto-generated, safe to delete.
+# Managed by the feature-memory plugin; recreated automatically each session.
+events.jsonl
+events-*.jsonl
+errors.log
+state.sqlite
+state.sqlite-journal
+state.sqlite-wal
+reports/
+"""
+
+_DOCS_GITIGNORE = """\
+# Feature Memory generated artifacts — derived from git history, not committed.
+# Rebuild with /feature-memory-changelog-refresh
+# (or: python plugin/hooks/fm_backfill.py --all)
+changelog-viewer.html
+changelogs/changelog.json
+"""
+
+
+def ensure_artifact_gitignores(project_dir):
+    """Drop self-contained .gitignore files so generated artifacts and runtime
+    state never dirty the working tree or cause cross-branch merge conflicts.
+
+    Writes ``.feature-memory/.gitignore`` (runtime state) and
+    ``docs/feature-memory/.gitignore`` (compiled changelog + viewer). Idempotent
+    and best-effort: only writes a file when its parent dir exists and the file
+    is absent, never clobbers a user-customized one, and never raises into the
+    caller. Returns the list of repo-relative paths created (for logging/tests).
+    """
+    created = []
+    targets = [
+        (project_dir / ".feature-memory" / ".gitignore", _RUNTIME_GITIGNORE),
+        (project_dir / "docs" / "feature-memory" / ".gitignore", _DOCS_GITIGNORE),
+    ]
+    for path, content in targets:
+        try:
+            if path.parent.exists() and not path.exists():
+                path.write_text(content, encoding="utf-8")
+                created.append(path.relative_to(project_dir).as_posix())
+        except Exception as e:
+            log_error(f"ensure_artifact_gitignores: {path}: {e}")
+    return created
+
+
 _TAGS_IMPACT  = ["breaking-change", "api-change", "schema-change", "config-change", "data-migration"]
 _TAGS_QUALITY = ["security", "auth", "performance", "error-handling", "logging", "accessibility", "ux"]
 _TAGS_PROCESS = ["tests", "docs", "dependency", "tooling", "ci-cd"]

@@ -1,9 +1,17 @@
 ---
 type: changelog
-updated: "2026-05-18"
+updated: "2026-06-06"
 ---
 
 # Feature Memory Changelog
+
+## 2026-06-06 (v0.8.0)
+
+- **hooks**: Generated artifacts (`changelogs/changelog.json`, `changelog-viewer.html`) and per-session runtime state (`events-*.jsonl`, `errors.log`) are no longer committed — they are build outputs, rebuildable from git history via `fm_backfill --all`. This stops the auto-regenerating files from tripping clean-tree hooks and from causing recurring cross-branch merge conflicts.
+- **hooks**: `fm_common.py` — added `ensure_artifact_gitignores()`, which drops self-contained `.gitignore` files into `.feature-memory/` and `docs/feature-memory/`. Patterns are explicit (never a blanket `*`) so copied hook scripts under `.feature-memory/hooks/` are never accidentally ignored. Idempotent; never clobbers a user-customized file.
+- **hooks**: `claude_session_start.py` — calls `ensure_artifact_gitignores()` each session, so both fresh and already-initialized repos self-protect on the next run with no manual steps.
+- **docs**: README documents the generated-vs-committed split; added `MIGRATION.md` with the v0.8.0 transition steps.
+- **tests**: added `tests/test_artifact_gitignore.py` (7 cases: creation, runtime/docs patterns, no-blanket-ignore guard, idempotency, missing-parent skip, never-raises). Suite now 205 passing.
 
 ## 2026-05-18 (v0.4.0)
 

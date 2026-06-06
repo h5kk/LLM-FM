@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fm_common import hook_error_wrapper, _check_viewer_update
+from fm_common import hook_error_wrapper, _check_viewer_update, ensure_artifact_gitignores
 
 
 def _safe_archive(events_path, archive_path):
@@ -40,6 +40,11 @@ def main():
 
     if not docs_root.exists():
         return
+
+    # Keep generated artifacts and per-session runtime state out of git so they
+    # never trip a clean-tree check or cause cross-branch merge conflicts. Safe
+    # to run every session: idempotent and never clobbers a customized file.
+    ensure_artifact_gitignores(project_dir)
 
     # Archive previous session's events before clearing.
     # Use the session_id embedded in the events themselves (not the new session's ID).

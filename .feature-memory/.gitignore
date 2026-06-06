@@ -1,0 +1,9 @@
+# Feature Memory runtime state — auto-generated, safe to delete.
+# Managed by the feature-memory plugin; recreated automatically each session.
+events.jsonl
+events-*.jsonl
+errors.log
+state.sqlite
+state.sqlite-journal
+state.sqlite-wal
+reports/

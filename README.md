@@ -29,8 +29,9 @@ The agent scaffolds the docs structure, scans your codebase, proposes features, 
 docs/feature-memory/
   index.md                    # feature table + auto-generated Mermaid relationship diagram
   recent.md                   # last 5 days of activity
-  changelog.md                # append-only global log
-  changelog-viewer.html       # interactive changelog browser (open in any browser)
+  changelog.md                # append-only global log (hand/skill maintained — committed)
+  .gitignore                  # drop-in: ignores the generated artifacts below
+  changelog-viewer.html       # GENERATED — interactive browser (rebuild, not committed)
   features/
     auth/                     # large feature — split mode
       index.md                # navigation hub
@@ -38,14 +39,24 @@ docs/feature-memory/
       engineering.md          # engineering audience: files, routes, patterns
     billing.md                # small feature — single file
   changelogs/
-    changelog.json            # compiled changelog data (loaded by viewer)
+    changelog.json            # GENERATED — compiled changelog data (rebuild, not committed)
   reports/                    # lint reports, reorg proposals
 
 .feature-memory/
-  config.yaml                 # globs, route patterns, mode (small | split | mixed)
-  events.jsonl                # hook event log (current session)
-  events-{session-id}.jsonl   # archived per-session logs
+  .gitignore                  # drop-in: ignores the runtime state below
+  config.yaml                 # globs, route patterns, mode (small | split | mixed) — committed
+  events.jsonl                # hook event log (current session) — ignored
+  events-{session-id}.jsonl   # archived per-session logs — ignored
 ```
+
+> **Generated vs. committed.** `changelog.json` and `changelog-viewer.html` are
+> build outputs, fully rebuildable from git history, so the plugin keeps them
+> **out of version control** — this is what stops auto-regeneration from tripping
+> clean-tree hooks or causing cross-branch merge conflicts. On every SessionStart
+> the plugin drops self-contained `.gitignore` files into `.feature-memory/` and
+> `docs/feature-memory/` (committed once, then they protect the whole team).
+> Rebuild the viewer/data any time with `/feature-memory-changelog-refresh` or
+> `python plugin/hooks/fm_backfill.py --all`.
 
 Three hooks wire into Claude Code's lifecycle:
 

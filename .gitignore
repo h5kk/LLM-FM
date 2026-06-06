@@ -4,12 +4,20 @@ feature-memory-gist-minimal.md
 feature-memory-gist-ar.md
 feature-memory-architecture-plan.md
 
-# Feature Memory runtime state (rebuild from markdown)
+# Feature Memory runtime state (rebuild from markdown / git history).
+# Also covered by self-contained drop-in .gitignore files that the plugin
+# writes into .feature-memory/ and docs/feature-memory/ on SessionStart;
+# these root entries are kept as a belt-and-suspenders default.
 .feature-memory/state.sqlite
 .feature-memory/state.sqlite-journal
 .feature-memory/state.sqlite-wal
 .feature-memory/events.jsonl
+.feature-memory/events-*.jsonl
+.feature-memory/errors.log
 .feature-memory/reports/
+# Generated changelog artifacts — rebuild via /feature-memory-changelog-refresh
+docs/feature-memory/changelogs/changelog.json
+docs/feature-memory/changelog-viewer.html
 
 # Python
 __pycache__/
